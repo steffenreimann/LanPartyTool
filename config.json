@@ -1,13 +1,7 @@
 {
-  "firststart": "false",
-  "contact": {
-    "address": "Alter Wall 50 Hamburg",
-    "name": "Alter Wall"
-  },
+  "firststart": "true",
   "username": "Steffen",
   "id": "0001",
-  "privat_key": "",
-  "public_key": "",
   "server": {
     "ip": "192.168.178.32",
     "port": "8888",
@@ -20,15 +14,6 @@
     "name": "",
     "printer": "",
     "start": true
-  },
-  "printer": {
-    "standard": "",
-    "all": []
-  },
-  "virtual_printer": {
-    "ip": "192.168.178.122",
-    "port": "2153",
-    "name": "NodeDrucker"
   },
   "allow": {
     "print_from_ext": true,

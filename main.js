@@ -152,11 +152,13 @@ ipcMain.on('openFile', (event, path) => {
    const fs = require('fs') 
    console.log('openfile');
    
-   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'openDirectory']});
-   
-   console.log(selectedFiles[0])
-  
+   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
 
+   console.log(selectedFiles[0])
+  merge(selectedFiles, function(err){
+      console.log("Fertig");
+  });
+    
     fs.readFile(selectedFiles[0], 'utf-8', (err, data) => {
         if(err){
             console.log("An error ocurred reading the file :" + err.message);
@@ -164,20 +166,14 @@ ipcMain.on('openFile', (event, path) => {
         }
 
         // Change how to handle the file content
-        console.log("The file content is : " + data);
+        //console.log("The file content is : " + data);
     });
 
  
 
 // Note that the previous example will handle only 1 file, if you want that the dialog accepts multiple files, then change the settings:
 // And obviously , loop through the fileNames and read every file manually
-dialog.showOpenDialog({ 
-    properties: [ 
-        'openFile', 'multiSelections', (fileNames) => {
-            console.log(fileNames);
-        }
-    ]
-});
+
 })  
 
 
@@ -431,7 +427,7 @@ function split(CompressedDIR, FileSize) {
 	    //console.log(`Is block device: ${stats.isBlockDevice()}`);
 	    
 	    if(isDirectory == true) {
-			console.log('Muss gepackt sein also eine Datein Kein Ordner!');
+			console.log('Muss gepackt sein also eine Datei Kein Ordner!');
 			
 		}else if(isFile == true) {
 			console.log('File');
@@ -479,7 +475,81 @@ function filestats(path) {
 }
 
 
- 
+
+
+
+
+
+
+ var merge = function(data, callback) {
+     
+     
+     console.log("Merge Data = " + data[0]);
+     
+     
+      const testFolder = './';
+const testFile = 'TestOrdner.zip';
+
+var names = [];
+
+
+function listNames(Dir, path) {
+	var pathres = path.split('-');
+	console.log(pathres[0]); 
+	console.log(pathres[1]); 
+	if(pathres[1] == undefined){
+		pathres[0] += '.sf';
+		//pathres[1] = 'part1';
+		console.log(pathres[0]);
+	}
+	fs.readdir(Dir, (err, files) => {
+		files.forEach(file => {
+			
+			//console.log(file); 
+			fileres = file.split('-');
+			//console.log(fileres[0]);
+			if(pathres[0] == fileres[0]) {
+		    	console.log('Push ',file,' in names')
+		    	names.push(file)
+	    	}
+	  });
+	  mergee(names);
+	})
+	
+}
+
+/*
+var t_start, t_end;
+t_start = new Date().getTime();
+// Code, dessen Ausführungszeit wir messen wollen
+t_end = new Date().getTime();
+alert(t_end - t_start);
+*/
+
+
+function mergee(names) {
+	var t_start, t_end;
+	t_start = new Date().getTime();
+	console.log('Merge with ' + names[0]);
+  	splitFile.mergeFiles(names, __dirname + '/testfile-output.zip')
+  		.then(() => {
+  		console.log('Done!');
+  		t_end = new Date().getTime();
+  	console.log(t_end - t_start + 'ms');
+  	})
+  	.catch((err) => {
+   		console.log('Error: ', err);
+  	});
+  	
+  }
+  
+//listNames(testFolder, '5gbtest.zip')
+     
+     callback();
+     
+     
+     
+ }
 
 
 
