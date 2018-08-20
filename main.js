@@ -155,7 +155,22 @@ ipcMain.on('openFile', (event, path) => {
    var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
     if(selectedFiles != undefined) {
         console.log(selectedFiles)
-        filestats(selectedFiles[0])
+        //filestats(selectedFiles[0])
+        
+        fs.lstat(selectedFiles[0], (err, stats) => {
+        if(err)
+        return console.log(err); //Handle error
+
+	    console.log(`Is file: ${stats.isFile()}`);
+	    console.log(`Is directory: ${stats.isDirectory()}`);
+	    console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
+	    console.log(`Is FIFO: ${stats.isFIFO()}`);
+	    console.log(`Is socket: ${stats.isSocket()}`);
+	    console.log(`Is character device: ${stats.isCharacterDevice()}`);
+	    console.log(`Is block device: ${stats.isBlockDevice()}`);
+	    mainWindow.webContents.send('selectedFiles', file = {"path": selectedFiles[0], "stats": stats} );
+	});
+       // mainWindow.webContents.send('selectedFiles', selectedFiles);
     }else{
         console.log('Bitte etwas auswählen');
     }
@@ -180,8 +195,26 @@ ipcMain.on('openFile', (event, path) => {
 // Note that the previous example will handle only 1 file, if you want that the dialog accepts multiple files, then change the settings:
 // And obviously , loop through the fileNames and read every file manually
 
+}) 
+ipcMain.on('openfile-merge', (event, data) => { 
+   const {dialog} = require('electron') 
+   const fs = require('fs') 
+   console.log('openfile');
+   
+   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
+    if(selectedFiles != undefined) {
+        console.log(selectedFiles)
+        //filestats(selectedFiles[0])
+        merge({'names': selectedFiles});
+       // mainWindow.webContents.send('selectedFiles', selectedFiles);
+    }else{
+        console.log('Bitte etwas auswählen');
+    }
+   
+}) 
+ipcMain.on('splitfile', (event, path) => { 
+   console.log('File Split');
 })  
-
 
 // Create menu template
 const mainMenuTemplate =  [
@@ -483,11 +516,49 @@ function filestats(path) {
 
 
 
+ipcMain.on('saveSplitFile', (event, data) => {
+           //console.log("Joo path" + data.path);
+        
+           savefile(data)
+})
 
+function savefile(data) {
+    const {dialog} = require('electron') 
+    const fs = require('fs') 
+    console.log(data.name)
+    console.log(data.path)
+    console.log(data.packSize)
+    dialog.showSaveDialog({ filters: [
 
+     { defaultPath: data.path, title: data.name, name: 'zip', extensions: ['zip'] }
 
+    ]}, function (fileName) {
 
- var merge = function(data, callback) {
+    if (fileName === undefined) return;
+
+    split(data.path, data.packSize);
+   // fs.writeFile(fileName, data, function (err) { });
+
+  }); 
+}
+
+function merge(data) {
+	var t_start, t_end;
+	t_start = new Date().getTime();
+	console.log('Merge with ' + data.names[0]);
+  	splitFile.mergeFiles(data.names, __dirname + '/Merge-output.zip')
+  		.then(() => {
+  		console.log('Done!');
+  		t_end = new Date().getTime();
+  	console.log(t_end - t_start + 'ms');
+  	})
+  	.catch((err) => {
+   		console.log('Error: ', err);
+  	});
+  	
+  }
+
+ var mergee = function(data, callback) {
      
      
      console.log("Merge Data = " + data[0]);

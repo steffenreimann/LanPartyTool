@@ -3,14 +3,9 @@
     const ul = document.querySelector('ul');
 
 
-    ipcRenderer.on('item:add', function(e, item){
-      ul.className = 'collection';
-      const li = document.createElement('li');
-      li.className = 'collection-item';
-      const itemText = document.createTextNode(item);
-
-      li.appendChild(itemText);
-      ul.appendChild(li);
+    ipcRenderer.on('selectedFiles', function(e, data){
+        console.log(data);
+        $( "#out" ).val(data.path);
     });
 
     ipcRenderer.on('item:clear', function(){
@@ -24,11 +19,26 @@
     function removeItem(e){
       console.log('hallo');
     }
-$( "#openfile" ).click(function() {
+$( "#openfile-merge" ).click(function() {
+      ipcRenderer.send('openfile-merge', () => { 
+                console.log("Event sent."); 
+            })
+  });    
+$( "#openfile-split" ).click(function() {
       console.log('open');
       open('file');
-  });    
-
+  });
+$( "#split-file" ).click(function() {
+      console.log('Split');
+    var path = $( "#out" ).val();
+    var packSize = $( "#size" ).val();
+    console.log(path)
+    ipcRenderer.send('saveSplitFile', {'path': path, 'name': 'ka', 'packSize': packSize } , () => { 
+                console.log("Event sent."); 
+            })
+   
+    
+  });
 
       
 function open(e){
@@ -47,7 +57,11 @@ function open(e){
     }
     
     
-         
 ipcRenderer.on('fileData', (event, data) => { 
     document.write(data) 
 })
+
+
+function save(){
+    
+}
