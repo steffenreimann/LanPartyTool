@@ -153,8 +153,14 @@ ipcMain.on('openFile', (event, path) => {
    console.log('openfile');
    
    var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
-
-   console.log(selectedFiles[0])
+    if(selectedFiles != undefined) {
+        console.log(selectedFiles)
+        filestats(selectedFiles[0])
+    }else{
+        console.log('Bitte etwas auswählen');
+    }
+   
+    /*
   merge(selectedFiles, function(err){
       console.log("Fertig");
   });
@@ -169,7 +175,7 @@ ipcMain.on('openFile', (event, path) => {
         //console.log("The file content is : " + data);
     });
 
- 
+ */
 
 // Note that the previous example will handle only 1 file, if you want that the dialog accepts multiple files, then change the settings:
 // And obviously , loop through the fileNames and read every file manually
@@ -458,7 +464,7 @@ function split(CompressedDIR, FileSize) {
 
 function filestats(path) {
 	
-	fs.lstat(__dirname + "/" + path, (err, stats) => {
+	fs.lstat(path, (err, stats) => {
     if(err)
         return console.log(err); //Handle error
 
@@ -469,7 +475,7 @@ function filestats(path) {
 	    console.log(`Is socket: ${stats.isSocket()}`);
 	    console.log(`Is character device: ${stats.isCharacterDevice()}`);
 	    console.log(`Is block device: ${stats.isBlockDevice()}`);
-	    return stats.isDirectory()
+	    
 	});
 
 }

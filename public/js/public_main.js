@@ -1,7 +1,7 @@
-const electron = require('electron');
+  const electron = require('electron');
     const {ipcRenderer} = electron;
     const ul = document.querySelector('ul');
-    
+
 
     ipcRenderer.on('item:add', function(e, item){
       ul.className = 'collection';
@@ -19,15 +19,20 @@ const electron = require('electron');
     });
 
    // ul.addEventListener('dblclick', removeItem);
-
+  
+      
     function removeItem(e){
-      event.target.remove();
-      if(ul.children.length == 0){
-        ul.className = '';
-      }
+      console.log('hallo');
     }
+$( "#openfile" ).click(function() {
+      console.log('open');
+      open('file');
+  });    
 
-    function open(e){
+
+      
+function open(e){
+    console.log('open1');
         if(e == "file") {
             ipcRenderer.send('openFile', () => { 
                 console.log("Event sent."); 
@@ -43,6 +48,6 @@ const electron = require('electron');
     
     
          
-    ipcRenderer.on('fileData', (event, data) => { 
-        document.write(data) 
-    })
+ipcRenderer.on('fileData', (event, data) => { 
+    document.write(data) 
+})

@@ -70,19 +70,16 @@
     
 <script>
         
-var $ = jQuery = window.$ = window.jQuery = require('./js/jquery.js');
- document.addEventListener("DOMNodeInserted", function(event) {
-    if (!!window && !(!!window.$)) {
-        window.$ = window.jQuery = require('path/to/jquery.js');
-    }
-});
+window.$ = window.jQuery = require('./js/jquery.js');
+ 
+
 </script>
-<script src="./js/jquery.js"></script>
+
 <script src="../node_modules/propellerkit/dist/js/bootstrap.js"></script>
 <script src="../node_modules/propellerkit/dist/js/propeller.js"></script>
 
-<script language="javascript" type="text/javascript" src="js/ClientMain.js"></script>
 
+<script language="javascript" type="text/javascript" src="./js/public_main.js"></script>
 
 
 <!-- Propeller textfield js -->
@@ -106,59 +103,7 @@ var $ = jQuery = window.$ = window.jQuery = require('./js/jquery.js');
 <script type="text/javascript" src="http://propeller.in/components/select2/js/pmd-select2.js"></script>
 
   <script>
-    const electron = require('electron');
-    const {ipcRenderer} = electron;
-    const ul = document.querySelector('ul');
-
-
-    ipcRenderer.on('item:add', function(e, item){
-      ul.className = 'collection';
-      const li = document.createElement('li');
-      li.className = 'collection-item';
-      const itemText = document.createTextNode(item);
-
-      li.appendChild(itemText);
-      ul.appendChild(li);
-    });
-
-    ipcRenderer.on('item:clear', function(){
-      ul.className = '';
-      ul.innerHTML = '';
-    });
-
-   // ul.addEventListener('dblclick', removeItem);
-  
-      
-    function removeItem(e){
-      console.log('hallo');
-    }
-      
-document.getElementById('openfile').click(function() {
-      console.log('open');
-      open('file');
-  });    
-      
-
-      
-    function open(e){
-        if(e == "file") {
-            ipcRenderer.send('openFile', () => { 
-                console.log("Event sent."); 
-            })
-           
-           }else if(e == "dir") {
-                    ipcRenderer.send('openDirectory', () => { 
-                        console.log("Event sent."); 
-                      }) 
-                    }
-      
-    }
-    
-    
-         
-    ipcRenderer.on('fileData', (event, data) => { 
-        document.write(data) 
-    })
+ 
       
       
   </script>
