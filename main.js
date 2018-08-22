@@ -15,7 +15,7 @@ var fs = require('fs')
 var os = require('os');
 var ifaces = os.networkInterfaces();
 var fs  = require('fs');
-var splitFile = require('split-file'); 
+var splitFile = require('./split-file.js'); 
 
 var clients = new Array(); // or the shortcut: = []
 var counter = 0;
@@ -584,7 +584,7 @@ function merge(data) {
     
     dialog.showSaveDialog({ filters: [
 
-     { defaultPath: data.path, title: data.name, name: 'sp', extensions: ['sp'] }
+     { defaultPath: data.path, title: data.name, name: 'zip', extensions: ['zip'] }
 
     ]}, function (fileName) {
 
