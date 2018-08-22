@@ -72,3 +72,4 @@ typings/
 # Serverless directories
 .serverless
 *.zip
+.DS_Store
