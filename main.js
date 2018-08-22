@@ -117,14 +117,17 @@ const mainMenuTemplate =  [
   {
     label: 'File',
     submenu:[
+               
       {
-        label:'Add File to Split',
+        label:'Split File',
+        accelerator:process.platform == 'darwin' ? 'Command+S' : 'Ctrl+S',
         click(){
           openSplitFile()
         }
       },
       {
         label:'Merge Files',
+        accelerator:process.platform == 'darwin' ? 'Command+M' : 'Ctrl+M',
         click(){
           openMergeFile();
         }
@@ -150,8 +153,16 @@ if(process.env.NODE_ENV !== 'production'){
   mainMenuTemplate.push({
     label: 'Developer Tools',
     submenu:[
+        {
+        label:'Home',
+        accelerator:process.platform == 'darwin' ? 'Command+H' : 'Ctrl+H',
+        click(){
+          loadHTML('public/mainWindow.html');
+        }
+      }, 
 	  {
         label: 'Config',
+        accelerator:process.platform == 'darwin' ? 'Command+K' : 'Ctrl+K',
         click(){
           loadHTML('public/configWindow.html');
         }
