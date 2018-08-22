@@ -13,6 +13,40 @@
       ul.innerHTML = '';
     });
 
+ipcRenderer.on('DOM', function(event, data){
+    
+    console.log("DOM Event ID : " + data.id);
+    console.log("DOM Event val : " + data.val);
+    console.log("DOM Event show : " + data.show);
+    if(data.val && data.id != undefined){
+        $( data.id ).val(data.val)
+        $( data.id ).html(data.val)
+       }
+    
+    
+    if(data.show != undefined){
+        if(data.show == true){
+                $( data.id ).removeAttr( "disabled" )
+           }else if(data.show == false){
+               $( data.id ).attr("disabled", true);
+           }
+    }
+    });
+
+ipcRenderer.on('split-info', function(event, data){
+    console.log("File Size : " + data);
+    console.log("File time : " + data.time);
+    if(data.file.size != undefined){
+       $( "#size" ).val(data.size)
+       }
+    if(data.file.time != undefined){
+       $( "#time" ).val(data.time)
+       }
+    
+    
+     
+    });
+
    // ul.addEventListener('dblclick', removeItem);
   
       
@@ -31,7 +65,7 @@ $( "#openfile-split" ).click(function() {
 $( "#split-file" ).click(function() {
       console.log('Split');
     var path = $( "#out" ).val();
-    var packSize = $( "#size" ).val();
+    var packSize = $( "#packsize" ).val();
     console.log(path)
     ipcRenderer.send('saveSplitFile', {'path': path, 'name': 'ka', 'packSize': packSize } , () => { 
                 console.log("Event sent."); 

@@ -94,7 +94,7 @@ function createAddWindow(){
   addWindow = new BrowserWindow({
     width: 300,
     height:200,
-    title:'Add Shopping List Item'
+    title:'LanPartyTool'
   });
   addWindow.loadURL(url.format({
     pathname: path.join(__dirname, 'public/addWindow.html'),
@@ -107,114 +107,9 @@ function createAddWindow(){
   });
 }
 
-// Catch item:add
-ipcMain.on('item:add', function(e, item){
-  mainWindow.webContents.send('item:add', item);
-  addWindow.close(); 
-  // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
-  //addWindow = null;
-});
-
-// Catch item:add
-ipcMain.on('config:safe', function(e, i){
-	console.log("hallo ",i);
-	
-	if(i.username != "" || i.username !=  "0"){
-		config_file.set("username", i.username);
-	}else{
-		console.log("Unzulässige Daten = ", i.username);
-	}
-  console.log("PW Daten = ", i.password);
-  config_file.set("password", i.password);
-  config_file.set("id", i.id);
-  config_file.set("server.ip", i.server.ip);
-  config_file.set("server.port", i.server.port);
-  config_file.set("printer.standard", i.printer.standard);
-  config_file.set("printer.all", i.printer.all);
-  config_file.set("virtual_printer.ip", i.virtual_printer.ip);
-  config_file.set("virtual_printer.port", i.virtual_printer.port);
-  
-  config_file.set("allow.print_from_ext", i.allow.print_from_ext);
-  config_file.set("allow.print_to_ext", i.allow.print_to_ext);
-  loadHTML('public/mainWindow.html');
-  setJSON({name: "firststart", val: "false"})
-  // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
-  //addWindow = null;
-});
-
 
 let win  
 
-
-
-ipcMain.on('openFile', (event, path) => { 
-   const {dialog} = require('electron') 
-   const fs = require('fs') 
-   console.log('openfile');
-   
-   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
-    if(selectedFiles != undefined) {
-        console.log(selectedFiles)
-        //filestats(selectedFiles[0])
-        
-        fs.lstat(selectedFiles[0], (err, stats) => {
-        if(err)
-        return console.log(err); //Handle error
-
-	    console.log(`Is file: ${stats.isFile()}`);
-	    console.log(`Is directory: ${stats.isDirectory()}`);
-	    console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
-	    console.log(`Is FIFO: ${stats.isFIFO()}`);
-	    console.log(`Is socket: ${stats.isSocket()}`);
-	    console.log(`Is character device: ${stats.isCharacterDevice()}`);
-	    console.log(`Is block device: ${stats.isBlockDevice()}`);
-	    mainWindow.webContents.send('selectedFiles', file = {"path": selectedFiles[0], "stats": stats} );
-	});
-       // mainWindow.webContents.send('selectedFiles', selectedFiles);
-    }else{
-        console.log('Bitte etwas auswählen');
-    }
-   
-    /*
-  merge(selectedFiles, function(err){
-      console.log("Fertig");
-  });
-    
-    fs.readFile(selectedFiles[0], 'utf-8', (err, data) => {
-        if(err){
-            console.log("An error ocurred reading the file :" + err.message);
-            return;
-        }
-
-        // Change how to handle the file content
-        //console.log("The file content is : " + data);
-    });
-
- */
-
-// Note that the previous example will handle only 1 file, if you want that the dialog accepts multiple files, then change the settings:
-// And obviously , loop through the fileNames and read every file manually
-
-}) 
-ipcMain.on('openfile-merge', (event, data) => { 
-   const {dialog} = require('electron') 
-   const fs = require('fs') 
-   console.log('openfile');
-   
-   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
-    if(selectedFiles != undefined) {
-        console.log(selectedFiles)
-        //filestats(selectedFiles[0])
-        merge({'names': selectedFiles});
-       // mainWindow.webContents.send('selectedFiles', selectedFiles);
-    }else{
-        console.log('Bitte etwas auswählen');
-    }
-   
-}) 
-ipcMain.on('splitfile', (event, path) => { 
-   console.log('File Split');
-})  
 
 // Create menu template
 const mainMenuTemplate =  [
@@ -223,15 +118,15 @@ const mainMenuTemplate =  [
     label: 'File',
     submenu:[
       {
-        label:'Add Item',
+        label:'Add File to Split',
         click(){
-          createAddWindow();
+          openSplitFile()
         }
       },
       {
-        label:'Clear Items',
+        label:'Merge Files',
         click(){
-          mainWindow.webContents.send('item:clear');
+          openMergeFile();
         }
       },
       {
@@ -325,8 +220,111 @@ try {
 
 
 
+
+
+// Catch item:add
+ipcMain.on('item:add', function(e, item){
+  mainWindow.webContents.send('item:add', item);
+  addWindow.close(); 
+  // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
+  //addWindow = null;
+});
+// Catch item:add
+ipcMain.on('config:safe', function(e, i){
+	console.log("hallo ",i);
+	
+	if(i.username != "" || i.username !=  "0"){
+		config_file.set("username", i.username);
+	}else{
+		console.log("Unzulässige Daten = ", i.username);
+	}
+  console.log("PW Daten = ", i.password);
+  config_file.set("password", i.password);
+  config_file.set("id", i.id);
+  config_file.set("server.ip", i.server.ip);
+  config_file.set("server.port", i.server.port);
+  config_file.set("printer.standard", i.printer.standard);
+  config_file.set("printer.all", i.printer.all);
+  config_file.set("virtual_printer.ip", i.virtual_printer.ip);
+  config_file.set("virtual_printer.port", i.virtual_printer.port);
+  
+  config_file.set("allow.print_from_ext", i.allow.print_from_ext);
+  config_file.set("allow.print_to_ext", i.allow.print_to_ext);
+  loadHTML('public/mainWindow.html');
+  setJSON({name: "firststart", val: "false"})
+  // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
+  //addWindow = null;
+});
+ipcMain.on('openFile', (event, path) => { 
+    openSplitFile(path)
+}) 
+ipcMain.on('openfile-merge', (event, data) => { 
+   openMergeFile(data)
+}) 
+ipcMain.on('splitfile', (event, path) => { 
+   console.log('File Split');
+})  
+
+function openMergeFile(){
+    const {dialog} = require('electron') 
+   const fs = require('fs') 
+   console.log('openfile');
+   
+   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
+    if(selectedFiles != undefined) {
+        console.log(selectedFiles)
+        //filestats(selectedFiles[0])
+        merge({'names': selectedFiles});
+       // mainWindow.webContents.send('selectedFiles', selectedFiles);
+    }else{
+        console.log('Bitte etwas auswählen');
+    }
+}
+
+
 Client(config.ext_server)
 
+
+function openSplitFile(path){
+     const {dialog} = require('electron') 
+   const fs = require('fs') 
+   console.log('openfile');
+   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
+    if(selectedFiles != undefined) {
+        console.log(selectedFiles)
+        //filestats(selectedFiles[0])
+        
+        fs.lstat(selectedFiles[0], (err, stats) => {
+        if(err)
+        return console.log(err); //Handle error
+
+	    console.log(`Is file: ${stats.isFile()}`);
+	    console.log(`Is directory: ${stats.isDirectory()}`);
+	    console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
+	    console.log(`Is FIFO: ${stats.isFIFO()}`);
+	    console.log(`Is socket: ${stats.isSocket()}`);
+	    console.log(`Is character device: ${stats.isCharacterDevice()}`);
+	    console.log(`Is block device: ${stats.isBlockDevice()}`);
+	    //mainWindow.webContents.send('selectedFiles', file = {"path": selectedFiles[0], "stats": stats} );
+	   var FileSize = stats.size / 1000000;
+        console.log(FileSize);
+        FileSize = Math.round(FileSize)
+        if(FileSize >= 1000){
+            
+                sizeMGB = FileSize / 1000
+                sizeMGB = sizeMGB + " GB"
+           }else{
+                sizeMGB = FileSize + " MB"
+           }
+        mainWindow.webContents.send('DOM', {"id": "#size", "val": sizeMGB} );
+        mainWindow.webContents.send('DOM', {"id": "#out", "val": selectedFiles[0]} );
+        mainWindow.webContents.send('DOM', {"id": "#time", "val": ""} );
+	});
+       // mainWindow.webContents.send('selectedFiles', selectedFiles);
+    }else{
+        console.log('Bitte etwas auswählen');
+    }
+}
 
 function Client(c) {
 	const
@@ -446,14 +444,14 @@ fs.readdir(path, (err, files) => {
 }
 
 
-function split(CompressedDIR, FileSize) {
+function split(CompressedDIR, FileSize, fileName) {
 	var isFile
 	var isDirectory
 	fs.lstat(CompressedDIR, (err, stats) => {
 		
     	if(err)
         return console.log(err); //Handle error
-        
+        mainWindow.webContents.send('DOM', {"id": "#split-file", "show": false} );
         
 		isFile = stats.isFile()
 		isDirectory = stats.isDirectory()
@@ -475,14 +473,29 @@ function split(CompressedDIR, FileSize) {
 
 			
 			FileSize = FileSize * 1000000;
+            
 			console.log(FileSize);
-			splitFile.splitFileBySize(CompressedDIR, FileSize)
+			splitFile.splitFileBySize(CompressedDIR, FileSize, fileName)
 			.then((names) => {
 		    	console.log(names);
 				//merge(names);  
 				// Code, dessen Ausführungszeit wir messen wollen
-			t_end = new Date().getTime();
-			console.log(t_end - t_start);
+			t_end = new Date().getTime()
+            t_end = t_end - t_start;
+            t_end = t_end / 1000;
+            t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
+			console.log(t_end);
+            if(t_end >= 60){
+               t_end = t_end / 60;
+                t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
+                t_end += " Minuten"
+               }else{
+                    t_end += " Sekunden"
+               }
+                
+            mainWindow.webContents.send('DOM', {"id": "#time", "val": "wurden in " + t_end + " geteilt"} );
+            mainWindow.webContents.send('DOM', {"id": "#split-file", "show": true} );
+            
 		  	})
 		  	.catch((err) => {
 		    	console.log('Error: ', err);
@@ -522,12 +535,20 @@ ipcMain.on('saveSplitFile', (event, data) => {
            savefile(data)
 })
 
+ipcMain.on('DOM', (event, data) => {
+           console.log("DOM Data : " + data);
+           
+})
+
 function savefile(data) {
     const {dialog} = require('electron') 
     const fs = require('fs') 
     console.log(data.name)
     console.log(data.path)
     console.log(data.packSize)
+    
+    
+    
     dialog.showSaveDialog({ filters: [
 
      { defaultPath: data.path, title: data.name, name: 'zip', extensions: ['zip'] }
@@ -535,26 +556,43 @@ function savefile(data) {
     ]}, function (fileName) {
 
     if (fileName === undefined) return;
-
-    split(data.path, data.packSize);
+        console.log(fileName)
+        split(data.path, data.packSize, fileName);
    // fs.writeFile(fileName, data, function (err) { });
 
   }); 
+  
 }
 
 function merge(data) {
+    const {dialog} = require('electron') 
+    const fs = require('fs') 
 	var t_start, t_end;
 	t_start = new Date().getTime();
 	console.log('Merge with ' + data.names[0]);
-  	splitFile.mergeFiles(data.names, __dirname + '/Merge-output.zip')
+    
+    dialog.showSaveDialog({ filters: [
+
+     { defaultPath: data.path, title: data.name, name: 'sp', extensions: ['sp'] }
+
+    ]}, function (fileName) {
+
+    if (fileName === undefined) return;
+        console.log(fileName)
+        splitFile.mergeFiles(data.names, fileName)
   		.then(() => {
   		console.log('Done!');
   		t_end = new Date().getTime();
-  	console.log(t_end - t_start + 'ms');
-  	})
-  	.catch((err) => {
-   		console.log('Error: ', err);
-  	});
+        console.log(t_end - t_start + 'ms');
+        })
+        .catch((err) => {
+            console.log('Error: ', err);
+        });
+
+  }); 
+    
+    
+  	
   	
   }
 
