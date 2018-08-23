@@ -11,12 +11,15 @@ This is a cross platform LanPartyTool desktop application built on electron
 
 Install the dependencies
 
+Go to the folder containing the lanpartytool and run... 
+
 ```sh
 $ npm install
 ```
 
-### Serve
-To run electron
+### Run App 
+
+Your go to 
 
 ```sh
 $ npm start
