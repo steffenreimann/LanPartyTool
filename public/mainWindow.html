@@ -77,7 +77,15 @@
 			<h4 class="panel-title"><a  data-toggle="collapse" data-parent="#accordion4" href="#collapseFour4" aria-expanded="false" aria-controls="collapseFour4"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">account_box</i> Einstellungen </a> </h4>
 		</div>
 		<div id="collapseFour4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-			<div class="panel-body"></div>
+			<div class="panel-body">
+                <div class="form-group pmd-textfield">
+                  <label for="regular1" class="control-label">
+                    Regular Input
+                  </label>
+                  <input type="text" id="networkSectionIpAddress" class="ip_address form-control " >
+                </div>
+                
+            </div>
 		</div>
 	</div>
 </div> <!--Accordion with colored icon end-->
@@ -87,27 +95,14 @@
     </div>
     
     
-<script>
-        
-window.$ = window.jQuery = require('./js/jquery.js');
- 
-
-</script>
-
+<script>window.$ = window.jQuery = require('./js/jquery.js');</script>
 <script src="../node_modules/propellerkit/dist/js/bootstrap.js"></script>
 <script src="../node_modules/propellerkit/dist/js/propeller.js"></script>
-
-
+<script language="javascript" type="text/javascript" src="./js/jquery.mask.js"></script>
 <script language="javascript" type="text/javascript" src="./js/public_main.js"></script>
-
-
-<!-- Propeller textfield js -->
 <script type="text/javascript" src="http://propeller.in/components/textfield/js/textfield.js"></script>
-
-<!-- Select2 js-->
 <script type="text/javascript" src="http://propeller.in/components/select2/js/select2.full.js"></script>
-
-<!-- Propeller Select2 -->
+<script type="text/javascript" src="http://propeller.in/components/select2/js/pmd-select2.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 		<!-- Select & Add Multiple Tags -->
@@ -117,17 +112,6 @@ window.$ = window.jQuery = require('./js/jquery.js');
 		})
 	});
 </script>
-
-<!-- Propeller Select2 -->
-<script type="text/javascript" src="http://propeller.in/components/select2/js/pmd-select2.js"></script>
-
-  <script>
- 
-      
-      
-  </script>
-  
-  
 
 </body>
 </html>

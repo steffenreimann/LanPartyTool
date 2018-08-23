@@ -10,13 +10,13 @@ let config_file = editJsonFile(`${__dirname}/config.json`);
 try {
 
 'use strict';
-
+var ping 			= require('ping');
 var fs = require('fs')
 var os = require('os');
 var ifaces = os.networkInterfaces();
 var fs  = require('fs');
 var splitFile = require('./split-file.js'); 
-
+var evilscan = require('evilscan');
 var clients = new Array(); // or the shortcut: = []
 var counter = 0;
 var chat = [];
@@ -35,6 +35,37 @@ var port = "8081"
 }
 
 
+
+
+let options = {
+    //target :'173.194.45.67',
+    // target  :'192.168.1.1-5',
+    target  :'192.168.0.1-192.168.0.254',
+    //port    :'21, 22, 23, 80, 443, 4443, 4444, 5038, 5060-5070, 8080',
+    port    :'1',
+    status  : 'TROU', // Timeout, Refused, Open, Unreachable
+    timeout : 3000,
+    banner  : true,
+    //geo	    : true
+};
+
+var scanner = new evilscan(options);
+
+scanner.on('result',function(data) {
+    // fired when item is matching options
+    console.log(data);
+});
+
+scanner.on('error',function(err) {
+    throw new Error(data.toString());
+});
+
+scanner.on('done',function() {
+    // finished !
+    console.log('Fertig');
+});
+
+scanner.run();
 
 
 
@@ -266,6 +297,7 @@ ipcMain.on('config:safe', function(e, i){
   // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
   //addWindow = null;
 });
+
 ipcMain.on('openFile', (event, path) => { 
     openSplitFile(path)
 }) 
@@ -459,7 +491,6 @@ function split(CompressedDIR, FileSize, fileName) {
 	var isFile
 	var isDirectory
 	fs.lstat(CompressedDIR, (err, stats) => {
-		
     	if(err)
         return console.log(err); //Handle error
         mainWindow.webContents.send('DOM', {"id": "#split-file", "show": false} );
@@ -478,41 +509,39 @@ function split(CompressedDIR, FileSize, fileName) {
 			console.log('Muss gepackt sein also eine Datei Kein Ordner!');
 			
 		}else if(isFile == true) {
-			console.log('File');
+            
 			var t_start, t_end;
 			t_start = new Date().getTime();
-
-			
-			FileSize = FileSize * 1000000;
+            // Code, dessen Ausführungszeit wir messen wollen Start
             
-			console.log(FileSize);
+			FileSize = FileSize * 1000000;
 			splitFile.splitFileBySize(CompressedDIR, FileSize, fileName)
 			.then((names) => {
-		    	console.log(names);
-				//merge(names);  
-				// Code, dessen Ausführungszeit wir messen wollen
-			t_end = new Date().getTime()
-            t_end = t_end - t_start;
-            t_end = t_end / 1000;
-            t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
-			console.log(t_end);
-            if(t_end >= 60){
-               t_end = t_end / 60;
-                t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
-                t_end += " Minuten"
-               }else{
-                    t_end += " Sekunden"
-               }
+		    	console.log("Names = " + names[0]);
+		    	console.log("Name = " + stats.name);
+                var 
+				//config_file.set(stats.name, names);
                 
-            mainWindow.webContents.send('DOM', {"id": "#time", "val": "wurden in " + t_end + " geteilt"} );
-            mainWindow.webContents.send('DOM', {"id": "#split-file", "show": true} );
-            
-		  	})
-		  	.catch((err) => {
-		    	console.log('Error: ', err);
-		  	});
-		  	
-	  	
+				// Code, dessen Ausführungszeit wir messen wollen End
+                t_end = new Date().getTime()
+                t_end = t_end - t_start;
+                t_end = t_end / 1000;
+                t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
+
+                if(t_end >= 60){
+                    t_end = t_end / 60;
+                    t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
+                    t_end += " Minuten"
+                }else{
+                    t_end += " Sekunden"
+                }
+
+                mainWindow.webContents.send('DOM', {"id": "#time", "val": "wurden in " + t_end + " geteilt"} );
+                mainWindow.webContents.send('DOM', {"id": "#split-file", "show": true} );
+
+            }).catch((err) => {
+                console.log('Error: ', err);
+            });
 		}
 	});
 
@@ -537,8 +566,25 @@ function filestats(path) {
 
 }
 
-
-
+//Input Data is array
+function ipscan(data){
+    var alive = [];
+	  	var i = data.length;
+	  	data.forEach(function(host){
+	  		ping.sys.probe(host, function(isAlive){
+		  		if(isAlive == true){
+			  		alive.push(host);
+			  		io.sockets.emit('msg', {"ip": host,"from":"multi-ping", "out": isAlive});			  		
+		  		}
+	  			i--
+	  			if(i==0){
+	  				ports(alive);
+	  				console.log(alive)
+	  				
+				}
+    		});
+		});
+}
 
 ipcMain.on('saveSplitFile', (event, data) => {
            //console.log("Joo path" + data.path);
@@ -547,6 +593,11 @@ ipcMain.on('saveSplitFile', (event, data) => {
 })
 
 ipcMain.on('DOM', (event, data) => {
+           console.log("DOM Data : " + data);
+           
+})
+
+ipcMain.on('ipscan', (event, data) => {
            console.log("DOM Data : " + data);
            
 })
