@@ -10,20 +10,12 @@ var io 				= require('socket.io').listen(httpServer),
     dl  = require('delivery'),
     fs  = require('fs');
     
-var parseUrl = require('parseurl')
-var send = require('send')
-    
 var intip
 var clients = new Array(); // or the shortcut: = []
 var counter = 0;
 var chat = [];
-    var port = "8081"
-var linkdata = { a: '<a type="button" href="http://',
-            link: 'http://www.deinedomain.de',
-            taget: '" target="_blank" rel="noopener">',
-            aend: '</a>'
-            }
 
+var files
 } catch (ex) {
     //console.log(ex);
     console.log(ex.code)
@@ -35,66 +27,7 @@ var linkdata = { a: '<a type="button" href="http://',
     
 }
 
-
-
-
-const folder_path_win = './public/files/windows/';
-const folder_path_osx = './public/files/macos/';
-const folder_path_lin = './public/files/linux/';
-const folder_path_tool = './public/files/tool/';
-//const folder_ext = './../../../../Volumes/Untitled/'
-const folder_inhalt_win = []
-const folder_inhalt_osx = []
-const folder_inhalt_lin = []
-const folder_inhalt_tool = []
-
-const testpath = './public/files/0ad.zip';
-//dirsys(folder)
-
-
-
-//fs.stat(folder_ext, function(err, stats) {
-//    console.log(folder_ext);
-//    console.log();
-//    console.log(stats);
-//    console.log();
-// 
-//    if (stats.isFile()) {
-//        console.log('    file');
-//    }
-//    if (stats.isDirectory()) {
-//        console.log('    directory');
-//    }
-// 
-//    console.log('    size: ' + stats["size"]);
-//    console.log('    mode: ' + stats["mode"]);
-//    console.log('    others eXecute: ' + (stats["mode"] & 1 ? 'x' : '-'));
-//    console.log('    others Write:   ' + (stats["mode"] & 2 ? 'w' : '-'));
-//    console.log('    others Read:    ' + (stats["mode"] & 4 ? 'r' : '-'));
-// 
-//    console.log('    group eXecute:  ' + (stats["mode"] & 10 ? 'x' : '-'));
-//    console.log('    group Write:    ' + (stats["mode"] & 20 ? 'w' : '-'));
-//    console.log('    group Read:     ' + (stats["mode"] & 40 ? 'r' : '-'));
-// 
-//    console.log('    owner eXecute:  ' + (stats["mode"] & 100 ? 'x' : '-'));
-//    console.log('    owner Write:    ' + (stats["mode"] & 200 ? 'w' : '-'));
-//  console.log('    owner Read:     ' + (stats["mode"] & 400 ? 'r' : '-'));
-//
-//    console.log('    file:           ' + (stats["mode"] & 0100000 ? 'f' : '-'));
-//    console.log('    directory:      ' + (stats["mode"] & 0040000 ? 'd' : '-'));
-// 
-// 
-// 
-//});
-
-
-
-
-
-
 function startServer(){
-    
-    
 	Object.keys(ifaces).forEach(function (ifname) {
 		var alias = 0;
 	  ifaces[ifname].forEach(function (iface) {
@@ -116,50 +49,34 @@ function startServer(){
 	  });
 	});
     
-	httpServer.listen(port);
-	console.log('Server Läuft unter http://' + intip + ':' + port);
+	httpServer.listen("8081");
+	console.log('Server Läuft unter http://' + intip + ':' + '80/');
+	app.use(express.static(__dirname + '/upload'));
+    app.use(express.static(__dirname + '/public/files'));
     app.use(express.static(__dirname + '/public'));
     app.get('/', function(req, res) {
 		res.sendFile(__dirname + '/public/index.html');
-					
+		console.log("Zugriff")			
 	});
-    
-    app.get('/0ad', function(req, res) {
-			
-        var pathname = '/public/files/0ad.zip'
-        res.sendFile(__dirname + pathname);
-        
-        });
-    app.get('/big', function(req, res) {
-			
-        var pathname = '/public/files/fcp.zip'
-        res.sendFile(__dirname + pathname);
-        
-        });
-    
-    
 	// opens the url in the default browser 
 	//opn('http://' + intip + ':' + '8081/');
     
 
-    //
+    
     console.log(intip);
     
 }
 
 
+
 	
 io.sockets.on('connection', function (socket) {	
     
-    newfile(folder_path_win, "win")
-    newfile(folder_path_osx, "osx")
-    newfile(folder_path_lin, "lin")
-    newfile(folder_path_tool, "tool")
-    //newfile(folder_ext, "tool")
-    
+    //readfiles(__dirname + '/public/files', socket)
     socket.on('ping', function() {
     socket.emit('pong');
   });
+    
     var delivery = dl.listen(socket);
 	var address = socket.handshake.address;
     
@@ -175,58 +92,33 @@ io.sockets.on('connection', function (socket) {
     members({"ip": address, "rw": "r"});
 	console.log(address);
     
-    socket.on('download', function(){
-        //console.log("download");
     
-        delivery.send({
-          name: '0ad.zip',
-          path : './public/files/0ad.zip',
-          params: {foo: 'bar'}
-        });
-    
-        
-    delivery.on('send.success',function(file){
-      //console.log('File successfully sent to client!');
-    });
- 
-  });
-    
-    socket.on('file', function(){
-        newfile(folder_path_win, "win")
-        newfile(folder_path_osx, "osx")
-        newfile(folder_path_lin, "lin")
-        newfile(folder_path_tool, "tool")
-    //newfile(folder_ext, "tool")
-  });
     
     
     delivery.on('receive.success',function(file){
-        
-        var data = { name: "", ip: "", text: "Data" }
         var params = file.params;
-        fs.writeFile(__dirname + '/public/files/tool' + file.name,file.buffer, function(err){
+        fs.writeFile(__dirname + '/public/files/' + file.name,file.buffer, function(err){
             if(err){
-                
                 console.log('File could not be saved.');
-                chat(data);
+                socket.emit('uploadstatus', false);
             }else{
                 console.log('File saved.');
-                data.name = linkdata.a + intip + ":" + port + "/files/tool" + file.name + linkdata.taget + file.name + linkdata.aend;
-                data.ip = ""
-                data.text = "Es wurde " + file.name + " hochgeladen!"
-                chatfunc(data);
+                socket.emit('uploadstatus', true);
                 
+                io.emit('chat', { name: 'Server', ip: 'Server', text: __dirname + '/public/files/' + file.name });
+                //socket.emit('chat', { name: 'Server', ip: 'Server', text: items[i] });
             };
         });
-        fs.readdir(folder_path_tool, (err, files) => {
-            console.log(files);
-        })
-        
-        
     });
     
+    socket.on('filelist', function () {
+        fs.readdir(__dirname + '/public/files', function(err, items) {
+        console.log(items);
+            socket.emit('filelist', items);
+        });
     
-    socket.on('member', function(data){
+    });
+    socket.on('member', function (data) {
     
         console.log("IP = " + data.ip);
         console.log("Name = " + data.name);
@@ -236,21 +128,32 @@ io.sockets.on('connection', function (socket) {
 
     });
     
-    socket.on('chatn', function(){
+    socket.on('chatn', function () {
         
         socket.emit('chatn', chat);
     });
     
-    socket.on('user', function(){
+    socket.on('user', function () {
         console.log("User möchte clients haben");
         socket.emit('users', clients);
     });
     
     socket.on('chat', function(data){
         
-        chatfunc(data);
+        console.log(chat.length);
         
+        if(chat.length <= 10) {
+            
+            chat.push(data);    
+            console.log(JSON.stringify(chat));
+            
+        }else{
+            chat.shift();
+            console.log(JSON.stringify(chat));
+        }
         
+        //console.log(data);
+        socket.broadcast.emit('chat', data);
   	});
 	
 	socket.on('disconnect', function(){
@@ -261,7 +164,6 @@ io.sockets.on('connection', function (socket) {
 	  	pig(data);
 	  	requ(data);
   	});
-    
   	socket.on('test', function(data){
 	  	linker(data)
   	});
@@ -369,163 +271,17 @@ io.sockets.on('connection', function (socket) {
   	
 }
     
-    function chatfunc(data) {
-        
-        if(chat.length <= 10) {
-            
-            chat.push(data);    
-            console.log(JSON.stringify(chat));
-            
-        }else{
-            chat.shift();
-            console.log(JSON.stringify(chat));
-        }
-        
-        //console.log(data);
-        //socket.emit('chat', data);
-        io.sockets.emit('chat', data);
-        
-    }
-    
-    function newfile(path, data) {
-    
-    
-    
-    //setInterval(function() {}, 5000);
-        startTime = Date.now();
-        console.log("Lade Ordner " + path);
-        
-        fs.readdir(path, (err, files) => {
-            var filesOld = {};
-                
-                
-                //console.log(files.length);
-                if(files != filesOld){
-                    console.log("Änderung!");
-                    console.log(files.length);
-                   // filesOld = files;
-                var i = 1
-                var leng = files.length
-                    files.forEach(function (file) {
-                         
-                        
-                        
-                       // console.log(stats.isFile());
-                        var filepath = path + file 
-                        //console.log(filepath);
-                        fs.stat(filepath, function(err, stats) { 
-                            
-                            if(stats.isFile === undefined) {
-                                console.log("ich bin undefiniert")
-                                //console.log(path);
-                            }else if(stats.isFile() === true) {
-                                var os = path
-                                var os = os.slice(15, os.length-1)
-                                //console.log(os)
-                                
-                                //console.log(file)
-                                var newpath = os
-                                var newValue = file
-                                
-                                console.log(newValue)
-                                filesOld[newpath] = newValue ;
-                                    //console.log(filesOld.path)
-                                    //console.log(newValue)
-                                var byte = stats["size"];
-                                kb = byte / 1000
-                                mb = kb / 1000
-                                gb = kb / 1000
-                                
-                               // console.log("Files = " + JSON.stringify(filesOld));
-                                //console.log(file)
-                                if(file != ".DS_Store"){
-                                io.sockets.emit('file', {'os': newpath, path: path, name:file, leng: leng, size: mb});
-                                }
-                                //console.log(filepath);
-                                //filesOld.push( { 'path': filepath, 'os': data, size: mb.toFixed(2) });
-                                leng--
-
-                                }
-                            })
-                        
-                            if(i === files.length){
-                               
-                                //console.log("Fertig");
-                                //console.log(files.length);
-                                
-                                
-                                //console.log("Files = " + JSON.stringify(filesOld));
-                            }
-                         i++
-                        });
-                   
-                }
-                    
-                
-            
-        
-        });
-    
-    }
-    
-    function dirsys(path) {
-    
-    fs.stat(path, function(err, stats) {
-        
-        //console.log(stats.isFile())
-        //console.log(stats.isDirectory())
-        
-        
-       if(stats.isFile() === true) {
-            
-        }else if(stats.isDirectory() === true) {
-             
-           console.log("dir");
-            
-            fs.readdir(path, (err, files) => {
-                //console.log(files);
-                var path
-                files.forEach(function (file) {
-                    //console.log(file);
-                    path = folder + file
-                    //filesys(path)
-                });
-            })
-            
-        }
-    });
-    
-    };
-
-    function filesys(path) {
-    
-    fs.stat(path, function(err, stats) {
-        
-        //console.log(stats.isFile())
-        //console.log(stats.isDirectory())
-        
-        if(stats.isFile === undefined) {
-            console.log("ich bin undefiniert")
-            console.log(path);
-        }else if(stats.isFile() === true) {
-            //console.log("file");
-            var byte = stats["size"];
-            kb = byte / 1000
-            mb = kb / 1000
-            gb = kb / 1000
-
-
-            //console.log( path + " - " + byte);
-            //console.log( path + " - " + kb);
-            //console.log( path + " - " + mb.toFixed(2) + "MB");
-
-        }
-    });
-
-};
-    
 });
+    //readfiles()
 
+function readfiles(){
+    
+    fs.readdir(__dirname + '/public/files', function(err, items) {
+        //console.log(items);
+        
+    });
+    return items
+}
 
 startServer();
 
