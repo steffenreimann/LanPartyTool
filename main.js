@@ -10,13 +10,12 @@ let config_file = editJsonFile(`${__dirname}/config.json`);
 try {
 
 'use strict';
-var ping 			= require('ping');
+var ping = require('ping');
 var fs = require('fs')
 var os = require('os');
 var ifaces = os.networkInterfaces();
 var fs  = require('fs');
 var splitFile = require('./split-file.js'); 
-var evilscan = require('evilscan');
 var clients = new Array(); // or the shortcut: = []
 var counter = 0;
 var chat = [];
@@ -36,36 +35,6 @@ var port = "8081"
 
 
 
-
-let options = {
-    //target :'173.194.45.67',
-    // target  :'192.168.1.1-5',
-    target  :'192.168.0.1-192.168.0.254',
-    //port    :'21, 22, 23, 80, 443, 4443, 4444, 5038, 5060-5070, 8080',
-    port    :'1',
-    status  : 'TROU', // Timeout, Refused, Open, Unreachable
-    timeout : 3000,
-    banner  : true,
-    //geo	    : true
-};
-
-var scanner = new evilscan(options);
-
-scanner.on('result',function(data) {
-    // fired when item is matching options
-    console.log(data);
-});
-
-scanner.on('error',function(err) {
-    throw new Error(data.toString());
-});
-
-scanner.on('done',function() {
-    // finished !
-    console.log('Fertig');
-});
-
-scanner.run();
 
 
 
