@@ -11,10 +11,7 @@ var io 				= require('socket.io').listen(httpServer);
 var parseUrl = require('parseurl')
 var send = require('send')
 
-for (let index = 0; index < array.length; index++) {
-    const element = array[index];
-    
-}
+
 
 
 
