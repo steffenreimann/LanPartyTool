@@ -1,0 +1,364 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="apple-touch-icon" href="apple-touch-icon.png">
+        <!-- Place favicon.ico in the root directory -->
+
+        <link rel="stylesheet" href="css/normalize.css">
+        <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+        <!--Google Icon Font-->
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<meta name="theme-color" content="#4f9a94">
+        <link rel="icon" sizes="192x192" href="assets/pc.png">
+        <!-- Propeller css -->
+        <link href="css/propeller.min.css" rel="stylesheet">
+        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <!-- Add your site or application content here -->
+        
+
+        <div class="container-fluid">
+
+            
+                 
+                     
+              
+            
+
+            <div class="" style=" margin-top: 75px;">
+				<form>
+	                <div class="topper pmd-card-title">
+	                    <div class="media-body media-middle">
+	                        <i style="margin-bottom: 15px;" type="button" onclick="listuser()" class="c material-icons md-dark pmd-md" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="Alle User">account_circle</i>
+	                       
+                            <i style="margin-bottom: 15px;" type="button" class="c material-icons md-dark pmd-md" data-target="#modal_files" data-toggle="modal" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="Files">cloud_download</i>
+	                        <i style=" " class="md-dark pmd-md m " id="namechat" style="">Your Name </i>
+                            <i style="margin-bottom: 15px;" class="m md-dark pmd-md" id="ipchat" style="">Your IP</i>
+                            <i style="margin-bottom: 15px;" onclick="$('#login').modal('show')" class="m md-dark pmd-md" id="ipchat" style="">Login</i>
+	                        
+                        </div>
+	                    <div class="media-right">
+			                <div class="media-left">
+								
+                                <div style="margin-bottom: 15px;" class="pmd-switch notification-trigger" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="Auto Scroll">
+									<label class="scroll_label">
+									<input id="scrollcheck" onclick="scrolldown()" type="checkbox" checked>
+									<span for="scrollcheck" class="pmd-switch-label"></span>
+									</label>
+								</div>
+							</div>
+                            
+                            <div class="media-right">
+                                
+                            <div style="margin-bottom: 15px;" class="pmd-switch pmd-tooltip notification-trigger" data-trigger="hover" data-toggle="tooltip" data-placement="bottom" title="Auto Scroll">
+									<label class="scroll_label">
+									<input id="modecheck" onclick="changeMode()" type="checkbox" checked>
+									<span for="modecheck" class="pmd-switch-label"></span>
+									</label>
+								</div>
+                            </div>
+                            
+                            
+                            
+	                    </div>
+	                </div>
+				</form>
+                <div class="pmd-card-body">
+                    <div class="row">
+                            <div id="chatw" class="chattext mit" type="html" name="sio" placeholder=">"></div><br>
+                    </div>
+                </div>
+            </div>
+
+</div>
+            <!--Accordion with all expandable example -->
+            
+            <!-- Footer -->
+<footer class="footer page-footer font-small blue pt-4">
+
+    <!-- Footer Links -->
+    <div class="container-fluid text-center text-md-left">
+           <div class="row" style="margin-top: 16px;">
+                        <div class="col-xs-11">
+                        
+	                        <div  class="form-group pmd-textfield">
+                                
+                                <input type="text" id="chat" placeholder="Nachricht Schreiben" class="form-control mit">
+                            </div>
+                        </div>
+                        <div class="col-xs-1 text-right">
+	                     <i type="button" class="c disable material-icons md-dark pmd-md" data-target="#complete-dialog" data-toggle="modal" data-trigger="hover" data-toggle="popover" data-placement="top" data-content="Verlinkung">add</i>
+                        
+                    </div>
+                    </div>
+
+                
+            
+        
+        </div>
+    <!-- Copyright -->
+
+  </footer>
+  <!-- Footer -->
+<!-- Anhaenge -->        
+<div tabindex="-1" class="modal fade" id="complete-dialog" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="">                     
+            <div class=""> 
+                <div class="pmd-tabs pmd-tabs-bg">
+                    <div class="h">
+                        <div class="pmd-card-title">
+                            <div class="media-body media-middle">
+                                <h2 class="pmd-card-title-text">Anhang</h2>
+                            </div>
+                       </div> 
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li role="presentation" class="active"><a href="#upload" aria-controls="home" role="tab" data-toggle="tab">Upload</a></li>
+                                <li role="presentation"><a href="#link" aria-controls="about" role="tab" data-toggle="tab">Button mit Link</a></li>
+                            </ul>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane " id="link">
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <div class="form-group pmd-textfield">
+                                            <label for="link" class="control-label">
+                                                Link
+                                            </label>
+                                            <input type="text" id="verbindung" placeholder="http://google.de" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <div class="form-group pmd-textfield">
+                                            <label for="linktext" class="control-label">
+                                                Button Text
+                                            </label>
+                                            <input type="text" id="linktext" placeholder="google" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="pmd-modal-action  text-right">
+                                        <button onclick="anhang()" data-dismiss="modal" class="btn pmd-btn-flat pmd-ripple-effect btn-primary" >Senden</button>
+                                        <!--<button data-dismiss="modal" onclick="shutdown()" class="btn pmd-btn-flat pmd-ripple-effect btn-primary" type="button">ServerShutdown</button> -->
+
+                                        <button data-dismiss="modal" type="button" class="btn pmd-btn-flat pmd-ripple-effect btn-default">Abbrechen</button>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane active" id="upload">
+                            <form action="/upload" method="post" enctype="multipart/form-data">
+                            <div class="modal-body">
+
+                                    <div class="row">
+                                        <div class="col-xs-12">
+                                            <div class="form-group pmd-textfield">
+                                                <label for="p" class="control-label">
+                                                    Fotos Videos GIFs mit Vorschau und ZIP RAR als Download im Chat
+                                                </label>
+                                                <input type="file" name="fileToUpload" id="filein" class="fileupload"/>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                            </div>
+                            <div class="pmd-modal-action  text-right">
+                                        <button onclick="submit()" target="_blank" data-dismiss="modal" class="btn pmd-btn-flat pmd-ripple-effect btn-primary" >Upload</button>
+                                        <!--<button data-dismiss="modal" onclick="shutdown()" class="btn pmd-btn-flat pmd-ripple-effect btn-primary" type="button">ServerShutdown</button> -->
+
+                                        <button data-dismiss="modal" type="button" data-target="#bin-zu-blöde" data-toggle="modal" class="btn pmd-btn-flat pmd-ripple-effect btn-default">Abbrechen</button>
+                            </div>
+                            </form>
+                        </div>  
+                        
+                    </div>
+                </div>        
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+        <div tabindex="-1" class="modal fade" id="bin-zu-blöde" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="pmd-card-title-text">OK</h2>
+                    </div>
+                    <div class="modal-body">
+                        <p>;)</p>
+                    </div>
+                    <div class="pmd-modal-action  text-right">
+                        <button data-dismiss="modal" data-target="#complete-dialog" data-toggle="modal" class="btn pmd-btn-flat pmd-ripple-effect btn-primary" type="button">Ok Nochmal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+<!-- User Login -->
+        <div tabindex="-1" class="modal fade" id="login" style="display: none;" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h2 class="pmd-card-title-text">Login</h2>
+			</div>
+			<div class="modal-body">
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group pmd-textfield">
+                        <label for="ip" class="control-label">
+                            Deine IP Adresse
+                        </label>
+                        <input type="text" id="ip" class="form-control" disabled>
+                    </div>
+                </div><div class="col-xs-6">
+                    <div class="form-group pmd-textfield">
+                        <label for="ip" class="control-label">
+                            Dein OS
+                        </label>
+                        <input type="text" id="OSName" class="form-control" disabled>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="form-group pmd-textfield">
+                        <label for="name" class="control-label">
+                            Name
+                        </label>
+                        <input type="text" id="name" class="form-control">
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <div class="form-group pmd-textfield">
+                        <label for="ipsioserver" class="control-label">
+                            Socket IO Server IP
+                        </label>
+                        <input type="text" id="ipsioserver" class="form-control">
+                    </div>
+                </div>
+            </div>
+				
+			</div>
+			<div class="pmd-modal-action  text-right">
+				<button onclick="memberlog()" class="btn pmd-btn-flat pmd-ripple-effect btn-dark" type="button">Login</button>
+				<button onclick="connectSIO()" type="button" class="btn pmd-btn-flat pmd-ripple-effect btn-dark">SIO Connect & Login</button>
+			</div>
+		</div>
+	</div>
+</div>
+    
+<!-- User -->
+        <div tabindex="-1" class="modal fade" id="alluser" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="">
+                    <div class="h">
+                        <div class="pmd-card-title">
+                            <div class="media-body media-middle">
+                                <h2 class="pmd-card-title-text">User</h2>
+                            </div>
+                            <div class="media-right">
+                                <div class="media-left">
+                                    <div type="button" onclick="socket.emit('user')" id="loop" class="c material-icons md-dark pmd-md">loop</div>
+                                </div>
+                            </div>
+	                   </div>
+                       
+                        
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            
+                            <div id="clients" class="form-group pmd-textfield" type="html" name="clients" style="width: 100% ;"></div><br>
+                        </form>
+                    </div>
+                    <div class="pmd-modal-action  text-right">
+                        <button data-dismiss="modal" class="btn pmd-btn-flat pmd-ripple-effect btn-primary" type="button">Ok</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!--Alt -->
+        <div tabindex="-1" class="modal fade" id="dbpush" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="pmd-card-title-text">Speichern</h2>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row" id="bomckeck" >
+
+                        </div>
+                    </div>
+                    <div class="pmd-modal-action pmd-modal-bordered text-right">
+                        <button data-dismiss="modal" class="btn pmd-btn-flat pmd-ripple-effect btn-primary" type="button">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+<!-- Filelist -->
+        <div tabindex="-1" class="modal fade " id="modal_files" style="display: none;" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="">
+                    <div class="h modal-header">
+                        <div class="pmd-card-title">
+                            <div class="media-body media-middle">
+                                <h2 class="pmd-card-title-text">Files</h2>
+                                
+                            </div>
+                            <div class="media-right">
+                                <div class="media-left">
+                                    <div type="button" onclick="socket.emit('filelist')" id="loop" class="c material-icons md-dark pmd-md">loop</div>
+                                </div>
+                            </div>
+	                   </div>
+                       
+                        
+                    </div>
+                    
+                    <div id="files" class="modal-body">
+                       
+                    </div>
+                    <div class="pmd-modal-action text-right">
+                        <button data-dismiss="modal" class="btn pmd-btn-flat pmd-ripple-effect btn-primary" type="button">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jquery js -->
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.js"></script>
+        <script src="js/plugins.js"></script>
+        <!-- Include all compiled plugins (below), or include individual files as needed -->
+        <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/propeller.min.js"></script>
+    
+       <script src="js/socket.io.js"></script>
+        <script src="js/main.js"></script>
+        
+       
+        
+<script>
+
+</script>
+
+    </body>
+</html>
