@@ -1,0 +1,23 @@
+{
+  "firststart": "true",
+  "username": "Steffen",
+  "id": "0001",
+  "server": {
+    "ip": "192.168.178.32",
+    "port": "8888",
+    "printer": "Epson",
+    "start": false
+  },
+  "ext_server": {
+    "ip": "localhost",
+    "port": "8000",
+    "name": "",
+    "printer": "",
+    "start": true
+  },
+  "allow": {
+    "print_from_ext": true,
+    "print_to_ext": false
+  },
+  "password": "$2b$10$Jnq3OIxsAAsCQvLADULyIu0gZcM7bkEV/SHACYil1MM8PdYCm4evi"
+}

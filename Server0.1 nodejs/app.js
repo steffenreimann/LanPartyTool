@@ -11,18 +11,13 @@ var io 				= require('socket.io').listen(httpServer);
 var parseUrl = require('parseurl')
 var send = require('send')
 
-for (let index = 0; index < array.length; index++) {
-    const element = array[index];
-    
-}
-
 
 
 var intip
 var clients = new Array(); // or the shortcut: = []
 var counter = 0;
 var chat = [];
-var port = "80"
+var port = "8081"
 var traffic = {"down": 0,"up": 0}
 const testpath = './public/files/0ad.zip';
 
