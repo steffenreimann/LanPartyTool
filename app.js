@@ -66,7 +66,9 @@ function startServer(){
 	httpServer.listen(port);
 	console.log('Server Läuft unter http://' + intip + ':' + port);
     app.use(express.static(__dirname + '/public'));
+
     app.use('/games', express.static(__dirname + '/public/files/'));
+
     app.get('/', function(req, res) {
 		res.sendFile(__dirname + '/public/index.html');			
 	});
@@ -82,10 +84,10 @@ function startServer(){
         var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         var startTime = Date.now();
         
-        console.log(req.rawHeaders)
+        //console.log(req.rawHeaders)
         
         var file_size = req.headers['content-length']
-        console.log(parseInt(file_size))
+        //console.log(parseInt(file_size))
         
         
         req.pipe(req.busboy); // Pipe it trough busboy
@@ -120,12 +122,12 @@ function startServer(){
             file.on('end', function(data){
                 fstream.end();
                 console.log('-- END -- Upload');
-                console.log(inpu_size);
+                //console.log(inpu_size);
                 var fullTime = Date.now() - startTime;
                 fullTime = fullTime / 1000;
                 var speed = speedtest(inpu_size, fullTime)
-                console.log(fullTime);
-                console.log(speed);
+                //console.log(fullTime);
+                //console.log(speed);
                 steamSpeedAnalyse("true", speed, inpu_size, ip);
                 
                 var ChatData = {text: "", ip: ip, speed: speed, filename: filename};
@@ -157,7 +159,7 @@ function startServer(){
     
     function chatContentSwitch(data){
         var tt = data.filename.split('.').pop();
-        console.log(tt)
+        //console.log(tt)
         if(tt === 'jpg' || tt === 'png' || tt === 'gif' || tt === 'tif' || tt === 'jpeg'){
             data.text = picdata.a + "/games/" + data.filename + picdata.aend;
         }else if(tt === 'mp4' || tt === 'ogg' || tt === 'webm' || tt === 'mp3'){
@@ -389,7 +391,7 @@ io.sockets.on('connection', function (socket) {
        
    var falses = 0; 
     if(clients.length <= 0 ){
-        console.log("IP die an den ersten client gegeben wird " + data.ip);
+        //console.log("IP die an den ersten client gegeben wird " + data.ip);
         socket.emit('member', { ip: data.ip, member: "false" });
        }else{
            for(var i=0;i<clients.length;i++) {
@@ -405,18 +407,18 @@ io.sockets.on('connection', function (socket) {
             if(res === false){
                 falses++
                 if(falses === clients.length){
-                    console.log("Falses" + n.ip);
+                    //console.log("Falses" + n.ip);
                     socket.emit('member', { ip: n.ip, member: res, name: n.name });
                    }
             }else if(res === true) {
-                console.log("isReady true")
+                //console.log("isReady true")
                 socket.emit('member', { ip: n.ip, member: res, name: n.name });
             }
                
                
                 
             
-            console.log("Alle getested");
+            //console.log("Alle getested");
         }
     }
 
