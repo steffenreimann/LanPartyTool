@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LanPartyTool</title>
+<!--   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"> -->
+	<link rel="stylesheet" href="../node_modules/propellerkit/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../node_modules/propellerkit/dist/css/propeller.min.css">
+	<link rel="stylesheet" href="../node_modules/propellerkit/dist/css/propeller.min.css.map">
+    <link rel="stylesheet" href="./css/main.css">
+</head>
+<body>
+<div class="window">
+
+      <!-- .toolbar-header sits at the top of your app -->
+<!--
+      <header class="toolbar toolbar-header">
+        <h1 class="title">Photon</h1>
+      </header>
+-->
+
+      <!-- Your app's content goes inside .window-content -->
+      <div class="window-content">
+	    <div class="col-xs-12">
+            
+            
+            
+            
+            <!--Accordion with colored icon example -->
+<div class="panel-group pmd-accordion" id="accordion4" role="tablist" aria-multiselectable="true" > 
+	<div class="panel panel-warning"> 
+		<div class="panel-heading" role="tab" id="headingOne">
+			<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion4" href="#collapseOne4" aria-expanded="true" aria-controls="collapseOne4"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">mood</i> Merge </a> </h4>
+            
+		</div>
+		<div id="collapseOne4" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+			<div class="panel-body"> 
+                <button id="openfile-merge" type="button" class="btn btn-primary"> Open </button >
+                <button id="" type="button" class="btn btn-primary"> Save </button >
+            </div>
+		</div>
+	</div>
+	<div class="panel panel-danger"> 
+		<div class="panel-heading" role="tab" id="headingTwo">
+			<h4 class="panel-title"><a  data-toggle="collapse" data-parent="#accordion4" href="#collapseTwo4" aria-expanded="false" aria-controls="collapseTwo4"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">account_balance</i> Split</a> </h4>
+		</div>
+		<div id="collapseTwo4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+			<div class="panel-body"><p></p>
+                
+<!-- Large Input -->
+<div class="form-group pmd-textfield form-group-lg">
+	<label for="out" class="control-label">Datei</label>
+	<input type="Large" id="out" class="form-control input-group-lg" placeholder="C:\Users\">
+	</div>
+                
+<div class="form-group pmd-textfield">
+  <label for="regular1" class="control-label">
+      Packet größe in MB
+  </label>
+  <input type="number" id="packsize" class="form-control" value="200" placeholder="200">
+</div>
+
+                <button id="openfile-split" type="button" class="btn btn-primary"> Open</button > 
+                <button id="split-file" type="button" class="btn btn-primary">Save</button >
+                <label id="size"></label>
+                <label id="time"></label>
+              
+                <br><br>
+                <!-- Animated progressbar of green color -->  
+<div class=" progress-rounded progress progress-striped pmd-progress active"><div class="progress-bar progress-bar-success" style="width: 0%;"></div></div>
+
+            </div>
+            
+		</div>
+	</div>
+	<div class="panel panel-info"> 
+		<div class="panel-heading" role="tab" id="headingFour">
+			<h4 class="panel-title"><a  data-toggle="collapse" data-parent="#accordion4" href="#collapseFour4" aria-expanded="false" aria-controls="collapseFour4"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">account_box</i> Einstellungen </a> </h4>
+		</div>
+		<div id="collapseFour4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+			<div class="panel-body">
+                <div class="form-group pmd-textfield">
+                  <label for="networkSectionIpAddress" class="control-label">
+                    IP Field
+                  </label>
+                  <input type="text" id="networkSectionIpAddress" class="ip_address form-control" >
+                </div>
+                
+            </div>
+		</div>
+	</div>
+</div> <!--Accordion with colored icon end-->
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+<script>window.$ = window.jQuery = require('./js/jquery.js');</script>
+<script src="../node_modules/propellerkit/dist/js/bootstrap.js"></script>
+<script src="../node_modules/propellerkit/dist/js/propeller.js"></script>
+<script language="javascript" type="text/javascript" src="./js/jquery.mask.js"></script>
+<script language="javascript" type="text/javascript" src="./js/public_main.js"></script>
+<script type="text/javascript" src="http://propeller.in/components/textfield/js/textfield.js"></script>
+<script type="text/javascript" src="http://propeller.in/components/select2/js/select2.full.js"></script>
+<script type="text/javascript" src="http://propeller.in/components/select2/js/pmd-select2.js"></script>
+<script type="text/javascript">
+	$(document).ready(function() {
+		<!-- Select & Add Multiple Tags -->
+		$(".select-add-tags").select2({
+			tags: true,
+			theme: "bootstrap",
+		})
+	});
+</script>
+
+</body>
+</html>
