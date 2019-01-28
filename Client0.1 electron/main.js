@@ -208,10 +208,16 @@ var config = config_file.toObject()
 
 
 try {
+
+	
+var filename = path.basename('/Users/Refsnes/demo_path.js');
+console.log(filename);
+
 	var gamedir = __dirname + "/games";
 	
 	fs.readdir(gamedir, (err, files) => {
 		files.forEach(file => {
+			var x = path.join(gamedir, file);
 			fs.lstat(gamedir , (err, stats) => {
 			    if(err) {
 				    return console.log(err); //Handle error
@@ -219,8 +225,9 @@ try {
 			    isDirectory = stats.isDirectory()
 			    
 				if(isDirectory == true)	{
-					console.log(`!!!!!Is Dir: ${file}`);
-					addGame(gamedir,file, "true")
+					console.log(`!!!!!Is Dir: ${x}`);
+					var addGameData = {path: x, split: true}
+					addGame(addGameData)
 				}
 /*
 				console.log(`Is file: ${stats.isFile()}`);
@@ -376,40 +383,39 @@ function setJSON(data) {
 
 
 
-function addGame(path, file, splitbool) {
-	fs.lstat(path + "/" + file, (err, stats) => {
+function addGame(da) {
+	var basename = path.basename(da.path);
+	var dirname = path.dirname(da.path);
+
+	fs.lstat(da.path, (err, stats) => {
 		if(err) {
 			return console.log(err); //Handle error
 		}
 		
 		isFile = stats.isFile()
-		isDirectory = stats.isDirectory()
+		isDirectory = stats.isDirectory() 
 			    
-			    
-		if(isFile && file != '.DS_Store' && splitbool)	{
-			console.log(`-- add game -- Is File: ${file} --`);
-
-			//var tmp = {ip: '', name: '', files: {}}
-			var tmpFiles = {name: path + "/" + file, stats: stats }
+		if(isFile && basename != '.DS_Store' && da.split)	{
+			console.log(`-- add game -- Is File: ${basename} --`);
+			var tmpFiles = {name: da.path, stats: stats }
 		
 			FilePaths.myFiles.push(tmpFiles);
 			console.log(FilePaths.myFiles);
 			//FilePaths = {myFiles: {}, network: {}};
-			console.log("patherfile");
-			var o = pather(file)
-
-
-			fs.mkdir(path + "/" + o.name, { recursive: true }, (err) => {
+			//console.log(da.path);
+			//console.log(basename);
+			//console.log(dirname);
+			var v = path.join(dirname,'LT-' + basename, basename);
+			var f = path.join(dirname, 'LT-' + basename);
+			fs.mkdir(f, { recursive: true }, (err) => {
 				if (err) throw err;
-				split(path + "/" + file, 400, path + "/" + o.name + "/" + file);
+				split(da.path, 400, v);
 			  });
 			
 		}
-		
-			    
 		if(isDirectory == true)	{
 			console.log(`Bitte Komprimieren`);
-				
+		
 		}
 		    
 	});
@@ -685,7 +691,6 @@ function openMergeFile(){
    console.log('selectedFiles = ' + selectedFiles)
 
     if(selectedFiles != undefined) {
-
 		fs.lstat(selectedFiles  + "/", (err, stats) => {
 			if(err) {
 				return console.log(err); //Handle error
@@ -711,10 +716,10 @@ function openMergeFile(){
 					console.log('selectedFiles name = ' + name);
 					files.forEach(file => {
 					  console.log('forEachfile = ' + file);
-					  tmpFileArray.push(p + '\\' + file);
+					  tmpFileArray.push(p + '/' + file);
 					});
 					console.log('tmpFileArray = ' + tmpFileArray);
-					merge({path: p + '\\', name: name, names: tmpFileArray, typ: typ});
+					merge({path: p + '/', name: name, names: tmpFileArray, typ: typ});
 				})
 			}
 		});
