@@ -226,7 +226,7 @@ console.log(filename);
 			    
 				if(isDirectory == true)	{
 					console.log(`!!!!!Is Dir: ${x}`);
-					var addGameData = {path: x, split: true}
+					var addGameData = {path: x, size: 400, split: true}
 					addGame(addGameData)
 				}
 /*
@@ -398,21 +398,18 @@ function addGame(da) {
 		if(isFile && basename != '.DS_Store' && da.split)	{
 			console.log(`-- add game -- Is File: ${basename} --`);
 			var tmpFiles = {name: da.path, stats: stats }
-		
 			FilePaths.myFiles.push(tmpFiles);
-			console.log(FilePaths.myFiles);
+			//console.log(FilePaths.myFiles);
 			//FilePaths = {myFiles: {}, network: {}};
 			//console.log(da.path);
 			//console.log(basename);
 			//console.log(dirname);
-			var v = path.join(dirname,'LT-' + basename, basename);
-			var f = path.join(dirname, 'LT-' + basename);
-			fs.mkdir(f, { recursive: true }, (err) => {
-				if (err) throw err;
-				split(da.path, 400, v);
-			  });
-			
+			checkFilestatus(da, LTsplit);
 		}
+
+		
+
+
 		if(isDirectory == true)	{
 			console.log(`Bitte Komprimieren`);
 		
@@ -432,14 +429,55 @@ function pather(data){
 	var d = {path: path, typ: typ, name: name}
 	return d
 }
+
+let checkFilestatus = function checkFilestatus(da, callback){
+	var basename = path.basename(da.path);
+	var dirname = path.dirname(da.path);
+	var v = path.join(dirname,'LT-' + basename, basename);
+	var f = path.join(dirname, 'LT-' + basename);
+	if(!fs.existsSync(f)){
+		fs.mkdir(f, { recursive: true }, (err) => {
+			if (err) throw err;
+			console.log('return false  ');
+			return callback(da.path, 400, v);
+			});
+	}else{
+		console.log('Ordner Schon Vorhanden!');
+		fs.readdir(f, function(err, files) {
+			console.log(files);
+			if(files != undefined && files != "" ){
+
+				files.forEach(file => {
+					console.log('forEachfile = ' + file);
+
+					if(file == "LT-Config.json"){
+						console.log("LT-Config.json");
+					}
 	
+				});
+
+				console.log('return true  ');
+				
+			}else{
+				console.log('return false  ');
+				return callback(da.path, da.size, v);
+			}
+		});
+	};
+
+	fs.lstat(da.path, (err, stats) => {
+		console.log(stats.size);
+
+	});
+
+
+	
+}
 	
 	/*
 		// Create 
-	function mkdirpath(dirPath)
-	{
-	    if(!fs.existsSync(dirPath))
-	    {
+	function mkdirpath(dirPath){
+	    if(!fs.existsSync(dirPath)){
 	        try
 	        {
 	            fs.mkdirSync(dirPath);
@@ -500,7 +538,7 @@ fs.readdir(path, (err, files) => {
 }
 
 
-function split(CompressedDIR, FileSize, fileName) {
+let LTsplit = function LTsplit(CompressedDIR, FileSize, fileName) {
 	var isFile
 	var isDirectory
 	fs.lstat(CompressedDIR, (err, stats) => {
@@ -654,7 +692,10 @@ function savefile(data) {
 				if(isFile)	{
 					console.log(`!!!!!Is File: ${name}`);
 					console.log(`!!!!!path: ${path}`);
-					addGame(path,name, "true")
+
+					//addGame(path,name, "true")
+					var addGameData = {path: x, size: 400, split: true}
+					addGame(addGameData)
 				}    
 			});
 	

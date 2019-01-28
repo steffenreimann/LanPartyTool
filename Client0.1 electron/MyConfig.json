@@ -1,0 +1,18 @@
+{
+    "firststart": "true",
+    "username": "",
+    "id": "0001",
+    "local": {
+      "ip": "",
+      "port": "8090"
+    },
+    "local_network": {
+      "users": [{
+        "port": "8090",
+        "name": "",
+        "ip": "",
+        "content": []
+        }
+      ]
+    }
+  }
