@@ -5,6 +5,8 @@ const editJsonFile = require("edit-json-file");
 var fs = require('fs')
 // If the file doesn't exist, the content will be an empty object by default.
 let MyConfig = editJsonFile(`${__dirname}/config.json`);
+let MyConfigTamplate = editJsonFile(`${__dirname}/MyConfig.json`);
+let MyConfigTmp = editJsonFile(`${__dirname}/MyConfigTmp.json`);
 var FilePaths = {myFiles: [], network: {}};
 
 try {
@@ -76,9 +78,9 @@ app.on('ready', function(){
   
   
   //Lese Aus der JSON Datei wlchen wert firststart hat 
-console.log(MyConfig.get("firststart"));
+console.log(MyConfig.get("UserConfigFile"));
 
-if(MyConfig.get("firststart") == true) {
+if(MyConfig.get("UserConfigFile") == true) {
 	console.log("Erster Start wird ausgeführt");
 	// Load html in window
 	  mainWindow.loadURL(url.format({
@@ -207,9 +209,14 @@ if(process.env.NODE_ENV !== 'production'){
 var config = MyConfig.toObject()
 
 
+
+
+
+
+
 try {
 
-	
+	checkConfigFiles()
 var filename = path.basename('/Users/Refsnes/demo_path.js');
 console.log(filename);
 
@@ -224,32 +231,14 @@ console.log(filename);
 			    }
 			    isDirectory = stats.isDirectory()
 			    
-				if(isDirectory == true)	{
+				if(isDirectory)	{
 					console.log(`!!!!!Is Dir: ${x}`);
 					var addGameData = {path: x, size: 400, split: true}
-					addGame(addGameData)
+					//addGame(addGameData)
 				}
-/*
-				console.log(`Is file: ${stats.isFile()}`);
-				console.log(`Is directory: ${stats.isDirectory()}`);
-				console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
-				console.log(`Is FIFO: ${stats.isFIFO()}`);
-				console.log(`Is socket: ${stats.isSocket()}`);
-				console.log(`Is character device: ${stats.isCharacterDevice()}`);
-				console.log(`Is block device: ${stats.isBlockDevice()}`);
-*/
 				    
 			});
-			
-			//console.log(filestat)
-			
 			console.log(file); 
-			//fileres = file.split('-');
-			//console.log(fileres[0]);
-			//if(pathres[0] == fileres[0]) {
-		    //console.log(filestat)
-		    //	names.push(file)
-	    	//}
 	    });
   
 	})
@@ -264,38 +253,9 @@ console.log(filename);
 
 
 // Catch item:add
-ipcMain.on('item:add', function(e, item){
-  mainWindow.webContents.send('item:add', item);
-  addWindow.close(); 
-  // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
-  //addWindow = null;
-});
+
 // Catch item:add
-ipcMain.on('config:safe', function(e, i){
-	console.log("hallo ",i);
-	
-	if(i.username != "" || i.username !=  "0"){
-		MyConfig.set("username", i.username);
-	}else{
-		console.log("Unzulässige Daten = ", i.username);
-	}
-  console.log("PW Daten = ", i.password);
-  MyConfig.set("password", i.password);
-  MyConfig.set("id", i.id);
-  MyConfig.set("server.ip", i.server.ip);
-  MyConfig.set("server.port", i.server.port);
-  MyConfig.set("printer.standard", i.printer.standard);
-  MyConfig.set("printer.all", i.printer.all);
-  MyConfig.set("virtual_printer.ip", i.virtual_printer.ip);
-  MyConfig.set("virtual_printer.port", i.virtual_printer.port);
-  
-  MyConfig.set("allow.print_from_ext", i.allow.print_from_ext);
-  MyConfig.set("allow.print_to_ext", i.allow.print_to_ext);
-  loadHTML('public/mainWindow.html');
-  setJSON({name: "firststart", val: "false"})
-  // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
-  //addWindow = null;
-});
+
 
 ipcMain.on('openFile', (event, path) => { 
     openSplitFile(path)
@@ -310,7 +270,7 @@ ipcMain.on('splitfile', (event, path) => {
 
 
 
-Client(config.ext_server)
+
 
 
 function openSplitFile(path){
@@ -354,17 +314,6 @@ function openSplitFile(path){
     }
 }
 
-function Client(c) {
-	const
-    io = require("socket.io-client"),
-    ioClient = io.connect("http://" + c.ip + ":" + c.port);
-console.log("http://",c.ip,":",c.port);
-	ioClient.on("seq-num", (msg) => console.info(msg));
-	
-	
-	
-}
-
 
 
 function loadHTML(data){
@@ -377,11 +326,26 @@ function loadHTML(data){
 }
 
 function setJSON(data) {
-	
 	MyConfig.set(data.name, data.val);
 }
 
+function checkConfigFiles(){
+	let MyConfig = editJsonFile(`${__dirname}/config.json`);
+	let MyConfigTemplate = editJsonFile(`${__dirname}/MyConfig.json`);
+	let MyConfigTmp = editJsonFile(`${__dirname}/MyConfigTmp.json`);
+	var Template = MyConfigTemplate.toObject()
+	var MyConfigTmpObj = MyConfigTemplate.toObject()
+	var conf = MyConfig.toObject()
+	
 
+
+	if(conf.UserConfigFile == false){
+		console.log('First Start');
+	}
+
+//MyConfigTemplate.set("allow.print_to_ext", i.allow.print_to_ext);
+	console.log(Template);
+}
 
 function addGame(da) {
 	var basename = path.basename(da.path);
@@ -395,27 +359,24 @@ function addGame(da) {
 		isFile = stats.isFile()
 		isDirectory = stats.isDirectory() 
 			    
-		if(isFile && basename != '.DS_Store' && da.split)	{
+		if(isFile && basename != '.DS_Store')	{
 			console.log(`-- add game -- Is File: ${basename} --`);
 			var tmpFiles = {name: da.path, stats: stats }
 			FilePaths.myFiles.push(tmpFiles);
-
 			//console.log(FilePaths.myFiles);
 			//FilePaths = {myFiles: {}, network: {}};
 			//console.log(da.path);
 			//console.log(basename);
 			//console.log(dirname);
-			checkFilestatus(da, LTsplit);
+			if(da.split){
+				checkFilestatus(da, LTsplit);
+			}
+			
 		}
-
-		
-
 
 		if(isDirectory == true)	{
 			console.log(`Bitte Komprimieren`);
-		
-		}
-		    
+		}  
 	});
 
 function pather(data){

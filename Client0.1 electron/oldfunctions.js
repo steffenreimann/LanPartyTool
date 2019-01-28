@@ -76,3 +76,49 @@ alert(t_end - t_start);
      
    
  }
+
+
+
+ ipcMain.on('item:add', function(e, item){
+	mainWindow.webContents.send('item:add', item);
+	addWindow.close(); 
+	// Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
+	//addWindow = null;
+  });
+
+
+
+  ipcMain.on('config:safe', function(e, i){
+	console.log("hallo ",i);
+	
+	if(i.username != "" || i.username !=  "0"){
+		MyConfig.set("username", i.username);
+	}else{
+		console.log("Unzulässige Daten = ", i.username);
+	}
+  console.log("PW Daten = ", i.password);
+  MyConfig.set("password", i.password);
+  MyConfig.set("id", i.id);
+  MyConfig.set("server.ip", i.server.ip);
+  MyConfig.set("server.port", i.server.port);
+  MyConfig.set("printer.standard", i.printer.standard);
+  MyConfig.set("printer.all", i.printer.all);
+  MyConfig.set("virtual_printer.ip", i.virtual_printer.ip);
+  MyConfig.set("virtual_printer.port", i.virtual_printer.port);
+  
+  MyConfig.set("allow.print_from_ext", i.allow.print_from_ext);
+  MyConfig.set("allow.print_to_ext", i.allow.print_to_ext);
+  loadHTML('public/mainWindow.html');
+  setJSON({name: "firststart", val: "false"})
+  // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
+  //addWindow = null;
+});
+
+
+Client(config.ext_server)
+
+function Client(c) {
+//	const io = require("socket.io-client"), ioClient = io.connect("http://" + c.ip + ":" + c.port);
+	//console.log("http://",c.ip,":",c.port);
+//	ioClient.on("seq-num", (msg) => console.info(msg));
+}

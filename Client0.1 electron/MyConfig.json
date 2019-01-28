@@ -4,7 +4,9 @@
     "id": "0001",
     "local": {
       "ip": "",
-      "port": "8090"
+      "port": "8090",
+      "gamesdir": "",
+      "content": []
     },
     "local_network": {
       "users": [{
