@@ -5,16 +5,14 @@ const editJsonFile = require("edit-json-file");
 var fs = require('fs')
 // If the file doesn't exist, the content will be an empty object by default.
 let config_file = editJsonFile(`${__dirname}/config.json`);
-
+var FilePaths = {myFiles: [], network: {}};
 
 try {
 
 'use strict';
 var ping = require('ping');
-var fs = require('fs')
 var os = require('os');
 var ifaces = os.networkInterfaces();
-var fs  = require('fs');
 var splitFile = require('./split-file.js'); 
 var clients = new Array(); // or the shortcut: = []
 var counter = 0;
@@ -32,6 +30,31 @@ var port = "8081"
     }
     
 }
+
+
+var Server = require('fast-tcp').Server;
+var Socket = require('fast-tcp').Socket;
+ 
+var server = new Server();
+
+server.on('connection', function (socket) {
+  socket.on('login', function (username) {
+    console.log('Trying to login: ' + username);
+  });
+  socket.on('files', function (username) {
+    console.log('Files');
+  });
+
+});
+
+server.listen(5000);
+ 
+
+
+
+
+
+//socket.emit('login', 'alejandro');
 
 
 
@@ -197,7 +220,7 @@ try {
 			    
 				if(isDirectory == true)	{
 					console.log(`!!!!!Is Dir: ${file}`);
-					addGame(gamedir,file)
+					addGame(gamedir,file, "true")
 				}
 /*
 				console.log(`Is file: ${stats.isFile()}`);
@@ -277,21 +300,7 @@ ipcMain.on('splitfile', (event, path) => {
    console.log('File Split');
 })  
 
-function openMergeFile(){
-    const {dialog} = require('electron') 
-   const fs = require('fs') 
-   console.log('openfile');
-   
-   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
-    if(selectedFiles != undefined) {
-        console.log(selectedFiles)
-        //filestats(selectedFiles[0])
-        merge({'names': selectedFiles});
-       // mainWindow.webContents.send('selectedFiles', selectedFiles);
-    }else{
-        console.log('Bitte etwas auswählen');
-    }
-}
+
 
 
 Client(config.ext_server)
@@ -367,7 +376,7 @@ function setJSON(data) {
 
 
 
-function addGame(path, file) {
+function addGame(path, file, splitbool) {
 	fs.lstat(path + "/" + file, (err, stats) => {
 		if(err) {
 			return console.log(err); //Handle error
@@ -377,9 +386,24 @@ function addGame(path, file) {
 		isDirectory = stats.isDirectory()
 			    
 			    
-		if(isFile == true && file != '.DS_Store')	{
+		if(isFile && file != '.DS_Store' && splitbool)	{
 			console.log(`-- add game -- Is File: ${file} --`);
-			//split(path + "/" + file, 150)		
+
+			//var tmp = {ip: '', name: '', files: {}}
+			var tmpFiles = {name: path + "/" + file, stats: stats }
+		
+			FilePaths.myFiles.push(tmpFiles);
+			console.log(FilePaths.myFiles);
+			//FilePaths = {myFiles: {}, network: {}};
+			console.log("patherfile");
+			var o = pather(file)
+
+
+			fs.mkdir(path + "/" + o.name, { recursive: true }, (err) => {
+				if (err) throw err;
+				split(path + "/" + file, 400, path + "/" + o.name + "/" + file);
+			  });
+			
 		}
 		
 			    
@@ -389,6 +413,20 @@ function addGame(path, file) {
 		}
 		    
 	});
+
+function pather(data){
+	var g = data.split('.');
+	var path = data 
+	console.log(path);
+	var typ = g.pop();
+	console.log(typ);
+	
+	var name = g.join('.')
+	console.log(name);
+	var d = {path: path, typ: typ, name: name}
+	return d
+}
+	
 	
 	/*
 		// Create 
@@ -474,10 +512,10 @@ function split(CompressedDIR, FileSize, fileName) {
 	    //console.log(`Is character device: ${stats.isCharacterDevice()}`);
 	    //console.log(`Is block device: ${stats.isBlockDevice()}`);
 	    
-	    if(isDirectory == true) {
+	    if(isDirectory) {
 			console.log('Muss gepackt sein also eine Datei Kein Ordner!');
 			
-		}else if(isFile == true) {
+		}else if(isFile) {
             
 			var t_start, t_end;
 			t_start = new Date().getTime();
@@ -488,7 +526,7 @@ function split(CompressedDIR, FileSize, fileName) {
 			.then((names) => {
 		    	console.log("Names = " + names[0]);
 		    	console.log("Name = " + stats.name);
-                var 
+                
 				//config_file.set(stats.name, names);
                 
 				// Code, dessen Ausführungszeit wir messen wollen End
@@ -571,6 +609,11 @@ ipcMain.on('ipscan', (event, data) => {
            
 })
 
+ipcMain.on('tcpconnect', (event, data) => {
+	console.log("tcpconnect Data : " + data);
+	connectToServer(data);
+})
+
 function savefile(data) {
     const {dialog} = require('electron') 
     const fs = require('fs') 
@@ -582,102 +625,45 @@ function savefile(data) {
     
     dialog.showSaveDialog({ filters: [
 
-     { defaultPath: data.path, title: data.name, name: 'zip', extensions: ['zip'] }
+     { defaultPath: data.path, extensions: ['*'] }
 
     ]}, function (fileName) {
 
     if (fileName === undefined) return;
-        console.log(fileName)
-        split(data.path, data.packSize, fileName);
+        console.log(data)
+		//split(data.path, data.packSize, fileName);
+	
+			fs.lstat(data.path , (err, stats) => {
+			    if(err) {
+				    return console.log(err); //Handle error
+			    }
+			    isFile = stats.isFile()
+				
+				var path = data.path
+				path = path.split('\\');
+				var name = path.pop()
+				path = path.join('\\');
+				//console.log(path);
+				
+				if(isFile)	{
+					console.log(`!!!!!Is File: ${name}`);
+					console.log(`!!!!!path: ${path}`);
+					addGame(path,name, "true")
+				}    
+			});
+	
    // fs.writeFile(fileName, data, function (err) { });
 
   }); 
   
 }
 
-function merge(data) {
-    const {dialog} = require('electron') 
-    const fs = require('fs') 
+ function merge(data) {
 	var t_start, t_end;
 	t_start = new Date().getTime();
-	console.log('Merge with ' + data.names[0]);
-    
-    dialog.showSaveDialog({ filters: [
-
-     { defaultPath: data.path, title: data.name, name: 'zip', extensions: ['zip'] }
-
-    ]}, function (fileName) {
-
-    if (fileName === undefined) return;
-        console.log(fileName)
-        splitFile.mergeFiles(data.names, fileName)
-  		.then(() => {
-  		console.log('Done!');
-  		t_end = new Date().getTime();
-        console.log(t_end - t_start + 'ms');
-        })
-        .catch((err) => {
-            console.log('Error: ', err);
-        });
-
-  }); 
-    
-    
-  	
-  	
-  }
-
- var mergee = function(data, callback) {
-     
-     
-     console.log("Merge Data = " + data[0]);
-     
-     
-      const testFolder = './';
-const testFile = 'TestOrdner.zip';
-
-var names = [];
-
-
-function listNames(Dir, path) {
-	var pathres = path.split('-');
-	console.log(pathres[0]); 
-	console.log(pathres[1]); 
-	if(pathres[1] == undefined){
-		pathres[0] += '.sf';
-		//pathres[1] = 'part1';
-		console.log(pathres[0]);
-	}
-	fs.readdir(Dir, (err, files) => {
-		files.forEach(file => {
-			
-			//console.log(file); 
-			fileres = file.split('-');
-			//console.log(fileres[0]);
-			if(pathres[0] == fileres[0]) {
-		    	console.log('Push ',file,' in names')
-		    	names.push(file)
-	    	}
-	  });
-	  mergee(names);
-	})
-	
-}
-
-/*
-var t_start, t_end;
-t_start = new Date().getTime();
-// Code, dessen Ausführungszeit wir messen wollen
-t_end = new Date().getTime();
-alert(t_end - t_start);
-*/
-
-
-function mergee(names) {
-	var t_start, t_end;
-	t_start = new Date().getTime();
-	console.log('Merge with ' + names[0]);
-  	splitFile.mergeFiles(names, __dirname + '/testfile-output.zip')
+	console.log('Merge with ' + data.names);
+	console.log('Merge path ' + data.path );
+  	splitFile.mergeFiles(data.names, data.path + '/' + data.name + '.' + data.typ)
   		.then(() => {
   		console.log('Done!');
   		t_end = new Date().getTime();
@@ -688,15 +674,67 @@ function mergee(names) {
   	});
   	
   }
-  
-//listNames(testFolder, '5gbtest.zip')
-     
-     callback();
-     
-     
-     
- }
 
+
+function openMergeFile(){
+    const {dialog} = require('electron') 
+   const fs = require('fs') 
+   console.log('openfile');
+   
+   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections', 'openDirectory' ]});
+   console.log('selectedFiles = ' + selectedFiles)
+
+    if(selectedFiles != undefined) {
+
+		fs.lstat(selectedFiles  + "/", (err, stats) => {
+			if(err) {
+				return console.log(err); //Handle error
+			}
+			
+			isFile = stats.isFile()
+			isDirectory = stats.isDirectory()
+			console.log(isFile)
+			if(isDirectory){
+				fs.readdir(selectedFiles  + "/", (err, files) => {
+					var g = files[0].split('.');
+					var p = selectedFiles[0].split('.');
+					var tmpFileArray = [];
+					p = p.join('.')
+					console.log('selectedFiles g = ' + g);
+					console.log('selectedFiles p = ' + p);
+					g.pop();
+					var path = g.join('.') 
+					var typ = g.pop();
+					console.log('selectedFiles path = ' + path);
+					console.log('selectedFiles typ = ' + typ);
+					var name = g.join('.')
+					console.log('selectedFiles name = ' + name);
+					files.forEach(file => {
+					  console.log('forEachfile = ' + file);
+					  tmpFileArray.push(p + '\\' + file);
+					});
+					console.log('tmpFileArray = ' + tmpFileArray);
+					merge({path: p + '\\', name: name, names: tmpFileArray, typ: typ});
+				})
+			}
+		});
+	}else{
+        console.log('Bitte etwas auswählen');
+    }
+}  
+
+function connectToServer(ip){
+	var socket = new Socket({
+		host: ip,
+		port: 8090
+	  });
+	socket.emit('login', 'alejandro');
+}
+
+
+function FileDownload(path){
+	 
+}
 
 
 // Set a couple of fields

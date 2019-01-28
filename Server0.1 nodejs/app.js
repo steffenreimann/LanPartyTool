@@ -13,6 +13,9 @@ var send = require('send')
 
 
 
+var Server = require('fast-tcp').Server;
+var Socket = require('fast-tcp').Socket;
+var server = new Server();
 
 
 var intip
@@ -63,8 +66,24 @@ function startServer(){
 	  });
 	});
     
-	httpServer.listen(port);
-	console.log('Server Läuft unter http://' + intip + ':' + port);
+    httpServer.listen(port);
+    server.listen('8090');
+
+    server.on('connection', function (socket) {
+      socket.on('login', function (username) {
+        console.log('Trying to login: ' + username);
+      });
+    
+    });
+    
+    
+
+
+
+
+
+    console.log('Http Server Läuft unter http://' + intip + ':' + port);
+    console.log('File Server Läuft unter ' + intip + ':' + '8090');
     app.use(express.static(__dirname + '/public'));
 
     app.use('/games', express.static(__dirname + '/public/files/'));

@@ -93,6 +93,13 @@ writeInput(config)
 
 
 
+function ipcSend(){
+	var ip = $( "#IpAddress" ).val();
+	ipcRenderer.send('tcpconnect', ip);
+}
+
+
+
 //Vergleich zweier passwörter
 // Load hash from your password DB.
 bcrypt.compare(myPlaintextPassword, hashed, function(err, res) {

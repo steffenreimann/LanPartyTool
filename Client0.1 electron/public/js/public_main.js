@@ -47,6 +47,11 @@ ipcRenderer.on('split-info', function(event, data){
      
     });
 
+    function ipcSend(){
+        var ip = $( "#IpAddress" ).val();
+        ipcRenderer.send('tcpconnect', ip);
+    }
+
    // ul.addEventListener('dblclick', removeItem);
   
       
