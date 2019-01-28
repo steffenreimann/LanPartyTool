@@ -210,13 +210,8 @@ var config = MyConfig.toObject()
 
 
 
-
-
-
-
 try {
-
-	checkConfigFiles()
+checkConfigFiles()
 var filename = path.basename('/Users/Refsnes/demo_path.js');
 console.log(filename);
 
@@ -246,15 +241,6 @@ console.log(filename);
 }catch(ex) {
 	console.log(ex);
 }
-
-
-
-
-
-
-// Catch item:add
-
-// Catch item:add
 
 
 ipcMain.on('openFile', (event, path) => { 
@@ -313,8 +299,6 @@ function openSplitFile(path){
         console.log('Bitte etwas auswählen');
     }
 }
-
-
 
 function loadHTML(data){
 	mainWindow.loadURL(url.format({
