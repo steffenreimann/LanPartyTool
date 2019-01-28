@@ -4,7 +4,7 @@ const url = require('url');
 const editJsonFile = require("edit-json-file");
 var fs = require('fs')
 // If the file doesn't exist, the content will be an empty object by default.
-let config_file = editJsonFile(`${__dirname}/config.json`);
+let MyConfig = editJsonFile(`${__dirname}/config.json`);
 var FilePaths = {myFiles: [], network: {}};
 
 try {
@@ -76,9 +76,9 @@ app.on('ready', function(){
   
   
   //Lese Aus der JSON Datei wlchen wert firststart hat 
-console.log(config_file.get("firststart"));
+console.log(MyConfig.get("firststart"));
 
-if(config_file.get("firststart") == true) {
+if(MyConfig.get("firststart") == true) {
 	console.log("Erster Start wird ausgeführt");
 	// Load html in window
 	  mainWindow.loadURL(url.format({
@@ -204,7 +204,7 @@ if(process.env.NODE_ENV !== 'production'){
   });
 }
 
-var config = config_file.toObject()
+var config = MyConfig.toObject()
 
 
 try {
@@ -275,22 +275,22 @@ ipcMain.on('config:safe', function(e, i){
 	console.log("hallo ",i);
 	
 	if(i.username != "" || i.username !=  "0"){
-		config_file.set("username", i.username);
+		MyConfig.set("username", i.username);
 	}else{
 		console.log("Unzulässige Daten = ", i.username);
 	}
   console.log("PW Daten = ", i.password);
-  config_file.set("password", i.password);
-  config_file.set("id", i.id);
-  config_file.set("server.ip", i.server.ip);
-  config_file.set("server.port", i.server.port);
-  config_file.set("printer.standard", i.printer.standard);
-  config_file.set("printer.all", i.printer.all);
-  config_file.set("virtual_printer.ip", i.virtual_printer.ip);
-  config_file.set("virtual_printer.port", i.virtual_printer.port);
+  MyConfig.set("password", i.password);
+  MyConfig.set("id", i.id);
+  MyConfig.set("server.ip", i.server.ip);
+  MyConfig.set("server.port", i.server.port);
+  MyConfig.set("printer.standard", i.printer.standard);
+  MyConfig.set("printer.all", i.printer.all);
+  MyConfig.set("virtual_printer.ip", i.virtual_printer.ip);
+  MyConfig.set("virtual_printer.port", i.virtual_printer.port);
   
-  config_file.set("allow.print_from_ext", i.allow.print_from_ext);
-  config_file.set("allow.print_to_ext", i.allow.print_to_ext);
+  MyConfig.set("allow.print_from_ext", i.allow.print_from_ext);
+  MyConfig.set("allow.print_to_ext", i.allow.print_to_ext);
   loadHTML('public/mainWindow.html');
   setJSON({name: "firststart", val: "false"})
   // Still have a reference to addWindow in memory. Need to reclaim memory (Grabage collection)
@@ -378,7 +378,7 @@ function loadHTML(data){
 
 function setJSON(data) {
 	
-	config_file.set(data.name, data.val);
+	MyConfig.set(data.name, data.val);
 }
 
 
@@ -399,6 +399,7 @@ function addGame(da) {
 			console.log(`-- add game -- Is File: ${basename} --`);
 			var tmpFiles = {name: da.path, stats: stats }
 			FilePaths.myFiles.push(tmpFiles);
+
 			//console.log(FilePaths.myFiles);
 			//FilePaths = {myFiles: {}, network: {}};
 			//console.log(da.path);
@@ -439,7 +440,7 @@ let checkFilestatus = function checkFilestatus(da, callback){
 		fs.mkdir(f, { recursive: true }, (err) => {
 			if (err) throw err;
 			console.log('return false  ');
-			return callback(da.path, 400, v);
+			return callback(da.path, da.size, v);
 			});
 	}else{
 		console.log('Ordner Schon Vorhanden!');
@@ -571,7 +572,7 @@ let LTsplit = function LTsplit(CompressedDIR, FileSize, fileName) {
 		    	console.log("Names = " + names[0]);
 		    	console.log("Name = " + stats.name);
                 
-				//config_file.set(stats.name, names);
+				//MyConfig.set(stats.name, names);
                 
 				// Code, dessen Ausführungszeit wir messen wollen End
                 t_end = new Date().getTime()
@@ -784,27 +785,27 @@ function FileDownload(path){
 
 
 // Set a couple of fields
-//config_file.set("planet", "Earthhhhsdcvdv");
+//MyConfig.set("planet", "Earthhhhsdcvdv");
 
  
 // Output the content
-console.log(config_file.get());
+console.log(MyConfig.get());
 // { planet: 'Earth',
 //   name: { first: 'Johnny', last: 'B.' },
 //   is_student: false }
  
 // Save the data to the disk
-//config_file.save();
+//MyConfig.save();
 // 
 // Reload it from the disk
-config_file = editJsonFile(`${__dirname}/config.json`, {
+MyConfig = editJsonFile(`${__dirname}/config.json`, {
     autosave: true
 });
 
 setJSON({name: "username", val: "Steffen"})
  
 // Output the whole thing
-//console.log(config_file.toObject());
+//console.log(MyConfig.toObject());
 // { planet: 'Earth',
 //   name: { first: 'Johnny', last: 'B.' },
 //   is_student: false,
