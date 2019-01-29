@@ -1,7 +1,10 @@
   const electron = require('electron');
     const {ipcRenderer} = electron;
     const ul = document.querySelector('ul');
+    var bcrypt = require('bcrypt');
+    const saltRounds = 10;
 
+    var hashed = "";
 
     ipcRenderer.on('selectedFiles', function(e, data){
         console.log(data);
@@ -120,6 +123,20 @@ $('.ip_address').mask("000.000.000.000", options);
 
 
 
-function save(){
-    
+function saveConfig() {
+	//Hashing eines Passwords 
+	var config_pw = $( "#config_pw" ).val();
+	var config_user = $( "#config_user" ).val();
+	var config_uuid = $( "#config_uuid" ).val();
+	
+	if(config_pw != "" && config_pw.length > 7) {
+		bcrypt.hash( config_pw , saltRounds, function(err, hash) {
+		  // Store hash in your password DB.
+			hashed = hash;
+			console.log("Das Password ist = " , config_pw.length , "lang.  Aus '" , config_pw , "' wurde =" , hashed);
+			//ipcRenderer.send('config:safe', item);
+		});
+	}else if(pwsafe.length < 7){
+		console.log("Das Passwort muss 8 Zeichen lang sein!", pwsafe.length);
+	}
 }

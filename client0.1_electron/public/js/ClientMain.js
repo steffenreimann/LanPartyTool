@@ -19,28 +19,6 @@ console.log('key: ', key.keyPair);
 */
 
 
-var item = {
-  "username": "",
-  "password": "hmmea",
-  "id": "0001",
-  "server": {
-	  "ip": "192.168.178.32",
-	  "port": "8888"
-  },
-  "printer": {
-    "standard": "",
-    "all": []
-  },
-  "virtual_printer": {
-	  "ip": "192.168.178.122",
-	  "port": "3434"
-  },
-  "allow": {
-	  "print_from_ext": true,
-	  "print_to_ext": false
-  }
-}
-
 
 function writeInput(data) {
 	
@@ -66,18 +44,18 @@ function writeInput(data) {
 }
 
 
-function safe() {
+function saveConfig() {
 	//Hashing eines Passwords 
-	var pwsafe = $( "#pw" ).val();
+	var config_pw = $( "#config_pw" ).val();
+	var config_user = $( "#config_user" ).val();
+	var config_uuid = $( "#config_uuid" ).val();
 	
-	if(pwsafe != "" && pwsafe.length > 7) {
-		bcrypt.hash( pwsafe , saltRounds, function(err, hash) {
+	if(config_pw != "" && config_pw.length > 7) {
+		bcrypt.hash( config_pw , saltRounds, function(err, hash) {
 		  // Store hash in your password DB.
-		  	hashed = hash;
-		  	console.log("Das Password ist = " , pwsafe.length , "lang.  Aus '" , pwsafe , "' wurde =" , hashed);
-		  	item.username = $( "#username" ).val();
-		  	item.password = hashed;
-			ipcRenderer.send('config:safe', item);
+			hashed = hash;
+			console.log("Das Password ist = " , config_pw.length , "lang.  Aus '" , config_pw , "' wurde =" , hashed);
+			//ipcRenderer.send('config:safe', item);
 		});
 	}else if(pwsafe.length < 7){
 		console.log("Das Passwort muss 8 Zeichen lang sein!", pwsafe.length);

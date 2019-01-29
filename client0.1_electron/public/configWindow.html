@@ -14,139 +14,71 @@
 	 
 </head>
 <body>
-<div class="window">
-	<div class="window-content">
-		<div class="container ">
-			<div class="col-xs-6">
-				Server
-				<div class="row">
-					<!-- User name -->
-					<div class="form-group pmd-textfield">
-						<label for="inputError1" class="control-label pmd-input-group-label">Server IP</label>
-						<div class="input-group">
-							<div class="input-group-addon"><i class="material-icons md-dark pmd-sm">settings_ethernet</i></div>
-							<input id="s_ip" type="ip" class="form-control" id="exampleInputAmount">
-						</div>
-					</div>
-					<!-- Password -->
-					<div class="form-group pmd-textfield">
-						<label for="inputError1" class="control-label pmd-input-group-label">Port</label>
-						<div class="input-group">
-							<div class="input-group-addon"><i class="material-icons md-dark pmd-sm">call_split</i></div>
-							<input id="s_port" type="text" class="form-control" id="exampleInputAmount">
-						</div>
-					</div>
-					<!--Select &amp; Add Multiple Tags -->
-					<div class="form-group pmd-textfield">
-						<label for="inputError1" class="control-label pmd-input-group-label">Drucker</label>
-						<div class="input-group">
-							<div class="input-group-addon">
-								<i class="material-icons md-dark pmd-sm">local_printshop</i>
+	<div class="window">
+		<div class="window-content">
+			<div class="container ">
+				<div class="col-xs-12">
+					<p>Config</p>
+					<div class="row">
+						<!-- User name -->
+						<div class="form-group pmd-textfield">
+							<label for="inputError1" class="control-label pmd-input-group-label">User Name</label>
+							<div class="input-group">
+								<div class="input-group-addon"><i class="material-icons md-dark pmd-sm">face</i></div>
+								<input id="config_user" type="" class="form-control" id="exampleInputAmount">
 							</div>
-						<select class="select-add-tags form-control pmd-select2-tags" >
-						  <option>Epson HD5600</option>
-						  <option>Test Drucker Epson</option>
-						</select>
 						</div>
-					</div>
-					<div class="checkbox pmd-default-theme">
-					    <label class="pmd-checkbox pmd-checkbox-ripple-effect">
-					        <input id="s_start" type="checkbox" value="">
-					        <span>Bei Start auch den Server Starten</span>
-					    </label>
-					</div>	
-				
-				</div>
-
-			</div>
-			
-			<div class="col-xs-6">
-				Externer Drucker Server
-				<div class="row">
-					<!-- User name -->
-					<div class="form-group pmd-textfield">
-						<label for="inputError1" class="control-label pmd-input-group-label">Server IP</label>
-						<div class="input-group">
-							<div class="input-group-addon"><i class="material-icons md-dark pmd-sm">settings_ethernet</i></div>
-							<input id="se_ip" type="ip" class="form-control" id="exampleInputAmount">
-						</div>
-					</div>
-					<!-- Password -->
-					<div class="form-group pmd-textfield">
-						<label for="inputError1" class="control-label pmd-input-group-label">Port</label>
-						<div class="input-group">
-							<div class="input-group-addon"><i class="material-icons md-dark pmd-sm">call_split</i></div>
-							<input id="se_port" type="text" class="form-control" id="exampleInputAmount">
-						</div>
-					</div>
-					<!--Select &amp; Add Multiple Tags -->
-					<div class="form-group pmd-textfield">
-						<label for="inputError1" class="control-label pmd-input-group-label">Drucker</label>
-						<div class="input-group">
-							<div class="input-group-addon">
-								<i class="material-icons md-dark pmd-sm">local_printshop</i>
+						<!-- Password -->
+						<div class="form-group pmd-textfield">
+							<label for="inputError1" class="control-label pmd-input-group-label">UUID</label>
+							<div class="input-group">
+								<div class="input-group-addon"><i class="material-icons md-dark pmd-sm">fingerprint</i></div>
+								<input id="config_uuid" type="text" class="form-control" id="exampleInputAmount">
 							</div>
-						<select class="select-add-tags form-control pmd-select2-tags" >
-						  <option>Epson HD5600</option>
-						  <option>Test Drucker Epson</option>
-						</select>
 						</div>
 					</div>
-					<div class="checkbox pmd-default-theme">
-					    <label class="pmd-checkbox pmd-checkbox-ripple-effect">
-					        <input id="se_start" type="checkbox" value="">
-					        <span>Bei Start auch den Server Starten</span>
-					    </label>
-					</div>	
-				
 				</div>
+				<footer class="footer page-footer font-small blue pt-4">
 
-			</div>
-			
-			
-			<!--
-<input id="pw" type="password" placeholder="Password"><br>
-			<input id="client_id" type="text" placeholder="ID"><br>
-			<input id="s_ip" type="text" placeholder="Server IP"><br>
-			<input id="s_port" type="text" placeholder="Port"><br>
-			<input id="v_printer_name" type="text" placeholder="vPrintername"><br>
-			<div class="checkbox">
-			    <label>
-			      <input id="ap_e2i" type="checkbox"> Allow print from ext to int
-			    </label>
+					<!-- Footer Links -->
+					<div class="container-fluid text-center text-md-left">
+						   <div class="row" style="margin-top: 10px; ">
+								<div class="col-xs-9 text-left" style="margin-bottom: 9px;">
+													
+										<div class="form-group pmd-textfield">
+												<label for="inputError1" class="control-label pmd-input-group-label">Password</label>
+												<div class="input-group">
+													<div class="input-group-addon"><i class="material-icons md-dark pmd-sm">dialpad</i></div>
+													<input id="config_pw" type="password" class="form-control">
+												</div>
+											</div>
+								</div>
+								<div class="col-xs-3 text-right text-center" style="margin-top: 12px;">
+										 
+										 <button onclick="saveConfig()" class="btn pmd-btn-flat pmd-ripple-effect btn-dark" type="button">Save</button>
+								</div>
+							</div>
+				
+								
+							
+						
+					</div>
+					<!-- Copyright -->
+				
+				  </footer>
 			</div>		
-			<div class="checkbox">
-			    <label>
-			      <input id="ap_i2e" type="checkbox"> Allow print from int to ext
-			    </label>
-			</div>
-			 <div class="form-actions">
-			    <button type="submit" class="btn btn-form btn-default">Cancel</button>
-			    <button type="button" onclick="safe()" class="btn pmd-ripple-effect btn-default"> Sichern </button >
-			</div>
--->
-		</div>	
-			
+		</div>
 	</div>
-</div>
 </body>
 
-<script>window.$ = window.jQuery = require('../js/jquery.js');</script>
-<script src="../js/jquery.js"></script>
+<script>window.$ = window.jQuery = require('./js/jquery.js');</script>
 <script src="../node_modules/propellerkit/dist/js/bootstrap.js"></script>
 <script src="../node_modules/propellerkit/dist/js/propeller.js"></script>
-
-<script language="javascript" type="text/javascript" src="js/ClientMain.js"></script>
-
-
-
-<!-- Propeller textfield js -->
+<script language="javascript" type="text/javascript" src="./js/jquery.mask.js"></script>
+<script language="javascript" type="text/javascript" src="./js/public_main.js"></script>
 <script type="text/javascript" src="http://propeller.in/components/textfield/js/textfield.js"></script>
-
-<!-- Select2 js-->
 <script type="text/javascript" src="http://propeller.in/components/select2/js/select2.full.js"></script>
-
-<!-- Propeller Select2 -->
+<script type="text/javascript" src="http://propeller.in/components/select2/js/pmd-select2.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
 		<!-- Select & Add Multiple Tags -->
@@ -156,9 +88,6 @@
 		})
 	});
 </script>
-
-<!-- Propeller Select2 -->
-<script type="text/javascript" src="http://propeller.in/components/select2/js/pmd-select2.js"></script>
 
 
 
