@@ -1,7 +1,7 @@
 {
   "name": "LanTool",
   "version": "1.0.0",
-  "description": "LanTool Kann Große Datein Spliten und im Netzwerk verteilen",
+  "description": "LanTool is a tool for sharing files within a local network such as torrent. It splits files and make them available for all other clients within the network.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
