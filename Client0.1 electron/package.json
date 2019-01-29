@@ -1,7 +1,7 @@
 {
-  "name": "LanPartyTool",
+  "name": "LanTool",
   "version": "1.0.0",
-  "description": "LanPartyTool Kann Große Datein Spliten und im Netzwerk verteilen",
+  "description": "LanTool Kann Große Datein Spliten und im Netzwerk verteilen",
   "main": "main.js",
   "scripts": {
     "start": "electron .",

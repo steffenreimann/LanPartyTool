@@ -8,7 +8,7 @@ let MyConfig = editJsonFile(`${__dirname}/config.json`);
 let MyConfigTamplate = editJsonFile(`${__dirname}/MyConfig.json`);
 let MyConfigTmp = editJsonFile(`${__dirname}/MyConfigTmp.json`);
 var FilePaths = {myFiles: [], network: {}};
-
+var ignoreFiles = [".DS_Store", ".gitkeep", ".gitignore"];
 try {
 
 'use strict';
@@ -229,7 +229,7 @@ console.log(filename);
 				if(isDirectory)	{
 					console.log(`!!!!!Is Dir: ${x}`);
 					var addGameData = {path: x, size: 400, split: true}
-					//addGame(addGameData)
+					addGame(addGameData)
 				}
 				    
 			});
@@ -331,6 +331,7 @@ function checkConfigFiles(){
 	console.log(Template);
 }
 
+/**JSON  */
 function addGame(da) {
 	var basename = path.basename(da.path);
 	var dirname = path.dirname(da.path);
@@ -343,7 +344,7 @@ function addGame(da) {
 		isFile = stats.isFile()
 		isDirectory = stats.isDirectory() 
 			    
-		if(isFile && basename != '.DS_Store')	{
+		if(isFile && !ignore(basename))	{
 			console.log(`-- add game -- Is File: ${basename} --`);
 			var tmpFiles = {name: da.path, stats: stats }
 			FilePaths.myFiles.push(tmpFiles);
@@ -355,13 +356,27 @@ function addGame(da) {
 			if(da.split){
 				checkFilestatus(da, LTsplit);
 			}
-			
 		}
 
 		if(isDirectory == true)	{
 			console.log(`Bitte Komprimieren`);
 		}  
 	});
+
+
+/**String File Basename. return true if basename are an Ignored File */
+function ignore(da){
+	for (let i = 0; i < ignoreFiles.length; i++) {
+		const element = ignoreFiles[i];
+		if(da == element){
+			console.log('ignore true = ' + element);
+			return true;
+		}
+	}
+	console.log('ignore false = ' + da);
+	return false;
+}
+
 
 function pather(data){
 	var g = data.split('.');
@@ -381,6 +396,12 @@ let checkFilestatus = function checkFilestatus(da, callback){
 	var dirname = path.dirname(da.path);
 	var v = path.join(dirname,'LT-' + basename, basename);
 	var f = path.join(dirname, 'LT-' + basename);
+	
+	fs.readdir(f, function(err, files) {
+
+	});
+
+
 	if(!fs.existsSync(f)){
 		fs.mkdir(f, { recursive: true }, (err) => {
 			if (err) throw err;
