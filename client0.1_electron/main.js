@@ -8,7 +8,7 @@ var fs = require('fs')
 // Check Configuration directory
 if (!configHelper.Init()) {
 	configHelper.InitDirs();
-	console.log('Created directory' + configHelper.GetHomeDir());
+	console.log('Created directory' + configHelper.GetBaseDir());
 }
 
 // If the file doesn't exist, the content will be an empty object by default.
