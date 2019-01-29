@@ -193,6 +193,7 @@ if(process.env.NODE_ENV !== 'production'){
         }
       },
       {
+				label: 'Reload',
         role: 'reload'
       },
       {
