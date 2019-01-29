@@ -1,0 +1,18 @@
+function checkConfigFiles()
+
+es gibt 3 config files 
+
+config.json  -- In der config.json werden daten hinterlegt die angaben über den client machen und angeben wo sich die anderen configs befinden
+befindet sich im electron Ordner. 
+
+{
+  "UserConfigFile": "false"
+}
+
+
+
+xyz.json  -- Speichert dauerhaft alle Pfade zu Files im Netzwerk und Local
+Kann sich überall local befinden 
+
+die dritte ist ein Template um Json Files zu erstellen 
+befindet sich im electron Ordner. 
