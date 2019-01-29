@@ -21,13 +21,8 @@ const decrypted = encryptAes.DecryptText(key, encrypted);
 const testUserConfig = {name: 'Hannes', 'id': '824823493429'};
 console.log('Before');
 console.log(testUserConfig);
-if (configHelper.LoadUserConfig(key) === null) {
-	console.log('No user config available, writing one.');
-	configHelper.WriteUserConfig(key, testUserConfig);
-}
-const readUserConfig = configHelper.LoadUserConfig(key);
-console.log('Loaded config:');
-console.log(readUserConfig);
+
+
 
 // If the file doesn't exist, the content will be an empty object by default.
 let MyConfig = editJsonFile(`${__dirname}/config.json`);
@@ -271,8 +266,26 @@ ipcMain.on('splitfile', (event, path) => {
 })  
 
 
+ipcMain.on('saveConfig', (event, data) => { 
+	console.log(data);
+	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
+	const cleanObject = {'config_user': data.config_user, 'config_uuid': data.config_uuid }
+	configHelper.WriteUserConfig(data.config_pw, cleanObject);
+	
+	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
+	console.log('Loaded config:');
+	console.log(readUserConfig);
+}) 
 
 
+ipcMain.on('loadConfig', (event, data) => { 
+	console.log(data);
+	//{'config_pw': config_pw}
+	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
+	console.log('Loaded config:');
+	console.log(readUserConfig);
+	mainWindow.webContents.send('loadConfig', readUserConfig );
+}) 
 
 
 

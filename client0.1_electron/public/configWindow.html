@@ -37,13 +37,14 @@
 							</div>
 						</div>
 					</div>
+					<div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
 				</div>
 				<footer class="footer page-footer font-small blue pt-4">
 
 					<!-- Footer Links -->
 					<div class="container-fluid text-center text-md-left">
 						   <div class="row" style="margin-top: 10px; ">
-								<div class="col-xs-9 text-left" style="margin-bottom: 9px;">
+								<div class="col-xs-8 text-left" style="margin-bottom: 9px;">
 													
 										<div class="form-group pmd-textfield">
 												<label for="inputError1" class="control-label pmd-input-group-label">Password</label>
@@ -53,9 +54,13 @@
 												</div>
 											</div>
 								</div>
-								<div class="col-xs-3 text-right text-center" style="margin-top: 12px;">
+								<div class="col-xs-2 text-right text-center" style="margin-top: 12px;">
 										 
 										 <button onclick="saveConfig()" class="btn pmd-btn-flat pmd-ripple-effect btn-dark" type="button">Save</button>
+								</div>
+								<div class="col-xs-2 text-right text-center" style="margin-top: 12px;">
+										 
+										 <button onclick="loadConfig()" class="btn pmd-btn-flat pmd-ripple-effect btn-dark" type="button">Load</button>
 								</div>
 							</div>
 				
@@ -75,6 +80,9 @@
 <script src="../node_modules/propellerkit/dist/js/bootstrap.js"></script>
 <script src="../node_modules/propellerkit/dist/js/propeller.js"></script>
 <script language="javascript" type="text/javascript" src="./js/jquery.mask.js"></script>
+
+<script type="text/javascript" src="./js/qrcode.js"></script>
+<script src="http://wzrd.in/standalone/uuid%2Fv1@latest"></script>
 <script language="javascript" type="text/javascript" src="./js/public_main.js"></script>
 <script type="text/javascript" src="http://propeller.in/components/textfield/js/textfield.js"></script>
 <script type="text/javascript" src="http://propeller.in/components/select2/js/select2.full.js"></script>
@@ -96,4 +104,10 @@
 
 
 
+
 </html>
+
+
+
+
+
