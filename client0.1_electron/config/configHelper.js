@@ -26,6 +26,10 @@ function getHomeDir() {
     return baseDir;
 }
 
+function getUserCfg() {
+    return userCfg;
+}
+
 /**
  * Loads encrypted UserConfig file decrypts it and returns it as javascript object
  * @param pwd {string} Password from user
@@ -72,6 +76,7 @@ module.exports = {
     Init: init,
     InitDirs: initDirs,
     GetBaseDir: getHomeDir,
+    GetUserCfg: getUserCfg,
     LoadUserConfig: loadUserConfig,
     WriteUserConfig: writeUserConfig,
 };
