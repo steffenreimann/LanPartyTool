@@ -44,3 +44,9 @@ For Linux
 ```sh
 $ npm run package-linux
 ```
+or Building Linux AppImages 
+
+```sh
+$ npm run dist
+```
+
