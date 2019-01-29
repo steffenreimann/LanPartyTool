@@ -2,7 +2,15 @@ const electron = require('electron');
 const path = require('path');
 const url = require('url');
 const editJsonFile = require("edit-json-file");
+const configHelper = require('./config/configHelper');
 var fs = require('fs')
+
+// Check Configuration directory
+if (!configHelper.Init()) {
+	configHelper.InitDirs();
+	console.log('Created directory' + configHelper.GetHomeDir());
+}
+
 // If the file doesn't exist, the content will be an empty object by default.
 let MyConfig = editJsonFile(`${__dirname}/config.json`);
 let MyConfigTamplate = editJsonFile(`${__dirname}/MyConfig.json`);
