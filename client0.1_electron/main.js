@@ -2,7 +2,33 @@ const electron = require('electron');
 const path = require('path');
 const url = require('url');
 const editJsonFile = require("edit-json-file");
+const configHelper = require('./config/configHelper');
+const encryptAes = require('./utils/aesEncrypt');
 var fs = require('fs')
+
+// Check Configuration directory
+if (!configHelper.Init()) {
+	configHelper.InitDirs();
+	console.log('Created directory' + configHelper.GetBaseDir());
+}
+
+// Encrypt testing
+const text = 'Hallo Welt';
+const key = "VeryStrong";
+const encrypted = encryptAes.EncryptText(key, text);
+const decrypted = encryptAes.DecryptText(key, encrypted);
+
+const testUserConfig = {name: 'Hannes', 'id': '824823493429'};
+console.log('Before');
+console.log(testUserConfig);
+if (configHelper.LoadUserConfig(key) === null) {
+	console.log('No user config available, writing one.');
+	configHelper.WriteUserConfig(key, testUserConfig);
+}
+const readUserConfig = configHelper.LoadUserConfig(key);
+console.log('Loaded config:');
+console.log(readUserConfig);
+
 // If the file doesn't exist, the content will be an empty object by default.
 let MyConfig = editJsonFile(`${__dirname}/config.json`);
 let MyConfigTamplate = editJsonFile(`${__dirname}/MyConfig.json`);
