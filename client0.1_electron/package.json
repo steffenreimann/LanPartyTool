@@ -1,13 +1,28 @@
 {
   "name": "LanTool",
   "version": "1.0.0",
-  "description": "LanTool Kann Große Datein Spliten und im Netzwerk verteilen",
+  "description": "LanTool is a tool for sharing files within a local network such as torrent. It splits files and make them available for all other clients within the network.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Shopping List\"",
-    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/icons/png/icon.png --prune=true --out=release-builds"
+    "package-linux": "electron-packager . --overwrite --platform=linux --arch=x64 --icon=assets/icons/png/icon.png --prune=true --out=release-builds",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "lantool.sterei",
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    }
   },
   "author": "Steffen Reimann",
   "license": "MIT",
@@ -22,6 +37,7 @@
   },
   "devDependencies": {
     "electron": "^1.8.7",
+    "electron-builder": "^20.38.5",
     "electron-packager": "^12.1.1"
   }
 }

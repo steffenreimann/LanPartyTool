@@ -86,3 +86,6 @@ typings/
 .dynamodb/
 
 # End of https://www.gitignore.io/api/node
+
+*.lock
+/client0.1_electron/dist/
