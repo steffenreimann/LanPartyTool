@@ -6,13 +6,15 @@ const aes = require('../utils/aesEncrypt');
 
 let homeDir = '';
 let baseDir = 'LanToolConfigs';
-const userCfg = 'user.cfg';
+const userCfgName = 'user.cfg';
+let userCfg = null;
 let userCfgPath = '';
+
 
 function init() {
     homeDir = os.homedir();
     baseDir = path.join(homeDir, baseDir);
-    userCfgPath = path.join(baseDir, userCfg);
+    userCfgPath = path.join(baseDir, userCfgName);
     return fs.existsSync(baseDir);
 }
 
@@ -43,7 +45,8 @@ function loadUserConfig(pwd) {
     } catch (e) {
         console.log('Could not parse UserConfig');
     }
-    return jsonObj;
+    userCfg = jsonObj;
+    return userCfg;
 }
 
 /**
