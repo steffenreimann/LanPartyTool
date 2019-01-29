@@ -51,17 +51,9 @@ server.on('connection', function (socket) {
 
 //server.listen(5000);
  
-
 //test
 
-
-
 //socket.emit('login', 'alejandro');
-
-
-
-
-
 
 // SET ENV
 process.env.NODE_ENV = 'development';
