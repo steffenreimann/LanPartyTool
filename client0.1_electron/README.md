@@ -1,6 +1,6 @@
-# Electron LanPartyTool Desktop App
+# LanTool App
 
-This is a cross platform LanPartyTool desktop application built on electron
+The LanTool sets up a server and players who still need a game can simply download it from the server. There is also a chat and a client overview with all logged in IPs. This tool is for Lan parties in the local network.
 
 ### Version
 1.0.0
@@ -9,17 +9,17 @@ This is a cross platform LanPartyTool desktop application built on electron
 
 ### Installation
 
-Install the dependencies
+1. Install NodeJS -- global
 
-Go to the folder containing the lanpartytool and run... 
-
+2. Install the dependencies 
+ 
 ```sh
 $ npm install
 ```
 
-### Run App 
+### Run Electron App
 
-Your go to 
+Start Client App
 
 ```sh
 $ npm start
@@ -44,9 +44,9 @@ For Linux
 ```sh
 $ npm run package-linux
 ```
-or Building Linux AppImages 
+
+Building AppImages Linux & Windows
 
 ```sh
 $ npm run dist
 ```
-
