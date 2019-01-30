@@ -1,3 +1,4 @@
+'use strict';
 const electron = require('electron');
 const path = require('path');
 const url = require('url');
@@ -30,9 +31,10 @@ let MyConfigTamplate = editJsonFile(`${__dirname}/MyConfig.json`);
 let MyConfigTmp = editJsonFile(`${__dirname}/MyConfigTmp.json`);
 var FilePaths = {myFiles: [], network: {}};
 var ignoreFiles = [".DS_Store", ".gitkeep", ".gitignore"];
+
 try {
 
-'use strict';
+
 var ping = require('ping');
 var os = require('os');
 var ifaces = os.networkInterfaces();
@@ -42,6 +44,8 @@ var counter = 0;
 var chat = [];
 var names = [];
 var port = "8081"
+
+
 
 } catch (ex) {
     console.log(ex);
@@ -53,6 +57,75 @@ var port = "8081"
     }
     
 }
+
+// Create menu template
+const mainMenuTemplate =  [
+	// Each object is a dropdown
+	{
+	  label: 'File',
+	  submenu:[
+				 
+		{
+		  label:'Split File',
+		  accelerator:process.platform == 'darwin' ? 'Command+S' : 'Ctrl+S',
+		  click(){
+			openSplitFile()
+		  }
+		},
+		{
+		  label:'Merge Files',
+		  accelerator:process.platform == 'darwin' ? 'Command+M' : 'Ctrl+M',
+		  click(){
+			openMergeFile();
+		  }
+		},
+		{
+		  label: 'Quit',
+		  accelerator:process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
+				  role: 'quit'
+		}
+	  ]
+	}
+  ];
+
+  // If OSX, add empty object to menu
+if(process.platform == 'darwin'){
+	// mainMenuTemplate.unshift({});
+   }
+   
+   // Add developer tools option if in dev
+   if(process.env.NODE_ENV !== 'production'){
+	 mainMenuTemplate.push({
+	   label: 'Developer Tools',
+	   submenu:[
+		   {
+		   label:'Home',
+		   accelerator:process.platform == 'darwin' ? 'Command+H' : 'Ctrl+H',
+		   click(){
+			 loadHTML('public/mainWindow.html');
+		   }
+		 }, 
+		 {
+		   label: 'Config',
+		   accelerator:process.platform == 'darwin' ? 'Command+K' : 'Ctrl+K',
+		   click(){
+			 loadHTML('public/configWindow.html');
+		   }
+		 },
+		 {
+				   label: 'Reload',
+		   role: 'reload'
+		 },
+		 {
+		   label: 'Toggle DevTools',
+		   accelerator:process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
+		   click(item, focusedWindow){
+			 focusedWindow.toggleDevTools();
+		   }
+		 }
+	   ]
+	 });
+   }
 
 
 var Server = require('fast-tcp').Server;
@@ -149,74 +222,9 @@ function createAddWindow(){
 let win  
 
 
-// Create menu template
-const mainMenuTemplate =  [
-  // Each object is a dropdown
-  {
-    label: 'File',
-    submenu:[
-               
-      {
-        label:'Split File',
-        accelerator:process.platform == 'darwin' ? 'Command+S' : 'Ctrl+S',
-        click(){
-          openSplitFile()
-        }
-      },
-      {
-        label:'Merge Files',
-        accelerator:process.platform == 'darwin' ? 'Command+M' : 'Ctrl+M',
-        click(){
-          openMergeFile();
-        }
-      },
-      {
-        label: 'Quit',
-        accelerator:process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
-				role: 'quit'
-      }
-    ]
-  }
-];
 
-// If OSX, add empty object to menu
-if(process.platform == 'darwin'){
-  mainMenuTemplate.unshift({});
-}
 
-// Add developer tools option if in dev
-if(process.env.NODE_ENV !== 'production'){
-  mainMenuTemplate.push({
-    label: 'Developer Tools',
-    submenu:[
-        {
-        label:'Home',
-        accelerator:process.platform == 'darwin' ? 'Command+H' : 'Ctrl+H',
-        click(){
-          loadHTML('public/mainWindow.html');
-        }
-      }, 
-	  {
-        label: 'Config',
-        accelerator:process.platform == 'darwin' ? 'Command+K' : 'Ctrl+K',
-        click(){
-          loadHTML('public/configWindow.html');
-        }
-      },
-      {
-				label: 'Reload',
-        role: 'reload'
-      },
-      {
-        label: 'Toggle DevTools',
-        accelerator:process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
-        click(item, focusedWindow){
-          focusedWindow.toggleDevTools();
-        }
-      }
-    ]
-  });
-}
+
 
 var config = MyConfig.toObject()
 

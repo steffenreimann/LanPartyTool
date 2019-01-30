@@ -21,6 +21,10 @@
       ul.innerHTML = '';
     });
 
+
+
+
+
 ipcRenderer.on('DOM', function(event, data){
     
     console.log("DOM Event ID : " + data.id);
