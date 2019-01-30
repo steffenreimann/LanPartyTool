@@ -49,7 +49,7 @@ function loadUserConfig(pwd) {
     try {
         jsonObj = JSON.parse(decrypted);
     } catch (e) {
-        console.log('Could not parse UserConfig');
+        console.error('Could not parse UserConfig from file');
         return result;
     }
     result.userExists = true;
