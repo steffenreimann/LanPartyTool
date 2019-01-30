@@ -1,4 +1,4 @@
-# LanTool App
+# LanTool Server
 
 The LanTool sets up a server and players who still need a game can simply download it from the server. There is also a chat and a client overview with all logged in IPs. This tool is for Lan parties in the local network.
 
@@ -11,18 +11,10 @@ The LanTool sets up a server and players who still need a game can simply downlo
 
 1. Install NodeJS -- global
 
-2. Install the dependencies -- server0.1_nodejs or client0.1_electron
+2. Install the dependencies 
  
 ```sh
 $ npm install
-```
-
-### Run Electron App
-
-Start Client App -- client0.1_electron
-
-```sh
-$ npm start
 ```
 
 ### Run NodeJS Server
@@ -33,28 +25,3 @@ Start Server -- server0.1_nodejs
 $ node app.js
 ```
 
-### To Package & Build
-
-For Windows
-
-```sh
-$ npm run package-win
-```
-
-For Mac
-
-```sh
-$ npm run package-mac
-```
-
-For Linux
-
-```sh
-$ npm run package-linux
-```
-
-Building AppImages Linux & Windows
-
-```sh
-$ npm run dist
-```

@@ -16,10 +16,6 @@
         $( "#out" ).val(data.path);
     });
 
-    ipcRenderer.on('item:clear', function(){
-      ul.className = '';
-      ul.innerHTML = '';
-    });
 
 
 
@@ -35,11 +31,10 @@ ipcRenderer.on('DOM', function(event, data){
         $( data.id ).html(data.val)
        }
     
-    
     if(data.show != undefined){
-        if(data.show == true){
+        if(data.show){
                 $( data.id ).removeAttr( "disabled" )
-           }else if(data.show == false){
+           }else{
                $( data.id ).attr("disabled", true);
            }
     }
@@ -120,25 +115,6 @@ ipcRenderer.on('loadConfig', (event, data) => {
 })
 
 
-
-var options =  { 
-            onKeyPress: function(cep, event, currentField, options){
-           console.log('An key was pressed!:', cep, ' event: ', event,'currentField: ', currentField, ' options: ', options);
-                if(cep){
-                  var ipArray = cep.split(".");
-                  var lastValue = ipArray[ipArray.length-1];
-                  if(lastValue !== "" && parseInt(lastValue) > 255){
-                      ipArray[ipArray.length-1] =  '255';
-                      var resultingValue = ipArray.join(".");
-                      currentField.attr('value',resultingValue);
-                  }
-            }             
-        }};
-
-$('.ip_address').mask("000.000.000.000", options);
-
-
-
 function saveConfig() {
 	//Hashing eines Passwords 
 	var config_pw = $( "#config_pw" ).val();
@@ -156,7 +132,6 @@ function loadConfig(){
     var config_pw = $( "#config_pw" ).val();
     ipcRenderer.send('loadConfig', {'config_pw': config_pw } , () => { 
         console.log("Event sent Load Config"); 
-        
     })
 }
 
