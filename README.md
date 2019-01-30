@@ -41,6 +41,12 @@ For Windows
 $ npm run package-win
 ```
 
+Building AppImages Windows 
+
+```sh
+$ npm run dist
+```
+
 For Mac
 
 ```sh
@@ -53,7 +59,7 @@ For Linux
 $ npm run package-linux
 ```
 
-Building AppImages Linux & Windows
+Building AppImages Linux 
 
 ```sh
 $ npm run dist
