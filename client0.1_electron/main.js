@@ -160,7 +160,11 @@ let addWindow;
 // Listen for app to be ready
 app.on('ready', function(){
   // Create new window
-  mainWindow = new BrowserWindow({});
+  mainWindow = new BrowserWindow({
+		webPreferences: {
+			nodeIntegration: true
+		}
+	});
   
   
   //Lese Aus der JSON Datei wlchen wert firststart hat 
@@ -274,6 +278,7 @@ ipcMain.on('splitfile', (event, path) => {
 })  
 
 
+/** */
 ipcMain.on('saveConfig', (event, data) => { 
 	console.log(data);
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
@@ -283,6 +288,7 @@ ipcMain.on('saveConfig', (event, data) => {
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
 	console.log('Loaded config:');
 	console.log(readUserConfig);
+	mainWindow.webContents.send('saveConfig', readUserConfig );
 }) 
 
 

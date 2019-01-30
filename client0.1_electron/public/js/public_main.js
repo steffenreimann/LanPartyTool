@@ -1,25 +1,13 @@
-  const electron = require('electron');
-    const {ipcRenderer} = electron;
-    const ul = document.querySelector('ul');
-    const saltRounds = 10;
+const electron = require('electron');
+const {ipcRenderer} = electron;
+const ul = document.querySelector('ul');
+const saltRounds = 10;
 
-    const configHelper = require('./../config/configHelper');
-    const encryptAes = require('./../utils/aesEncrypt');
-    var qrcode = new QRCode(document.getElementById("qrcode"), {
-        width : 100,
-        height : 100
-    });
     
-
-    ipcRenderer.on('selectedFiles', function(e, data){
-        console.log(data);
-        $( "#out" ).val(data.path);
-    });
-
-
-
-
-
+ipcRenderer.on('selectedFiles', function(e, data){
+    console.log(data);
+    $( "#out" ).val(data.path);
+});
 
 ipcRenderer.on('DOM', function(event, data){
     
@@ -54,15 +42,14 @@ ipcRenderer.on('split-info', function(event, data){
      
     });
 
-    function ipcSend(){
+function ipcSend(){
         var ip = $( "#IpAddress" ).val();
         ipcRenderer.send('tcpconnect', ip);
     }
 
-   // ul.addEventListener('dblclick', removeItem);
+//ul.addEventListener('dblclick', removeItem);
   
-      
-    function removeItem(e){
+function removeItem(e){
       console.log('hallo');
     }
 $( "#openfile-merge" ).click(function() {
@@ -106,42 +93,5 @@ function open(e){
 ipcRenderer.on('fileData', (event, data) => { 
     document.write(data) 
 })
-
-ipcRenderer.on('loadConfig', (event, data) => { 
-    console.log(data);
-    $( "#config_user" ).val(data.config_user)
-    $( "#config_uuid" ).val(data.config_uuid)
-    qrcode.makeCode(data.config_uuid);
-})
-
-
-function saveConfig() {
-	//Hashing eines Passwords 
-	var config_pw = $( "#config_pw" ).val();
-	var config_user = $( "#config_user" ).val();
-	var config_uuid = uuidv1(); // -> v1 UUID
-    
-    
-    console.log(configHelper.GetUserCfg());
-    ipcRenderer.send('saveConfig', {'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid } , () => { 
-        console.log("Event sent Save Config"); 
-    })
-}
-
-function loadConfig(){
-    var config_pw = $( "#config_pw" ).val();
-    ipcRenderer.send('loadConfig', {'config_pw': config_pw } , () => { 
-        console.log("Event sent Load Config"); 
-    })
-}
-
-
-
-
-console.log(configHelper.GetUserCfg());
-
-
-
-
 
 
