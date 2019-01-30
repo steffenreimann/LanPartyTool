@@ -33,7 +33,4 @@ ipcRenderer.on('loadConfig', (event, data) => {
         $( "#config_uuid" ).val(data.config_uuid)
         qrcode.makeCode(data.config_uuid);
     }
-    
 })
-
-loadConfig()

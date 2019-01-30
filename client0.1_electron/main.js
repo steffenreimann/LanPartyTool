@@ -281,13 +281,14 @@ ipcMain.on('splitfile', (event, path) => {
 /** */
 ipcMain.on('saveConfig', (event, data) => { 
 	console.log(data);
+	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
+	console.log('Loaded config:');
+	console.log(readUserConfig);
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
 	const cleanObject = {'config_user': data.config_user, 'config_uuid': data.config_uuid }
 	configHelper.WriteUserConfig(data.config_pw, cleanObject);
 	
-	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
-	console.log('Loaded config:');
-	console.log(readUserConfig);
+	
 	mainWindow.webContents.send('saveConfig', readUserConfig );
 }) 
 
