@@ -284,22 +284,27 @@ ipcMain.on('saveConfig', (event, data) => {
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
 	console.log('Loaded config:');
 	console.log(readUserConfig);
+	if(!readUserConfig.parseError){
+		const cleanObject = {'config_user': data.config_user, 'config_uuid': data.config_uuid }
+		configHelper.WriteUserConfig(data.config_pw, cleanObject);
+	}
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
-	const cleanObject = {'config_user': data.config_user, 'config_uuid': data.config_uuid }
-	configHelper.WriteUserConfig(data.config_pw, cleanObject);
-	
-	
-	mainWindow.webContents.send('saveConfig', readUserConfig );
+	mainWindow.webContents.send('saveConfig', readUserConfig.userCfg );
 }) 
 
+//let result = {};
+//result['parseError'] = true;
 
+//{fileExists: false, parseError: true, userCfg: null}
 ipcMain.on('loadConfig', (event, data) => { 
 	console.log(data);
 	//{'config_pw': config_pw}
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
+
 	console.log('Loaded config:');
 	console.log(readUserConfig);
-	mainWindow.webContents.send('loadConfig', readUserConfig );
+	
+	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
 }) 
 
 
