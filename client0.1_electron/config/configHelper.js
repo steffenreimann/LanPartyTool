@@ -33,10 +33,10 @@ function getUserCfg() {
 /**
  * Loads encrypted UserConfig file decrypts it and returns it as javascript object
  * @param pwd {string} Password from user
- * @returns {Object} {fileExists: false, userExists: false, userCfg: null};
+ * @returns {Object} {fileExists: false, parseError: false, userCfg: null};
  */
 function loadUserConfig(pwd) {
-    const result = {fileExists: false, userExists: false, userCfg: null};
+    const result = {fileExists: false, parseError: true, userCfg: null};
     if (!fs.existsSync(userCfgPath)) {
         return result;
     }
@@ -52,7 +52,7 @@ function loadUserConfig(pwd) {
         console.error('Could not parse UserConfig from file');
         return result;
     }
-    result.userExists = true;
+    result.parseError = false;
     userCfg = jsonObj;
     result.userCfg = userCfg;
     return result;
