@@ -36,9 +36,11 @@ function getUserCfg() {
  * @returns {Object} null when error
  */
 function loadUserConfig(pwd) {
+    const result = {fileExists: false, userExists: false, userCfg: null};
     if (!fs.existsSync(userCfgPath)) {
-        return null;
+        return result;
     }
+    result.fileExists = true;
     const raw = fs.readFileSync(userCfgPath);
 
     let decrypted = aes.DecryptBuffer(pwd, raw);
@@ -48,9 +50,11 @@ function loadUserConfig(pwd) {
         jsonObj = JSON.parse(decrypted);
     } catch (e) {
         console.log('Could not parse UserConfig');
+        return result;
     }
     userCfg = jsonObj;
-    return userCfg;
+    result.userCfg = userCfg;
+    return result;
 }
 
 /**
