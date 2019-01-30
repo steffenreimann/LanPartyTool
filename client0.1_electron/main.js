@@ -6,6 +6,7 @@ const editJsonFile = require("edit-json-file");
 const configHelper = require('./config/configHelper');
 const encryptAes = require('./utils/aesEncrypt');
 var fs = require('fs')
+const uuidv4 = require('uuid/v4');
 
 // Check Configuration directory
 if (!configHelper.Init()) {
@@ -284,12 +285,19 @@ ipcMain.on('saveConfig', (event, data) => {
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
 	console.log('Loaded config:');
 	console.log(readUserConfig);
+
 	if(!readUserConfig.parseError){
-		const cleanObject = {'config_user': data.config_user, 'config_uuid': data.config_uuid }
+		var config_uuid
+		if(!readUserConfig.fileExists){
+			config_uuid = uuidv4(); // ⇨ '10ba038e-48da-487b-96e8-8d3b99b6d18a'
+		}else{
+			config_uuid = readUserConfig.config_uuid;
+		}
+		const cleanObject = {'config_user': data.config_user, 'config_uuid': config_uuid }
 		configHelper.WriteUserConfig(data.config_pw, cleanObject);
 	}
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
-	mainWindow.webContents.send('saveConfig', readUserConfig.userCfg );
+	mainWindow.webContents.send('saveConfig', cleanObject );
 }) 
 
 //let result = {};

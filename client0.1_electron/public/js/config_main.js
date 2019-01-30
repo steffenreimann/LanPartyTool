@@ -10,7 +10,7 @@ function saveConfig() {
 	//Hashing eines Passwords 
 	var config_pw = $( "#config_pw" ).val();
 	var config_user = $( "#config_user" ).val();
-	var config_uuid = uuidv1(); // -> v1 UUID
+	//var config_uuid = uuidv1(); // -> v1 UUID
     ipcRenderer.send('saveConfig', {'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid } , () => {})
 }
 
