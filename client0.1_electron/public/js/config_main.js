@@ -11,8 +11,14 @@ function saveConfig() {
 	//Hashing eines Passwords 
 	var config_pw = $( "#config_pw" ).val();
 	var config_user = $( "#config_user" ).val();
-	//var config_uuid = uuidv1(); // -> v1 UUID
-    ipcRenderer.send('saveConfig', {'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid } , () => {})
+    //var config_uuid = uuidv1(); // -> v1 UUID
+    
+    if(isCorrect([config_pw, config_user],["","0"])){
+        ipcRenderer.send('saveConfig', {'config_pw': config_pw, 'config_user': config_user, 'config_uuid': null } , () => {})
+    }else{
+        console.log("isNotCorrect");
+    }
+    
 }
 
 ipcRenderer.on('saveConfig', (event, data) => { 
@@ -53,3 +59,27 @@ ipcRenderer.on('loadConfig', (event, data) => {
         console.log(de.toString());
     }
 })
+
+isCorrect()
+
+/**
+ * Return false if data and filter are equal
+ * @param data {array} 
+ * @param filter {array}
+ * @returns boolean {boolean}
+ */
+function isCorrect(data, filter){
+    for (let index = 0; index < data.length; index++) {
+        const dataelement = data[index];
+        for (let idex = 0; idex < filter.length; idex++) {
+            const filterelement = filter[idex];
+            if(dataelement == filterelement){
+                console.log("isNotCorrect");
+                console.log("data element" + dataelement);
+                console.log("filter element" + filterelement);
+                return false;
+            }
+        }
+    }
+    return true;
+}

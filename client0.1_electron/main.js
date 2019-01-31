@@ -259,6 +259,7 @@ ipcMain.on('saveConfig', (event, data) => {
 		cleanObject.config_uuid = readUserConfig.userCfg.config_uuid;
 	}
 	uuid_holder = true;
+	loadHTML('public/mainWindow.html');
 	configHelper.WriteUserConfig(data.config_pw, cleanObject);
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
 	mainWindow.webContents.send('saveConfig', cleanObject );
@@ -327,6 +328,12 @@ function loadHTML(data){
 	const readUserConfig = configHelper.LoadUserConfig("");
 	if(readUserConfig.parseError){
 			console.log("readUserConfig.parseError");
+			console.log("Kein Config File vorhanden!! Bitte Reistrieren");
+		mainWindow.loadURL(url.format({
+			pathname: path.join(__dirname, 'public/loginWindow.html'),
+			protocol: 'file:',
+			slashes: true
+		}));
 		}
 	if(readUserConfig.fileExists && !uuid_holder) {
 		
