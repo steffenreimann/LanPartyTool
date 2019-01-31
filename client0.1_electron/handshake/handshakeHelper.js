@@ -3,7 +3,7 @@ const uuid = require('uuid/v4');
 
 function generateToken(userUUID) {
     const tokenUUID = uuid();
-    return aes.EncryptBuffer(userUUID, Buffer.from(tokenUUID, 'utf8'));
+    return {originToken: tokenUUID, encryptedToken: aes.EncryptBuffer(userUUID, Buffer.from(tokenUUID, 'utf8'))};
 }
 
 function decryptToken(userUUID, token, isString) {
