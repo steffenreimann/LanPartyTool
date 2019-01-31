@@ -491,22 +491,23 @@ function filestats(path) {
 }
 //Input Data is array
 function ipscan(data){
-   var alive = [];
-		 var i = data.length;
-		 data.forEach(function(host){
-			 ping.sys.probe(host, function(isAlive){
-				 if(isAlive == true){
-					 alive.push(host);			  		
-				 }
-				 i--
-				 if(i==0){
-					 console.log(alive)
-					 
-			   }
-		   });
-	   });
+	
+   	var alive = [];
+	var i = data.length;
+	data.forEach(function(host){
+		ping.sys.probe(host, function(isAlive){
+			if(isAlive == true){
+				alive.push(host);	
+				console.log("Alive Host on IP = " + host)		  		
+			}
+			i--
+			if(i==0){
+				//console.log(alive)
+			}
+		});
+	});
 }
-// Handle add item window
+// Handle pwWindow
 function createloginWindow(){
 	pwWindow = new BrowserWindow({
 	  width: 300,
@@ -523,3 +524,4 @@ function createloginWindow(){
 	  pwWindow = null;
 	});
   }
+ipscan(["192.168.178.1", "192.168.0.1"]);
