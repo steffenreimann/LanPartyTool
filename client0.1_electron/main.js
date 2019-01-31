@@ -13,7 +13,7 @@ const {app, BrowserWindow, Menu, ipcMain} = electron;
 
 let mainWindow;
 let addWindow;
-var user = {uuid: "", };
+var user = {uuid: ""};
 
 // SET ENV
 process.env.NODE_ENV = 'development';
@@ -49,7 +49,7 @@ const mainMenuTemplate =  [
 	}
   ];
 
-  
+
   // If OSX, add empty object to menu
 if(process.platform == 'darwin'){
 	//mainMenuTemplate.unshift({});
