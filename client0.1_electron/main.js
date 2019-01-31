@@ -170,6 +170,7 @@ ipcMain.on('loadConfig', (event, data) => {
 	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
 	if(pwWindow != undefined){
 		pwWindow.hide();
+		pwWindow = null;
 	}
 	
 }) 
