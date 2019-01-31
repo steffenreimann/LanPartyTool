@@ -1,3 +1,8 @@
+/*
+ * Initial author: Jonas Ahlf
+ * Created: Thu Jan 31 17:26:07 CET 2019
+ */
+
 const os = require('os');
 const fs = require('fs');
 

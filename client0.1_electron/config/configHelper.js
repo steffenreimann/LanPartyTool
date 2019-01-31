@@ -1,3 +1,8 @@
+/*
+ * Initial author: Jonas Ahlf
+ * Created: Thu Jan 31 17:25:59 CET 2019
+ */
+
 const fs = require('fs');
 const aes = require('../utils/aesEncrypt');
 const cfgPaths = require('./configPaths');
