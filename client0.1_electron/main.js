@@ -12,7 +12,7 @@ var splitFile = require('./split-file.js');
 const {app, BrowserWindow, Menu, ipcMain} = electron;
 
 let mainWindow;
-let addWindow;
+let pwWindow;
 var user = {uuid: ""};
 
 // SET ENV
@@ -168,6 +168,7 @@ ipcMain.on('loadConfig', (event, data) => {
 	console.log(readUserConfig);
 	user.uuid = true;
 	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
+	pwWindow.hide();
 }) 
 ipcMain.on('saveSplitFile', (event, data) => {
     //console.log("Joo path" + data.path);
@@ -503,18 +504,18 @@ function ipscan(data){
 }
 // Handle add item window
 function createloginWindow(){
-	addWindow = new BrowserWindow({
+	pwWindow = new BrowserWindow({
 	  width: 300,
 	  height:200,
 	  title:'Login'
 	});
-	addWindow.loadURL(url.format({
+	pwWindow.loadURL(url.format({
 	  pathname: path.join(__dirname, 'public/pwWindow.html'),
 	  protocol: 'file:',
 	  slashes:true
 	}));
 	// Handle garbage collection
-	addWindow.on('close', function(){
-	  addWindow = null;
+	pwWindow.on('close', function(){
+	  pwWindow = null;
 	});
   }

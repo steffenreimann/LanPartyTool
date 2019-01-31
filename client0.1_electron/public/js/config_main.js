@@ -58,7 +58,7 @@ ipcRenderer.on('loadConfig', (event, data) => {
     }
 })
 
-isCorrect()
+
 
 /**
  * Return false if data and filter are equal
