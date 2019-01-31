@@ -128,27 +128,29 @@ if(process.platform == 'darwin'){
 	 });
    }
 
-
+// Fast-TCP Testung ---------------------------------------------------
 var Server = require('fast-tcp').Server;
 var Socket = require('fast-tcp').Socket;
- 
 var server = new Server();
-
 server.on('connection', function (socket) {
   socket.on('login', function (username) {
     console.log('Trying to login: ' + username);
   });
-  socket.on('files', function (username) {
-    console.log('Files');
+  socket.on('LT-Broadcast', function (data) {
+    console.log('LT-Broadcast');
+    console.log(data);
   });
 
 });
-
-//server.listen(5000);
- 
-//test
-
+server.listen('8090');
+// Broadcast event to everyone, exclude sender
+//socket.emit('LT-Broadcast', 'Hello, World!', { broadcast: true });
 //socket.emit('login', 'alejandro');
+// Fast-TCP Testung ---------------------------------------------------
+
+
+
+
 
 // SET ENV
 process.env.NODE_ENV = 'development';
@@ -157,40 +159,19 @@ const {app, BrowserWindow, Menu, ipcMain} = electron;
 
 let mainWindow;
 let addWindow;
-
+var uuid_holder = false;
 // Listen for app to be ready
 app.on('ready', function(){
   // Create new window
+  //const readUserConfig = configHelper.LoadUserConfig("");
+
   mainWindow = new BrowserWindow({
 		webPreferences: {
 			nodeIntegration: true
 		}
 	});
-  
-  
-  //Lese Aus der JSON Datei wlchen wert firststart hat 
-console.log(MyConfig.get("UserConfigFile"));
 
-if(MyConfig.get("UserConfigFile") == true) {
-	console.log("Erster Start wird ausgeführt");
-	// Load html in window
-	  mainWindow.loadURL(url.format({
-	    pathname: path.join(__dirname, 'public/configWindow.html'),
-	    protocol: 'file:',
-	    slashes:true
-	  }));
-	
-	
-	
-}else{
-	console.log("Erster Start wurde bereits ausgeführt");
-	// Load html in window
-	  mainWindow.loadURL(url.format({
-	    pathname: path.join(__dirname, 'public/mainWindow.html'),
-	    protocol: 'file:',
-	    slashes:true
-	  }));
-}
+	loadHTML('public/mainWindow.html');
 
   
   
@@ -224,19 +205,7 @@ function createAddWindow(){
 }
 
 
-let win  
-
-
-
-
-
-
-var config = MyConfig.toObject()
-
-
-
 try {
-checkConfigFiles()
 var filename = path.basename('/Users/Refsnes/demo_path.js');
 console.log(filename);
 
@@ -267,7 +236,6 @@ console.log(filename);
 	console.log(ex);
 }
 
-
 ipcMain.on('openFile', (event, path) => { 
     openSplitFile(path)
 }) 
@@ -279,23 +247,19 @@ ipcMain.on('splitfile', (event, path) => {
 })  
 
 
-/** */
 ipcMain.on('saveConfig', (event, data) => { 
-	console.log(data);
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
-	console.log('Loaded config:');
-	console.log(readUserConfig);
-
-	if(!readUserConfig.parseError){
-		var config_uuid
-		if(!readUserConfig.fileExists){
-			config_uuid = uuidv4(); // ⇨ '10ba038e-48da-487b-96e8-8d3b99b6d18a'
-		}else{
-			config_uuid = readUserConfig.config_uuid;
-		}
-		const cleanObject = {'config_user': data.config_user, 'config_uuid': config_uuid }
-		configHelper.WriteUserConfig(data.config_pw, cleanObject);
+	const cleanObject = {'config_user': data.config_user, 'config_uuid': null }
+	if(readUserConfig.fileExists && readUserConfig.parseError){
+		return;
 	}
+	if(!readUserConfig.fileExists){
+		cleanObject.config_uuid = uuidv4(); // ⇨ '10ba038e-48da-487b-96e8-8d3b99b6d18a'
+	}else{
+		cleanObject.config_uuid = readUserConfig.userCfg.config_uuid;
+	}
+	uuid_holder = true;
+	configHelper.WriteUserConfig(data.config_pw, cleanObject);
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
 	mainWindow.webContents.send('saveConfig', cleanObject );
 }) 
@@ -304,6 +268,7 @@ ipcMain.on('saveConfig', (event, data) => {
 //result['parseError'] = true;
 
 //{fileExists: false, parseError: true, userCfg: null}
+
 ipcMain.on('loadConfig', (event, data) => { 
 	console.log(data);
 	//{'config_pw': config_pw}
@@ -311,7 +276,7 @@ ipcMain.on('loadConfig', (event, data) => {
 
 	console.log('Loaded config:');
 	console.log(readUserConfig);
-	
+	uuid_holder = true;
 	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
 }) 
 
@@ -359,35 +324,33 @@ function openSplitFile(path){
 }
 
 function loadHTML(data){
-	mainWindow.loadURL(url.format({
-	    pathname: path.join(__dirname, data),
-	    protocol: 'file:',
-	    slashes:true
-	}));
-	
+	const readUserConfig = configHelper.LoadUserConfig("");
+	if(readUserConfig.parseError){
+			console.log("readUserConfig.parseError");
+		}
+	if(readUserConfig.fileExists && !uuid_holder) {
+		
+		console.log("FIle vorhanden!! Please Login");
+		mainWindow.loadURL(url.format({
+			pathname: path.join(__dirname, 'public/configWindow.html'),
+			protocol: 'file:',
+			slashes: true
+		}));	
+	}else if(uuid_holder){
+		console.log("uuid_holder");
+		mainWindow.loadURL(url.format({
+			 pathname: path.join(__dirname, data),
+			protocol: 'file:',
+			slashes: true
+		}));
+	}
 }
 
 function setJSON(data) {
 	MyConfig.set(data.name, data.val);
 }
 
-function checkConfigFiles(){
-	let MyConfig = editJsonFile(`${__dirname}/config.json`);
-	let MyConfigTemplate = editJsonFile(`${__dirname}/MyConfig.json`);
-	let MyConfigTmp = editJsonFile(`${__dirname}/MyConfigTmp.json`);
-	var Template = MyConfigTemplate.toObject()
-	var MyConfigTmpObj = MyConfigTemplate.toObject()
-	var conf = MyConfig.toObject()
-	
 
-
-	if(conf.UserConfigFile == false){
-		console.log('First Start');
-	}
-
-//MyConfigTemplate.set("allow.print_to_ext", i.allow.print_to_ext);
-	console.log(Template);
-}
 
 /**JSON  */
 function addGame(da) {

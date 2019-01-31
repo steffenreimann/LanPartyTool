@@ -1,9 +1,10 @@
 const configHelper = require('./../config/configHelper');
 const encryptAes = require('./../utils/aesEncrypt');
+const handshake = require('./../handshake/handshakeHelper');
 
 var qrcode = new QRCode(document.getElementById("qrcode"), {
-    width : 100,
-    height : 100
+    width : 400,
+    height : 400
 });
 
 function saveConfig() {
@@ -18,7 +19,6 @@ ipcRenderer.on('saveConfig', (event, data) => {
     console.log(data);
     $( "#config_user" ).val(data.config_user)
     $( "#config_uuid" ).val(data.config_uuid)
-    qrcode.makeCode(data.config_uuid);
 })
 
 function loadConfig(){
@@ -27,10 +27,29 @@ function loadConfig(){
 }
 
 ipcRenderer.on('loadConfig', (event, data) => { 
-    console.log(data);
+    //console.log(data);
     if(data != null){
         $( "#config_user" ).val(data.config_user)
         $( "#config_uuid" ).val(data.config_uuid)
-        qrcode.makeCode(data.config_uuid);
+        var token = handshake.GenerateToken(data.config_uuid);
+        console.log(token.toString());
+
+        var newObj = {
+            token: token.toString(), 
+        ip: "192.168.178.23",
+        key: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAr4MdqPlGn0lj27aAOnMV\
+        JAxZUrEEVQeCn+Jtn/WsSNnnc51DJIFxv4vP8mn76C91W0iMRLEhSf/3CBQNEwH0\
+        n+TXwAc91Ia7Gx/uCmuOq6TGfm/es0NhES2WvE42XwvbxtX7Vv8gsdCeXoGG6oJo\
+        6ivQbcjhcEjNouEAWB1sl8rd9iYnqD4VOld+zPwEaghoTo+NRXCEEmZViK5ZwmqX\
+        gJVB/+ahWC14YuTejdgIPQdbyy39QviYej4QY3rubSc6pSJwyGovqsrlCJZoDFHf\
+        c+bv3LrEJTvRoQq1z9Ox/ySU1wAhaoD/9QxNn1655zWg9Uo1+YmSR8EogP7W+TzW\
+        MQIDAQAB"
+        }
+
+
+        qrcode.makeCode(JSON.stringify(newObj));
+
+        var de = handshake.DecryptToken(data.config_uuid, token); 
+        console.log(de.toString());
     }
 })
