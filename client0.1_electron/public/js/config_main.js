@@ -1,5 +1,3 @@
-const configHelper = require('./../config/configHelper');
-const encryptAes = require('./../utils/aesEncrypt');
 const handshake = require('./../handshake/handshakeHelper');
 
 var qrcode = new QRCode(document.getElementById("qrcode"), {

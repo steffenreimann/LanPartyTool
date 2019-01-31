@@ -2,70 +2,30 @@
 const electron = require('electron');
 const path = require('path');
 const url = require('url');
-const editJsonFile = require("edit-json-file");
 const configHelper = require('./config/configHelper');
 const encryptAes = require('./utils/aesEncrypt');
 var fs = require('fs')
 const uuidv4 = require('uuid/v4');
-
-// Check Configuration directory
-if (!configHelper.Init()) {
-	configHelper.InitDirs();
-	console.log('Created directory' + configHelper.GetBaseDir());
-}
-
-// Encrypt testing
-const text = 'Hallo Welt';
-const key = "VeryStrong";
-const encrypted = encryptAes.EncryptText(key, text);
-const decrypted = encryptAes.DecryptText(key, encrypted);
-
-const testUserConfig = {name: 'Hannes', 'id': '824823493429'};
-console.log('Before');
-console.log(testUserConfig);
-
-
-
-// If the file doesn't exist, the content will be an empty object by default.
-let MyConfig = editJsonFile(`${__dirname}/config.json`);
-let MyConfigTamplate = editJsonFile(`${__dirname}/MyConfig.json`);
-let MyConfigTmp = editJsonFile(`${__dirname}/MyConfigTmp.json`);
-var FilePaths = {myFiles: [], network: {}};
-var ignoreFiles = [".DS_Store", ".gitkeep", ".gitignore"];
-
-try {
-
-
 var ping = require('ping');
-var os = require('os');
-var ifaces = os.networkInterfaces();
 var splitFile = require('./split-file.js'); 
-var clients = new Array(); // or the shortcut: = []
-var counter = 0;
-var chat = [];
-var names = [];
-var port = "8081"
 
+const {app, BrowserWindow, Menu, ipcMain} = electron;
 
+let mainWindow;
+let addWindow;
+var user = {uuid: "", };
 
-} catch (ex) {
-    console.log(ex);
-   // console.log(ex.code)
-    if(ex.code == 'MODULE_NOT_FOUND'){
-	    console.log('MODULE_NOT_FOUND')
-	    //exec("npm install ", puts);
-	    
-    }
-    
-}
+// SET ENV
+process.env.NODE_ENV = 'development';
+
+var ignoreFiles = [".DS_Store", ".gitkeep", ".gitignore"];
 
 // Create menu template
 const mainMenuTemplate =  [
 	// Each object is a dropdown
 	{
 	  label: 'File',
-	  submenu:[
-				 
+	  submenu:[	 
 		{
 		  label:'Split File',
 		  accelerator:process.platform == 'darwin' ? 'Command+S' : 'Ctrl+S',
@@ -89,13 +49,13 @@ const mainMenuTemplate =  [
 	}
   ];
 
+  
   // If OSX, add empty object to menu
 if(process.platform == 'darwin'){
-	// mainMenuTemplate.unshift({});
-   }
-   
-   // Add developer tools option if in dev
-   if(process.env.NODE_ENV !== 'production'){
+	//mainMenuTemplate.unshift({});
+}
+// Add developer tools option if in dev
+if(process.env.NODE_ENV !== 'production'){
 	 mainMenuTemplate.push({
 	   label: 'Developer Tools',
 	   submenu:[
@@ -114,7 +74,7 @@ if(process.platform == 'darwin'){
 		   }
 		 },
 		 {
-				   label: 'Reload',
+			label: 'Reload',
 		   role: 'reload'
 		 },
 		 {
@@ -126,7 +86,13 @@ if(process.platform == 'darwin'){
 		 }
 	   ]
 	 });
-   }
+}
+// Check Configuration directory
+if (!configHelper.Init()) {
+	configHelper.InitDirs();
+	console.log('Created directory' + configHelper.GetBaseDir());
+}
+
 
 // Fast-TCP Testung ---------------------------------------------------
 var Server = require('fast-tcp').Server;
@@ -140,7 +106,6 @@ server.on('connection', function (socket) {
     console.log('LT-Broadcast');
     console.log(data);
   });
-
 });
 server.listen('8090');
 // Broadcast event to everyone, exclude sender
@@ -150,103 +115,34 @@ server.listen('8090');
 
 
 
-
-
-// SET ENV
-process.env.NODE_ENV = 'development';
-
-const {app, BrowserWindow, Menu, ipcMain} = electron;
-
-let mainWindow;
-let addWindow;
-var uuid_holder = false;
 // Listen for app to be ready
 app.on('ready', function(){
-  // Create new window
-  //const readUserConfig = configHelper.LoadUserConfig("");
-
-  mainWindow = new BrowserWindow({
+  	//Create new window
+  	//const readUserConfig = configHelper.LoadUserConfig("");
+	mainWindow = new BrowserWindow({
 		webPreferences: {
 			nodeIntegration: true
 		}
 	});
-
 	loadHTML('public/mainWindow.html');
-
-  
-  
-  // Quit app when closed
-  mainWindow.on('closed', function(){
-    app.quit();
-  });
-
-  // Build menu from template
-  const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
-  // Insert menu
-  Menu.setApplicationMenu(mainMenu);
+  	// Quit app when closed
+	mainWindow.on('closed', function(){
+		app.quit();
+	});
+  	// Build menu from template
+	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
+	// Insert menu
+	Menu.setApplicationMenu(mainMenu);
 });
-
-// Handle add item window
-function createAddWindow(){
-  addWindow = new BrowserWindow({
-    width: 300,
-    height:200,
-    title:'LanPartyTool'
-  });
-  addWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'public/addWindow.html'),
-    protocol: 'file:',
-    slashes:true
-  }));
-  // Handle garbage collection
-  addWindow.on('close', function(){
-    addWindow = null;
-  });
-}
-
-
-try {
-var filename = path.basename('/Users/Refsnes/demo_path.js');
-console.log(filename);
-
-	var gamedir = __dirname + "/games";
-	
-	fs.readdir(gamedir, (err, files) => {
-		files.forEach(file => {
-			var x = path.join(gamedir, file);
-			fs.lstat(gamedir , (err, stats) => {
-			    if(err) {
-				    return console.log(err); //Handle error
-			    }
-			    isDirectory = stats.isDirectory()
-			    
-				if(isDirectory)	{
-					console.log(`!!!!!Is Dir: ${x}`);
-					var addGameData = {path: x, size: 400, split: true}
-					addGame(addGameData)
-				}
-				    
-			});
-			console.log(file); 
-	    });
-  
-	})
-	
-}catch(ex) {
-	console.log(ex);
-}
-
 ipcMain.on('openFile', (event, path) => { 
     openSplitFile(path)
 }) 
 ipcMain.on('openfile-merge', (event, data) => { 
-   openMergeFile(data)
+   	openMergeFile(data)
 }) 
 ipcMain.on('splitfile', (event, path) => { 
-   console.log('File Split');
+   	console.log('File Split');
 })  
-
-
 ipcMain.on('saveConfig', (event, data) => { 
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
 	const cleanObject = {'config_user': data.config_user, 'config_uuid': null }
@@ -258,473 +154,92 @@ ipcMain.on('saveConfig', (event, data) => {
 	}else{
 		cleanObject.config_uuid = readUserConfig.userCfg.config_uuid;
 	}
-	uuid_holder = true;
+	user.uuid = true;
 	loadHTML('public/mainWindow.html');
 	configHelper.WriteUserConfig(data.config_pw, cleanObject);
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
 	mainWindow.webContents.send('saveConfig', cleanObject );
 }) 
-
-//let result = {};
-//result['parseError'] = true;
-
-//{fileExists: false, parseError: true, userCfg: null}
-
 ipcMain.on('loadConfig', (event, data) => { 
 	console.log(data);
 	//{'config_pw': config_pw}
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
-
 	console.log('Loaded config:');
 	console.log(readUserConfig);
-	uuid_holder = true;
+	user.uuid = true;
 	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
 }) 
-
-
-
-function openSplitFile(path){
-     const {dialog} = require('electron') 
-   const fs = require('fs') 
-   console.log('openfile');
-   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
-    if(selectedFiles != undefined) {
-        console.log(selectedFiles)
-        //filestats(selectedFiles[0])
-        
-        fs.lstat(selectedFiles[0], (err, stats) => {
-        if(err)
-        return console.log(err); //Handle error
-
-	    console.log(`Is file: ${stats.isFile()}`);
-	    console.log(`Is directory: ${stats.isDirectory()}`);
-	    console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
-	    console.log(`Is FIFO: ${stats.isFIFO()}`);
-	    console.log(`Is socket: ${stats.isSocket()}`);
-	    console.log(`Is character device: ${stats.isCharacterDevice()}`);
-	    console.log(`Is block device: ${stats.isBlockDevice()}`);
-	    //mainWindow.webContents.send('selectedFiles', file = {"path": selectedFiles[0], "stats": stats} );
-	   var FileSize = stats.size / 1000000;
-        console.log(FileSize);
-        FileSize = Math.round(FileSize)
-        if(FileSize >= 1000){
-            
-                sizeMGB = FileSize / 1000
-                sizeMGB = sizeMGB + " GB"
-           }else{
-                sizeMGB = FileSize + " MB"
-           }
-        mainWindow.webContents.send('DOM', {"id": "#size", "val": sizeMGB} );
-        mainWindow.webContents.send('DOM', {"id": "#out", "val": selectedFiles[0]} );
-        mainWindow.webContents.send('DOM', {"id": "#time", "val": ""} );
-	});
-       // mainWindow.webContents.send('selectedFiles', selectedFiles);
-    }else{
-        console.log('Bitte etwas auswählen');
-    }
-}
-
-function loadHTML(data){
-	const readUserConfig = configHelper.LoadUserConfig("");
-	if(readUserConfig.parseError){
-			console.log("readUserConfig.parseError");
-			console.log("Kein Config File vorhanden!! Bitte Reistrieren");
-		mainWindow.loadURL(url.format({
-			pathname: path.join(__dirname, 'public/loginWindow.html'),
-			protocol: 'file:',
-			slashes: true
-		}));
-		}
-	if(readUserConfig.fileExists && !uuid_holder) {
-		
-		console.log("FIle vorhanden!! Please Login");
-		mainWindow.loadURL(url.format({
-			pathname: path.join(__dirname, 'public/configWindow.html'),
-			protocol: 'file:',
-			slashes: true
-		}));	
-	}else if(uuid_holder){
-		console.log("uuid_holder");
-		mainWindow.loadURL(url.format({
-			 pathname: path.join(__dirname, data),
-			protocol: 'file:',
-			slashes: true
-		}));
-	}
-}
-
-function setJSON(data) {
-	MyConfig.set(data.name, data.val);
-}
-
-
-
-/**JSON  */
-function addGame(da) {
-	var basename = path.basename(da.path);
-	var dirname = path.dirname(da.path);
-
-	fs.lstat(da.path, (err, stats) => {
-		if(err) {
-			return console.log(err); //Handle error
-		}
-		
-		isFile = stats.isFile()
-		isDirectory = stats.isDirectory() 
-			    
-		if(isFile && !ignore(basename))	{
-			console.log(`-- add game -- Is File: ${basename} --`);
-			var tmpFiles = {name: da.path, stats: stats }
-			FilePaths.myFiles.push(tmpFiles);
-			//console.log(FilePaths.myFiles);
-			//FilePaths = {myFiles: {}, network: {}};
-			//console.log(da.path);
-			//console.log(basename);
-			//console.log(dirname);
-			if(da.split){
-				checkFilestatus(da, LTsplit);
-			}
-		}
-
-		if(isDirectory == true)	{
-			console.log(`Bitte Komprimieren`);
-		}  
-	});
-
-
-/**String File Basename. return true if basename are an Ignored File */
-function ignore(da){
-	for (let i = 0; i < ignoreFiles.length; i++) {
-		const element = ignoreFiles[i];
-		if(da == element){
-			console.log('ignore true = ' + element);
-			return true;
-		}
-	}
-	console.log('ignore false = ' + da);
-	return false;
-}
-
-
-function pather(data){
-	var g = data.split('.');
-	var path = data 
-	console.log(path);
-	var typ = g.pop();
-	console.log(typ);
-	
-	var name = g.join('.')
-	console.log(name);
-	var d = {path: path, typ: typ, name: name}
-	return d
-}
-
-let checkFilestatus = function checkFilestatus(da, callback){
-	var basename = path.basename(da.path);
-	var dirname = path.dirname(da.path);
-	var v = path.join(dirname,'LT-' + basename, basename);
-	var f = path.join(dirname, 'LT-' + basename);
-	
-	fs.readdir(f, function(err, files) {
-
-	});
-
-
-	if(!fs.existsSync(f)){
-		fs.mkdir(f, { recursive: true }, (err) => {
-			if (err) throw err;
-			console.log('return false  ');
-			return callback(da.path, da.size, v);
-			});
-	}else{
-		console.log('Ordner Schon Vorhanden!');
-		fs.readdir(f, function(err, files) {
-			console.log(files);
-			if(files != undefined && files != "" ){
-
-				files.forEach(file => {
-					console.log('forEachfile = ' + file);
-
-					if(file == "LT-Config.json"){
-						console.log("LT-Config.json");
-					}
-	
-				});
-
-				console.log('return true  ');
-				
-			}else{
-				console.log('return false  ');
-				return callback(da.path, da.size, v);
-			}
-		});
-	};
-
-	fs.lstat(da.path, (err, stats) => {
-		console.log(stats.size);
-
-	});
-
-
-	
-}
-	
-	/*
-		// Create 
-	function mkdirpath(dirPath){
-	    if(!fs.existsSync(dirPath)){
-	        try
-	        {
-	            fs.mkdirSync(dirPath);
-	        }
-	        catch(e)
-	        {
-	            mkdirpath(path.dirname(dirPath));
-	            mkdirpath(dirPath);
-	        }
-	    }
-	}
-	*/
-
-	// Create folder path
-	//mkdirpath('my/new/folder/create');
-	//	const fs = require('fs')
-	//const path = require('path')
-	var dirPath = 'mynewfolder';
-	const mkdirSync = function (dirPath) {
-	  try {
-	    fs.mkdirSync(dirPath)
-	    console.log('mkdir')
-	  } catch (err) {
-		  console.log(err)
-	    if (err.code !== 'EEXIST') throw err
-	  }
-	}
-	
-	
-	
-	/*
-fs.readdir(path, (err, files) => {
-		files.forEach(file => {
-			fs.lstat(path + "/" + file , (err, stats) => {
-			    if(err) {
-				    return console.log(err); //Handle error
-			    }
-			    isFile = stats.isFile()
-			    
-				if(isFile == true && file != '.DS_Store')	{
-					console.log(`-- Is File: ${file} --`);
-					
-				}
-		    
-			});
-			console.log('jo' + file); 
-			//fileres = file.split('-');
-			//console.log(fileres[0]);
-			if(pathres[0] == fileres[0]) {
-		    	console.log('Push ',file,' in names')
-		    	names.push(file)
-	    	}
-	  });
-	  
-	})
-*/
-
-}
-
-
-let LTsplit = function LTsplit(CompressedDIR, FileSize, fileName) {
-	var isFile
-	var isDirectory
-	fs.lstat(CompressedDIR, (err, stats) => {
-    	if(err)
-        return console.log(err); //Handle error
-        mainWindow.webContents.send('DOM', {"id": "#split-file", "show": false} );
-        
-		isFile = stats.isFile()
-		isDirectory = stats.isDirectory()
-	    //console.log('Is file: ' + isFile);
-	    //console.log('Is directory: ' + isDirectory );
-	    //console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
-	    //console.log(`Is FIFO: ${stats.isFIFO()}`);
-	    //console.log(`Is socket: ${stats.isSocket()}`);
-	    //console.log(`Is character device: ${stats.isCharacterDevice()}`);
-	    //console.log(`Is block device: ${stats.isBlockDevice()}`);
-	    
-	    if(isDirectory) {
-			console.log('Muss gepackt sein also eine Datei Kein Ordner!');
-			
-		}else if(isFile) {
-            
-			var t_start, t_end;
-			t_start = new Date().getTime();
-            // Code, dessen Ausführungszeit wir messen wollen Start
-            
-			FileSize = FileSize * 1000000;
-			splitFile.splitFileBySize(CompressedDIR, FileSize, fileName)
-			.then((names) => {
-		    	console.log("Names = " + names[0]);
-		    	console.log("Name = " + stats.name);
-                
-				//MyConfig.set(stats.name, names);
-                
-				// Code, dessen Ausführungszeit wir messen wollen End
-                t_end = new Date().getTime()
-                t_end = t_end - t_start;
-                t_end = t_end / 1000;
-                t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
-
-                if(t_end >= 60){
-                    t_end = t_end / 60;
-                    t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
-                    t_end += " Minuten"
-                }else{
-                    t_end += " Sekunden"
-                }
-
-                mainWindow.webContents.send('DOM', {"id": "#time", "val": "wurden in " + t_end + " geteilt"} );
-                mainWindow.webContents.send('DOM', {"id": "#split-file", "show": true} );
-
-            }).catch((err) => {
-                console.log('Error: ', err);
-            });
-		}
-	});
-
-}
-
-
-function filestats(path) {
-	
-	fs.lstat(path, (err, stats) => {
-    if(err)
-        return console.log(err); //Handle error
-
-	    console.log(`Is file: ${stats.isFile()}`);
-	    console.log(`Is directory: ${stats.isDirectory()}`);
-	    console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
-	    console.log(`Is FIFO: ${stats.isFIFO()}`);
-	    console.log(`Is socket: ${stats.isSocket()}`);
-	    console.log(`Is character device: ${stats.isCharacterDevice()}`);
-	    console.log(`Is block device: ${stats.isBlockDevice()}`);
-	    
-	});
-
-}
-
-//Input Data is array
-function ipscan(data){
-    var alive = [];
-	  	var i = data.length;
-	  	data.forEach(function(host){
-	  		ping.sys.probe(host, function(isAlive){
-		  		if(isAlive == true){
-			  		alive.push(host);
-			  		io.sockets.emit('msg', {"ip": host,"from":"multi-ping", "out": isAlive});			  		
-		  		}
-	  			i--
-	  			if(i==0){
-	  				ports(alive);
-	  				console.log(alive)
-	  				
-				}
-    		});
-		});
-}
-
 ipcMain.on('saveSplitFile', (event, data) => {
-           //console.log("Joo path" + data.path);
-        
-           savefile(data)
+    //console.log("Joo path" + data.path);
+    savefile(data)
 })
-
 ipcMain.on('DOM', (event, data) => {
-           console.log("DOM Data : " + data);
-           
+    console.log("DOM Data : " + data);      
 })
-
 ipcMain.on('ipscan', (event, data) => {
-           console.log("DOM Data : " + data);
-           
+    console.log("DOM Data : " + data);    
 })
-
 ipcMain.on('tcpconnect', (event, data) => {
 	console.log("tcpconnect Data : " + data);
 	connectToServer(data);
 })
-
 function savefile(data) {
     const {dialog} = require('electron') 
     const fs = require('fs') 
     console.log(data.name)
     console.log(data.path)
-    console.log(data.packSize)
-    
-    
-    
+    console.log(data.packSize) 
     dialog.showSaveDialog({ filters: [
-
      { defaultPath: data.path, extensions: ['*'] }
-
     ]}, function (fileName) {
-
     if (fileName === undefined) return;
         console.log(data)
 		//split(data.path, data.packSize, fileName);
-	
-			fs.lstat(data.path , (err, stats) => {
-			    if(err) {
-				    return console.log(err); //Handle error
-			    }
-			    isFile = stats.isFile()
-				
-				var path = data.path
-				path = path.split('\\');
-				var name = path.pop()
-				path = path.join('\\');
-				//console.log(path);
-				
-				if(isFile)	{
-					console.log(`!!!!!Is File: ${name}`);
-					console.log(`!!!!!path: ${path}`);
+		fs.lstat(data.path , (err, stats) => {
+			if(err) {
+				return console.log(err); //Handle error
+			}
+			isFile = stats.isFile()	
+			var path = data.path
+			path = path.split('\\');
+			var name = path.pop()
+			path = path.join('\\');
+			if(isFile)	{
+				console.log(`!!!!!Is File: ${name}`);
+				console.log(`!!!!!path: ${path}`);
 
-					//addGame(path,name, "true")
-					var addGameData = {path: x, size: 400, split: true}
-					addGame(addGameData)
-				}    
-			});
+				//addGame(path,name, "true")
+				var addGameData = {path: x, size: 400, split: true}
+				addGame(addGameData)
+			}    
+		});
 	
    // fs.writeFile(fileName, data, function (err) { });
 
   }); 
   
 }
-
- function merge(data) {
+function merge(data) {
 	var t_start, t_end;
 	t_start = new Date().getTime();
 	console.log('Merge with ' + data.names);
 	console.log('Merge path ' + data.path );
-  	splitFile.mergeFiles(data.names, data.path + '/' + data.name + '.' + data.typ)
-  		.then(() => {
+  	splitFile.mergeFiles(data.names, data.path + '/' + data.name + '.' + data.typ).then(() => {
   		console.log('Done!');
   		t_end = new Date().getTime();
-  	console.log(t_end - t_start + 'ms');
+  		console.log(t_end - t_start + 'ms');
   	})
   	.catch((err) => {
    		console.log('Error: ', err);
   	});
-  	
-  }
-
-
+}
 function openMergeFile(){
     const {dialog} = require('electron') 
-   const fs = require('fs') 
-   console.log('openfile');
-   
-   var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections', 'openDirectory' ]});
-   console.log('selectedFiles = ' + selectedFiles)
+	const fs = require('fs') 
+	console.log('openfile');
+	
+	var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections', 'openDirectory' ]});
+	console.log('selectedFiles = ' + selectedFiles)
 
     if(selectedFiles != undefined) {
 		fs.lstat(selectedFiles  + "/", (err, stats) => {
@@ -763,7 +278,6 @@ function openMergeFile(){
         console.log('Bitte etwas auswählen');
     }
 }  
-
 function connectToServer(ip){
 	var socket = new Socket({
 		host: ip,
@@ -771,37 +285,236 @@ function connectToServer(ip){
 	  });
 	socket.emit('login', 'alejandro');
 }
+function openSplitFile(path){
+	const {dialog} = require('electron') 
+  	const fs = require('fs') 
+  	console.log('openfile');
+  	var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections']});
+   	if(selectedFiles != undefined) {
+	   	console.log(selectedFiles)
+		//filestats(selectedFiles[0])
+		
+		fs.lstat(selectedFiles[0], (err, stats) => {
+			if(err)
+			return console.log(err); //Handle error
 
-
-function FileDownload(path){
-	 
+			console.log(`Is file: ${stats.isFile()}`);
+			console.log(`Is directory: ${stats.isDirectory()}`);
+			console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
+			console.log(`Is FIFO: ${stats.isFIFO()}`);
+			console.log(`Is socket: ${stats.isSocket()}`);
+			console.log(`Is character device: ${stats.isCharacterDevice()}`);
+			console.log(`Is block device: ${stats.isBlockDevice()}`);
+			//mainWindow.webContents.send('selectedFiles', file = {"path": selectedFiles[0], "stats": stats} );
+			var FileSize = stats.size / 1000000;
+			console.log(FileSize);
+			FileSize = Math.round(FileSize)
+			if(FileSize >= 1000){
+			
+				sizeMGB = FileSize / 1000
+				sizeMGB = sizeMGB + " GB"
+			}else{
+				sizeMGB = FileSize + " MB"
+			}
+			mainWindow.webContents.send('DOM', {"id": "#size", "val": sizeMGB} );
+			mainWindow.webContents.send('DOM', {"id": "#out", "val": selectedFiles[0]} );
+			mainWindow.webContents.send('DOM', {"id": "#time", "val": ""} );
+		});
+	  	//mainWindow.webContents.send('selectedFiles', selectedFiles);
+   	}else{
+	   console.log('Bitte etwas auswählen');
+	}
 }
+function loadHTML(data){
+	const readUserConfig = configHelper.LoadUserConfig("");
+	if(!readUserConfig.fileExists){
+		console.log("Kein File vorhanden");
+		mainWindow.loadURL(url.format({
+			pathname: path.join(__dirname, 'public/loginWindow.html'),
+			protocol: 'file:',
+			slashes: true
+		}));
+	}
+	if(readUserConfig.fileExists && !user.uuid) { 
+		console.log("Nutzer vorhanden!! Please Login");
+		createloginWindow();	
+	}
+	if(readUserConfig.fileExists && user.uuid){
+		mainWindow.loadURL(url.format({
+			pathname: path.join(__dirname, data),
+			protocol: 'file:',
+			slashes: true
+		}));
+	}
+}
+/**JSON  */
+function addGame(da) {
+	var basename = path.basename(da.path);
+	fs.lstat(da.path, (err, stats) => {
+		if(err) {
+			return console.log(err); //Handle error
+		}
+		isFile = stats.isFile()
+		isDirectory = stats.isDirectory() 
+		if(isFile && !ignore(basename))	{
+			console.log(`-- add game -- Is File: ${basename} --`);
+			var tmpFiles = {name: da.path, stats: stats }
+			FilePaths.myFiles.push(tmpFiles);
+			if(da.split){
+				checkFilestatus(da, LTsplit);
+			}
+		}
+		if(isDirectory == true)	{
+			console.log(`Bitte Komprimieren`);
+		}  
+	});
 
+   var dirPath = 'mynewfolder';
+   const mkdirSync = function (dirPath) {
+	 try {
+	   fs.mkdirSync(dirPath)
+	   console.log('mkdir')
+	 } catch (err) {
+		 console.log(err)
+	   if (err.code !== 'EEXIST') throw err
+	 }
+   }
 
-// Set a couple of fields
-//MyConfig.set("planet", "Earthhhhsdcvdv");
-
+}
+/**String File Basename. return true if basename are an Ignored File */
+function ignore(fileName){
+	for (let i = 0; i < ignoreFiles.length; i++) {
+		const element = ignoreFiles[i];
+		if(fileName == element){
+			console.log('ignore true = ' + element);
+			return true;
+		}
+	}
+	console.log('File Ignore false = ' + fileName);
+	return false;
+ }
+let checkFilestatus = function checkFilestatus(da, callback){
+	var basename = path.basename(da.path);
+	var dirname = path.dirname(da.path);
+	var filePath = path.join(dirname,'LT-' + basename, basename);
+	var dirPath = path.join(dirname, 'LT-' + basename);
  
-// Output the content
-console.log(MyConfig.get());
-// { planet: 'Earth',
-//   name: { first: 'Johnny', last: 'B.' },
-//   is_student: false }
- 
-// Save the data to the disk
-//MyConfig.save();
-// 
-// Reload it from the disk
-MyConfig = editJsonFile(`${__dirname}/config.json`, {
-    autosave: true
-});
+	if(!fs.existsSync(dirPath)){
+		fs.mkdir(dirPath, { recursive: true }, (err) => {
+			if (err) throw err;
+			console.log('return false  ');
+			return callback(da.path, da.size, filePath);
+		});
+	}else{
+		console.log('Ordner Schon Vorhanden!');
+		fs.readdir(dirPath, function(err, files) {
+			console.log(files);
+			if(files != undefined && files != "" ){
+				files.forEach(file => {
+					console.log('forEachfile = ' + file);
+					if(file == "LT-Config.json"){
+						console.log("LT-Config.json");
+					}
+				});
+				console.log('return true  ');
+				
+			}else{
+				console.log('return false  ');
+				return callback(da.path, da.size, filePath);
+			}
+		});
+	};
+}
+let LTsplit = function LTsplit(CompressedDIR, FileSize, fileName) {
+   var isFile
+   var isDirectory
+   fs.lstat(CompressedDIR, (err, stats) => {
+	   if(err)
+	   return console.log(err); //Handle error
+	   mainWindow.webContents.send('DOM', {"id": "#split-file", "show": false} );
+	   
+	   isFile = stats.isFile()
+	   isDirectory = stats.isDirectory()
 
-setJSON({name: "username", val: "Steffen"})
- 
-// Output the whole thing
-//console.log(MyConfig.toObject());
-// { planet: 'Earth',
-//   name: { first: 'Johnny', last: 'B.' },
-//   is_student: false,
-//   a: { new: { field: [Object] } } }
+	   if(isDirectory) {
+		   console.log('Muss gepackt sein also eine Datei Kein Ordner!'); 
+	   }else if(isFile) {
+		   var t_start, t_end;
+		   t_start = new Date().getTime();
+		   // Code, dessen Ausführungszeit wir messen wollen Start
 
+		   FileSize = FileSize * 1000000;
+		   splitFile.splitFileBySize(CompressedDIR, FileSize, fileName).then((names) => {
+			   console.log("Names = " + names[0]);
+			   console.log("Name = " + stats.name);
+			   
+			   // Code, dessen Ausführungszeit wir messen wollen End
+			   t_end = new Date().getTime()
+			   t_end = t_end - t_start;
+			   t_end = t_end / 1000;
+			   t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
+
+			   if(t_end >= 60){
+				   t_end = t_end / 60;
+				   t_end = parseFloat(Math.round(t_end * 100) / 100).toFixed(2);
+				   t_end += " Minuten"
+			   }else{
+				   t_end += " Sekunden"
+			   }
+			   mainWindow.webContents.send('DOM', {"id": "#time", "val": "wurden in " + t_end + " geteilt"} );
+			   mainWindow.webContents.send('DOM', {"id": "#split-file", "show": true} );
+
+		   }).catch((err) => {
+			   console.log('Error: ', err);
+		   });
+	   }
+   });
+
+}
+function filestats(path) { 
+   fs.lstat(path, (err, stats) => {
+   if(err)
+	   return console.log(err); //Handle error
+	   console.log(`Is file: ${stats.isFile()}`);
+	   console.log(`Is directory: ${stats.isDirectory()}`);
+	   console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
+	   console.log(`Is FIFO: ${stats.isFIFO()}`);
+	   console.log(`Is socket: ${stats.isSocket()}`);
+	   console.log(`Is character device: ${stats.isCharacterDevice()}`);
+	   console.log(`Is block device: ${stats.isBlockDevice()}`);   
+   });
+}
+//Input Data is array
+function ipscan(data){
+   var alive = [];
+		 var i = data.length;
+		 data.forEach(function(host){
+			 ping.sys.probe(host, function(isAlive){
+				 if(isAlive == true){
+					 alive.push(host);			  		
+				 }
+				 i--
+				 if(i==0){
+					 console.log(alive)
+					 
+			   }
+		   });
+	   });
+}
+// Handle add item window
+function createloginWindow(){
+	addWindow = new BrowserWindow({
+	  width: 300,
+	  height:200,
+	  title:'Login'
+	});
+	addWindow.loadURL(url.format({
+	  pathname: path.join(__dirname, 'public/pwWindow.html'),
+	  protocol: 'file:',
+	  slashes:true
+	}));
+	// Handle garbage collection
+	addWindow.on('close', function(){
+	  addWindow = null;
+	});
+  }

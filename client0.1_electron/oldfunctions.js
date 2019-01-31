@@ -139,3 +139,35 @@ var options =  {
 }};
 
 $('.ip_address').mask("000.000.000.000", options);
+
+
+try {
+	var filename = path.basename('/Users/Refsnes/demo_path.js');
+	console.log(filename);
+	
+		var gamedir = __dirname + "/games";
+		
+		fs.readdir(gamedir, (err, files) => {
+			files.forEach(file => {
+				var x = path.join(gamedir, file);
+				fs.lstat(gamedir , (err, stats) => {
+					if(err) {
+						return console.log(err); //Handle error
+					}
+					isDirectory = stats.isDirectory()
+					
+					if(isDirectory)	{
+						console.log(`!!!!!Is Dir: ${x}`);
+						var addGameData = {path: x, size: 400, split: true}
+						addGame(addGameData)
+					}
+						
+				});
+				console.log(file); 
+			});
+	  
+		})
+		
+	}catch(ex) {
+		console.log(ex);
+	}
