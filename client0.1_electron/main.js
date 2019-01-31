@@ -524,4 +524,4 @@ function createloginWindow(){
 	  pwWindow = null;
 	});
   }
-ipscan(["192.168.178.1", "192.168.0.1"]);
+ipscan(["192.168.178.1", "192.168.0.1", "localhost"]);
