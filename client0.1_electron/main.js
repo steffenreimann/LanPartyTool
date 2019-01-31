@@ -168,7 +168,10 @@ ipcMain.on('loadConfig', (event, data) => {
 	console.log(readUserConfig);
 	user.uuid = true;
 	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
-	pwWindow.hide();
+	if(pwWindow != undefined){
+		pwWindow.hide();
+	}
+	
 }) 
 ipcMain.on('saveSplitFile', (event, data) => {
     //console.log("Joo path" + data.path);
