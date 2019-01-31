@@ -25,6 +25,17 @@ ipcRenderer.on('saveConfig', (event, data) => {
     $( "#config_uuid" ).val(data.config_uuid)
 })
 
+ipcRenderer.on('applogin', (event, data) => { 
+    console.log(data);
+})
+
+function applogin(){
+    var config_pw = $( "#config_pw" ).val();
+    ipcRenderer.send('applogin', {'config_pw': config_pw } , () => {})
+}
+
+
+
 function loadConfig(){
     var config_pw = $( "#config_pw" ).val();
     ipcRenderer.send('loadConfig', {'config_pw': config_pw } , () => {})
@@ -81,3 +92,5 @@ function isCorrect(data, filter){
     }
     return true;
 }
+
+
