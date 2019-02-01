@@ -1,21 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>LanTool User Register</title>
+  <title>LanTool User Login</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 </head>
 <body>
   <div class="container">
-    
-      <div>
-        <label>Username</label>
-        <input type="text" id="config_user" autofocus>
-      </div>
       <div>
         <label>Password</label>
         <input type="password" id="config_pw" autofocus>
       </div>
-      <button class="waves-effect waves-light btn" onclick="saveConfig()">Register</button>
+      
+
+
+      <div class="container-fluid ">
+        <div class="row" >
+       
+         <div class="col-xs-12 text-right ">
+          <button class="waves-effect waves-light btn" onclick="applogin()">Login</button>
+       </div>
+      </div>
+ 
+         
+      
+       
+     
+   </div>
     
   </div>
   <script>window.$ = window.jQuery = require('./js/jquery.js');</script>

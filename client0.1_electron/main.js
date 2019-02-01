@@ -19,7 +19,7 @@ console.log(util.frm('Object: {0}', [cloned]));
 
 let mainWindow;
 let pwWindow;
-var user = {uuid: ""};
+var user = {uuid: "", name: "",ip: ""};
 
 // SET ENV
 process.env.NODE_ENV = 'development';
@@ -69,14 +69,21 @@ if(process.env.NODE_ENV !== 'production'){
 		   label:'Home',
 		   accelerator:process.platform == 'darwin' ? 'Command+H' : 'Ctrl+H',
 		   click(){
-			 loadHTML('public/mainWindow.html');
+			 loadHTML('public/appmainWindow.html');
 		   }
 		 }, 
 		 {
 		   label: 'Config',
 		   accelerator:process.platform == 'darwin' ? 'Command+K' : 'Ctrl+K',
 		   click(){
-			 loadHTML('public/configWindow.html');
+			 loadHTML('public/appconfigWindow.html');
+		   }
+		 },
+		 {
+		   label: 'Logout',
+		   accelerator:process.platform == 'darwin' ? 'Command+L' : 'Ctrl+L',
+		   click(){
+			applogout();
 		   }
 		 },
 		 {
@@ -93,6 +100,9 @@ if(process.env.NODE_ENV !== 'production'){
 	   ]
 	 });
 }
+
+
+
 // Check Configuration directory
 if (!configHelper.Init()) {
 	configHelper.InitDirs();
@@ -161,7 +171,6 @@ ipcMain.on('saveConfig', (event, data) => {
 		cleanObject.config_uuid = readUserConfig.userCfg.config_uuid;
 	}
 	user.uuid = true;
-	loadHTML('public/mainWindow.html');
 	configHelper.WriteUserConfig(data.config_pw, cleanObject);
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
 	mainWindow.webContents.send('saveConfig', cleanObject );
@@ -172,14 +181,26 @@ ipcMain.on('loadConfig', (event, data) => {
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
 	console.log('Loaded config:');
 	console.log(readUserConfig);
-	user.uuid = true;
 	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
+}) 
+
+ipcMain.on('applogin', (event, data) => { 
+	console.log(data);
+	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
+	user.uuid = true;
+
+	loadHTML('public/appmainWindow.html');
+
+	mainWindow.webContents.send('applogin', readUserConfig.userCfg );
 	if(pwWindow != undefined){
 		pwWindow.hide();
 		pwWindow = null;
 	}
-	
 }) 
+ipcMain.on('applogout', (event, data) => { 
+	applogout();
+}) 
+
 ipcMain.on('saveSplitFile', (event, data) => {
     //console.log("Joo path" + data.path);
     savefile(data)
@@ -341,13 +362,18 @@ function loadHTML(data){
 	if(!readUserConfig.fileExists){
 		console.log("Kein File vorhanden");
 		mainWindow.loadURL(url.format({
-			pathname: path.join(__dirname, 'public/loginWindow.html'),
+			pathname: path.join(__dirname, 'public/appregisterWindow.html'),
 			protocol: 'file:',
 			slashes: true
 		}));
 	}
 	if(readUserConfig.fileExists && !user.uuid) { 
 		console.log("Nutzer vorhanden!! Please Login");
+		mainWindow.loadURL(url.format({
+			pathname: path.join(__dirname, 'public/nothingWindow.html'),
+			protocol: 'file:',
+			slashes: true
+		}));
 		createloginWindow();	
 	}
 	if(readUserConfig.fileExists && user.uuid){
@@ -497,22 +523,23 @@ function filestats(path) {
 }
 //Input Data is array
 function ipscan(data){
-   var alive = [];
-		 var i = data.length;
-		 data.forEach(function(host){
-			 ping.sys.probe(host, function(isAlive){
-				 if(isAlive == true){
-					 alive.push(host);			  		
-				 }
-				 i--
-				 if(i==0){
-					 console.log(alive)
-					 
-			   }
-		   });
-	   });
+	
+   	var alive = [];
+	var i = data.length;
+	data.forEach(function(host){
+		ping.sys.probe(host, function(isAlive){
+			if(isAlive == true){
+				alive.push(host);	
+				console.log("Alive Host on IP = " + host)		  		
+			}
+			i--
+			if(i==0){
+				//console.log(alive)
+			}
+		});
+	});
 }
-// Handle add item window
+// Handle pwWindow
 function createloginWindow(){
 	pwWindow = new BrowserWindow({
 	  width: 300,
@@ -520,7 +547,7 @@ function createloginWindow(){
 	  title:'Login'
 	});
 	pwWindow.loadURL(url.format({
-	  pathname: path.join(__dirname, 'public/pwWindow.html'),
+	  pathname: path.join(__dirname, 'public/apploginWindow.html'),
 	  protocol: 'file:',
 	  slashes:true
 	}));
@@ -529,3 +556,12 @@ function createloginWindow(){
 	  pwWindow = null;
 	});
   }
+
+function applogout(){
+	user.uuid = false;
+	//createloginWindow()
+	loadHTML('public/nothingWindow.html');
+	
+}
+
+ipscan(["192.168.178.1", "192.168.0.1", "localhost"]);

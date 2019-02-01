@@ -1,16 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>LanTool User Login</title>
+  <title>LanTool User Register</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 </head>
 <body>
   <div class="container">
+    
+      <div>
+        <label>Username</label>
+        <input type="text" id="config_user" autofocus>
+      </div>
       <div>
         <label>Password</label>
         <input type="password" id="config_pw" autofocus>
       </div>
-      <button class="waves-effect waves-light btn" onclick="loadConfig()">Login</button>
+      <button class="waves-effect waves-light btn" onclick="saveConfig()">Register</button>
     
   </div>
   <script>window.$ = window.jQuery = require('./js/jquery.js');</script>
@@ -23,5 +28,13 @@
   
   <script language="javascript" type="text/javascript" src="./js/public_main.js"></script>
   <script language="javascript" type="text/javascript" src="./js/config_main.js"></script>
+  <script language="javascript" type="text/javascript">
+  $('#config_pw').keypress(function (e) {
+    if (e.which == 13) {
+      console.log("Press Enter");
+      loadConfig();
+    }
+  });
+  </script>
 </body>
 </html>
