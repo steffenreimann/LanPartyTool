@@ -3,6 +3,7 @@ const electron = require('electron');
 const path = require('path');
 const url = require('url');
 const configHelper = require('./config/configHelper');
+const util = require('./utils/swissKnife');
 const encryptAes = require('./utils/aesEncrypt');
 var fs = require('fs')
 const uuidv4 = require('uuid/v4');
@@ -10,6 +11,11 @@ var ping = require('ping');
 var splitFile = require('./split-file.js'); 
 
 const {app, BrowserWindow, Menu, ipcMain} = electron;
+
+// Testing swissKnife
+const toClone = {name: 'Jonas', inner: {items: ['test', 'test2']}};
+const cloned = util.Clone(toClone);
+console.log(util.frm('Object: {0}', [cloned]));
 
 let mainWindow;
 let pwWindow;
