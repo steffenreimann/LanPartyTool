@@ -3,6 +3,7 @@ const electron = require('electron');
 const path = require('path');
 const url = require('url');
 const configHelper = require('./config/configHelper');
+const netconfig = require('./netconfig/netconfig');
 const encryptAes = require('./utils/aesEncrypt');
 var fs = require('fs')
 const uuidv4 = require('uuid/v4');
@@ -103,6 +104,11 @@ if (!configHelper.Init()) {
 	console.log('Created directory' + configHelper.GetBaseDir());
 }
 
+if (!netconfig.Init()) {
+	netconfig.InitDirs();
+	console.log('Created Net Config directory' + netconfig.GetBaseDir());
+}
+
 
 // Fast-TCP Testung ---------------------------------------------------
 var Server = require('fast-tcp').Server;
@@ -166,6 +172,12 @@ ipcMain.on('saveConfig', (event, data) => {
 	}
 	user.uuid = true;
 	configHelper.WriteUserConfig(data.config_pw, cleanObject);
+
+
+	netconfig.WriteUserNetConfig(cleanObject.config_uuid, cleanObject);
+
+
+
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
 	mainWindow.webContents.send('saveConfig', cleanObject );
 }) 
@@ -175,6 +187,11 @@ ipcMain.on('loadConfig', (event, data) => {
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
 	console.log('Loaded config:');
 	console.log(readUserConfig);
+
+	const readUserNetConfig = netconfig.LoadUserNetConfig(readUserConfig.userCfg.config_uuid);
+	console.log('Loaded Net config:');
+	console.log(readUserNetConfig);
+
 	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
 }) 
 
@@ -515,23 +532,39 @@ function filestats(path) {
 	   console.log(`Is block device: ${stats.isBlockDevice()}`);   
    });
 }
-//Input Data is array
+/**
+ * Parsed response
+ * @typedef {object} PingResponse
+ * @param {string} host - The input IP address or HOST
+ * @param {string} numeric_host - Target IP address
+ * @param {boolean} alive - True for existed host
+ * @param {string} output - Raw stdout from system ping
+ * @param {number} time - Time (float) in ms for first successful ping response
+ * @param {string} min - Minimum time for collection records
+ * @param {string} max - Maximum time for collection records
+ * @param {string} avg - Average time for collection records
+ * @param {string} stddev - Standard deviation time for collected records
+ */
 function ipscan(data){
-	
-   	var alive = [];
-	var i = data.length;
-	data.forEach(function(host){
-		ping.sys.probe(host, function(isAlive){
-			if(isAlive == true){
-				alive.push(host);	
-				console.log("Alive Host on IP = " + host)		  		
-			}
-			i--
-			if(i==0){
-				//console.log(alive)
-			}
+	var a = [];
+	let index 
+	for (index = 0; index < 245; index++) {
+		var ip = "192.168.178." + index
+		a.push(ip);
+	}
+	if(index >= 244){
+		var alive = [];
+		a.forEach(function(host){
+			ping.sys.probe(host, function(isAlive){
+				if(isAlive == true){
+					alive.push(host);	
+					console.log("Alive Host on IP = " + host)		  		
+				}
+			});
 		});
-	});
+	}
+	
+   	
 }
 // Handle pwWindow
 function createloginWindow(){
@@ -558,4 +591,4 @@ function applogout(){
 	
 }
 
-ipscan(["192.168.178.1", "192.168.0.1", "localhost"]);
+ipscan();
