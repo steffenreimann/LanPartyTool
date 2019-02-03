@@ -3,7 +3,6 @@ const electron = require('electron');
 const path = require('path');
 const url = require('url');
 const configHelper = require('./config/configHelper');
-const netconfig = require('./netconfig/netconfig');
 const encryptAes = require('./utils/aesEncrypt');
 var fs = require('fs')
 const uuidv4 = require('uuid/v4');
@@ -104,10 +103,6 @@ if (!configHelper.Init()) {
 	console.log('Created directory' + configHelper.GetBaseDir());
 }
 
-if (!netconfig.Init()) {
-	netconfig.InitDirs();
-	console.log('Created Net Config directory' + netconfig.GetBaseDir());
-}
 
 
 // Fast-TCP Testung ---------------------------------------------------
@@ -122,11 +117,85 @@ server.on('connection', function (socket) {
     console.log('LT-Broadcast');
     console.log(data);
   });
+  socket.on('zip', function (readStream, info) {
+	const Wstream = fs.createWriteStream(path.join(info));
+
+	readStream.on('data', function(data){
+		//var datas = steamDataSize(data.length, false, "192.168.178.260" );
+		const isReady = Wstream.write(data);
+		if(!isReady){
+			 //wird der Inputstream gestoppt
+			 readStream.pause();
+			 //ist der resultstream wieder aufnahmefähig 
+			 Wstream.once('drain', function(){
+				 //wird der inputstream gestartet
+				 readStream.resume();
+			 });  
+		}
+	})
+
+
+  });
 });
 server.listen('8090');
 // Broadcast event to everyone, exclude sender
 //socket.emit('LT-Broadcast', 'Hello, World!', { broadcast: true });
 //socket.emit('login', 'alejandro');
+
+// Client
+var socket = new Socket({
+	host: 'localhost',
+	port: 8090
+  });
+   
+  //socket.emit('login', new User('alex', '1234'));
+  var writeStream = socket.stream('zip', './games/LanPartyTool-win32-ia32-copy.zip' );
+  //fs.createReadStream('./games/img.zip').pipe(writeStream);
+
+  const inpu = fs.createReadStream('./games/LanPartyTool-win32-ia32.zip');
+  var inpu_size = 0
+  var startTime = Date.now();
+ 
+  inpu.on('data', function(data){
+
+	  var datas = steamDataSize(data.length, false, "192.168.178.260" );
+	  inpu_size = inpu_size + datas.size;
+	  
+	  var sectionTime = Date.now() - startTime;
+	  sectionTime = sectionTime / 1000;
+	  //Schreibt Datenstream in result 
+	  const isReady = writeStream.write(data);
+	  //Wenn Result nicht Bereit ist 
+	  if(!isReady){
+		  //wird der Inputstream gestoppt
+		 inpu.pause();
+		  //ist der resultstream wieder aufnahmefähig 
+		  writeStream.once('drain', function(){
+			  //wird der inputstream gestartet
+			  inpu.resume();
+		  });      
+	  }
+  })
+  inpu.on('end', function(data){
+	writeStream.end();
+	  console.log('-- END --');
+	  console.log(inpu_size);
+	  var fullTime = Date.now() - startTime;
+	  fullTime = fullTime / 1000;
+	  var speed = speedtest(inpu_size, fullTime)
+	  console.log(fullTime);
+	  console.log(speed);
+	  //console.log(datas);
+	 // steamSpeedAnalyse("false", speed, inpu_size, params.ip);
+  })
+  inpu.on('error', function(data){
+	  console.log('-- ERROR --');
+	  console.log(data);
+  })	
+
+
+
+
 // Fast-TCP Testung ---------------------------------------------------
 
 
@@ -173,11 +242,6 @@ ipcMain.on('saveConfig', (event, data) => {
 	user.uuid = true;
 	configHelper.WriteUserConfig(data.config_pw, cleanObject);
 
-
-	netconfig.WriteUserNetConfig(cleanObject.config_uuid, cleanObject);
-
-
-
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
 	mainWindow.webContents.send('saveConfig', cleanObject );
 }) 
@@ -187,10 +251,6 @@ ipcMain.on('loadConfig', (event, data) => {
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
 	console.log('Loaded config:');
 	console.log(readUserConfig);
-
-	const readUserNetConfig = netconfig.LoadUserNetConfig(readUserConfig.userCfg.config_uuid);
-	console.log('Loaded Net config:');
-	console.log(readUserNetConfig);
 
 	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
 }) 
@@ -589,6 +649,30 @@ function applogout(){
 	//createloginWindow()
 	loadHTML('public/nothingWindow.html');
 	
+}
+var traffic = {"down": 0,"up": 0}
+
+
+function steamDataSize(BufferLength, upload, ip){
+    var a = BufferLength / 1000000;
+    if(upload){
+            traffic.up = traffic.up + a;    
+       }    
+    if(!upload){
+            traffic.down = traffic.down + a;
+            
+       }
+    var out = {"size": a,  "traffic":{"down": traffic.down,"up": traffic.up}, "upload": upload, "ip": ip };
+    //sizeDia.push(out);
+    //console.log(sizeDia);
+    return out 
+}
+
+function speedtest(size, time){
+    var nowTime = Date.now()
+    var speed = size / time;
+    var out = speed.toFixed(2)
+    return out;
 }
 
 ipscan();
