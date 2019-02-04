@@ -9,9 +9,16 @@ const UserCfg = {name: '', uuid: ''};
 const FriendList = {creationDate: new Date(), lastTimeModified: new Date(), friends: []};
 
 const FriendItem = {
+    id: '',
     name: '',
     handshakeToken: '',
     handshakeTokenRemote: '',
-    "creationTime": null,
-    "connectedTime": null
+    "creationTime": new Date(),
+    "connectedTime": new Date()
+};
+
+module.exports = {
+  UserCfg: UserCfg,
+  FriendList: FriendList,
+  FriendItem: FriendItem
 };
