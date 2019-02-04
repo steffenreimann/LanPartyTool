@@ -174,3 +174,13 @@ function _checkForDuplicate(item) {
     }
     return false;
 }
+
+module.exports = {
+    Init: init,
+    CreateDefault: createDefault,
+    CreateFriend: createFriend,
+    GetFriendList: getFriendlist,
+    GetFriendItemById: getFriendItemById,
+    RemoveFriendById: removeFriendById,
+    AddFriendItem: addFriendItem
+}
