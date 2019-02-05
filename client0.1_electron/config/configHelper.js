@@ -1,29 +1,20 @@
+/*
+ * Initial author: Jonas Ahlf
+ * Created: Thu Jan 31 17:25:59 CET 2019
+ */
+
 const fs = require('fs');
-const os = require('os');
-const path = require('path');
 const aes = require('../utils/aesEncrypt');
+const cfgPaths = require('./configPaths');
 
-
-let homeDir = '';
-let baseDir = 'LanToolConfigs';
-const userCfgName = 'user.cfg';
 let userCfg = null;
-let userCfgPath = '';
-
 
 function init() {
-    homeDir = os.homedir();
-    baseDir = path.join(homeDir, baseDir);
-    userCfgPath = path.join(baseDir, userCfgName);
-    return fs.existsSync(baseDir);
+    return cfgPaths.Init();
 }
 
 function initDirs() {
-    fs.mkdirSync(baseDir);
-}
-
-function getHomeDir() {
-    return baseDir;
+    fs.mkdirSync(cfgPaths.GetBaseDir());
 }
 
 function getUserCfg() {
@@ -37,11 +28,11 @@ function getUserCfg() {
  */
 function loadUserConfig(pwd) {
     const result = {fileExists: false, parseError: true, userCfg: null};
-    if (!fs.existsSync(userCfgPath)) {
+    if (!fs.existsSync(cfgPaths.GetUserCfgPath())) {
         return result;
     }
     result.fileExists = true;
-    const raw = fs.readFileSync(userCfgPath);
+    const raw = fs.readFileSync(cfgPaths.GetUserCfgPath());
 
     let decrypted = aes.DecryptBuffer(pwd, raw);
     decrypted = decrypted.toString('utf8');
@@ -69,7 +60,7 @@ function writeUserConfig(pwd, userCfgObj) {
     const jsonBytes = new Buffer(jsonText, 'utf8');
     const encrypted = aes.EncryptBuffer(pwd, jsonBytes);
     try {
-        fs.writeFileSync(userCfgPath, encrypted);
+        fs.writeFileSync(cfgPaths.GetUserCfgPath(), encrypted);
         return true;
     } catch (e) {
         console.error('Could not write UserConfig');
@@ -80,7 +71,6 @@ function writeUserConfig(pwd, userCfgObj) {
 module.exports = {
     Init: init,
     InitDirs: initDirs,
-    GetBaseDir: getHomeDir,
     GetUserCfg: getUserCfg,
     LoadUserConfig: loadUserConfig,
     WriteUserConfig: writeUserConfig,
