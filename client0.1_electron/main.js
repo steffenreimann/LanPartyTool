@@ -124,9 +124,12 @@ server.on('connection', function (socket) {
     console.log(data);
   });
   socket.on('zip', function (readStream, info) {
+	  console.log('Started stream');
 	const Wstream = fs.createWriteStream(path.join(info));
 
 	readStream.on('data', function(data){
+		//console.log("Data came");
+		//console.log(data);
 		//var datas = steamDataSize(data.length, false, "192.168.178.260" );
 		const isReady = Wstream.write(data);
 		if(!isReady){
@@ -138,7 +141,12 @@ server.on('connection', function (socket) {
 				 readStream.resume();
 			 });  
 		}
-	})
+	});
+	readStream.on('end', function() {
+		writeStream.end();
+		
+		console.log("File end");
+	});
 
 
   });
@@ -158,6 +166,14 @@ var socket = new Socket({
   var writeStream = socket.stream('zip', './games/LanPartyTool-win32-ia32-copy.zip' );
   //fs.createReadStream('./games/img.zip').pipe(writeStream);
 
+  //Pseudocode
+
+  var buffer = [];
+
+  //fs.read('file', buffer, 0, length, positionFromRequest, function(data){s.write(data);});
+
+  // END
+
   const inpu = fs.createReadStream('./games/LanPartyTool-win32-ia32.zip');
   var inpu_size = 0
   var startTime = Date.now();
@@ -175,7 +191,7 @@ var socket = new Socket({
 	  if(!isReady){
 		  //wird der Inputstream gestoppt
 		 inpu.pause();
-		  //ist der resultstream wieder aufnahmefähig 
+		  //ist der resultstream wieder aufnahmefiähig 
 		  writeStream.once('drain', function(){
 			  //wird der inputstream gestartet
 			  inpu.resume();

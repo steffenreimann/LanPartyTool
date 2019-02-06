@@ -194,11 +194,14 @@ function startServer(){
         return data
     }
     
-    
+    app.get('adkasdasdnkasd', asyncWriteFileToClient);
+
     app.get('/download/:ip/:path', function(req, res) {
         
         var params = req.params;
         console.log(params);
+
+    
         
         const inpu = fs.createReadStream('./public/files/' + params.path);
         var inpu_size = 0

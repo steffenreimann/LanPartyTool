@@ -18,18 +18,17 @@ function init() {
     return fs.existsSync(baseDir);
 }
 
+function read(file, callback){
 
-
-
-app.get('/download/:ip/:path', function(req, res) {
-        
+    
     var params = req.params;
     console.log(params);
     
-    const inpu = fs.createReadStream('./public/files/' + params.path);
+
+    const inpu = fs.createReadStream('./public/files/' );
     var inpu_size = 0
     var startTime = Date.now();
-   
+
     inpu.on('data', function(data){
 
         var datas = steamDataSize(data.length, false, params.ip );
@@ -37,14 +36,10 @@ app.get('/download/:ip/:path', function(req, res) {
         
         var sectionTime = Date.now() - startTime;
         sectionTime = sectionTime / 1000;
-        
-        //console.log(sectionTime.toFixed(2));
-        //console.log(inpu_size.toFixed(2));
-        //console.log(speedtest(inpu_size, sectionTime));
 
-        
         //Schreibt Datenstream in result 
-        const isReady = res.write(data);
+        const isReady = callback(data);
+
         //Wenn Result nicht Bereit ist 
         if(!isReady){
             //wird der Inputstream gestoppt
@@ -69,12 +64,10 @@ app.get('/download/:ip/:path', function(req, res) {
         steamSpeedAnalyse("false", speed, inpu_size, params.ip);
     })
     inpu.on('error', function(data){
+        callback([null, {error: true}]);
         console.log('-- ERROR --');
-    })		
-});
-
-
-
+    })	
+}    
 
 
 module.exports = {
