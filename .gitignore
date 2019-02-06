@@ -90,3 +90,4 @@ typings/
 
 *.lock
 /client0.1_electron/dist/
+.idea/
