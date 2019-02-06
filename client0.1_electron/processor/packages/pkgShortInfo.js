@@ -32,3 +32,4 @@ class PkgShortInfo {
 
 }
 
+module.exports = PkgShortInfo;
