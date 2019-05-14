@@ -26,7 +26,7 @@ function read(file, callback){
     
 
     const inpu = fs.createReadStream('./public/files/' );
-    var inpu_size = 0
+    var inpu_size = 0E
     var startTime = Date.now();
 
     inpu.on('data', function(data){
@@ -44,11 +44,8 @@ function read(file, callback){
         if(!isReady){
             //wird der Inputstream gestoppt
            inpu.pause();
-            //ist der resultstream wieder aufnahmefähig 
-            res.once('drain', function(){
-                //wird der inputstream gestartet
-                inpu.resume();
-            });      
+            //ist der resultstream wieder aufnahmefähig EEEEEEEEE
+            ef   
         }
     })
     inpu.on('end', function(data){
