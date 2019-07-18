@@ -639,6 +639,57 @@ function filestats(path) {
 	   console.log(`Is block device: ${stats.isBlockDevice()}`);   
    });
 }
+
+// Handle pwWindow
+function createloginWindow(){
+	pwWindow = new BrowserWindow({
+	  width: 300,
+	  height:200,
+	  title:'Login'
+	});
+	pwWindow.loadURL(url.format({
+	  pathname: path.join(__dirname, 'public/apploginWindow.html'),
+	  protocol: 'file:',
+	  slashes:true
+	}));
+	// Handle garbage collection
+	pwWindow.on('close', function(){
+	  pwWindow = null;
+	});
+  }
+
+function applogout(){
+	user.uuid = false;
+	//createloginWindow()
+	loadHTML('public/nothingWindow.html');
+}
+
+
+var traffic = {"down": 0,"up": 0}
+
+function steamDataSize(BufferLength, upload, ip){
+    var a = BufferLength / 1000000;
+    if(upload){
+            traffic.up = traffic.up + a;    
+       }    
+    if(!upload){
+            traffic.down = traffic.down + a;
+            
+       }
+    var out = {"size": a,  "traffic":{"down": traffic.down,"up": traffic.up}, "upload": upload, "ip": ip };
+    //sizeDia.push(out);
+    //console.log(sizeDia);
+    return out 
+}
+
+function speedtest(size, time){
+    var nowTime = Date.now()
+    var speed = size / time;
+    var out = speed.toFixed(2)
+    return out;
+}
+
+
 /**
  * Parsed response
  * @typedef {object} PingResponse
@@ -670,56 +721,6 @@ function ipscan(data){
 			});
 		});
 	}
-	
-   	
-}
-// Handle pwWindow
-function createloginWindow(){
-	pwWindow = new BrowserWindow({
-	  width: 300,
-	  height:200,
-	  title:'Login'
-	});
-	pwWindow.loadURL(url.format({
-	  pathname: path.join(__dirname, 'public/apploginWindow.html'),
-	  protocol: 'file:',
-	  slashes:true
-	}));
-	// Handle garbage collection
-	pwWindow.on('close', function(){
-	  pwWindow = null;
-	});
-  }
-
-function applogout(){
-	user.uuid = false;
-	//createloginWindow()
-	loadHTML('public/nothingWindow.html');
-	
-}
-var traffic = {"down": 0,"up": 0}
-
-
-function steamDataSize(BufferLength, upload, ip){
-    var a = BufferLength / 1000000;
-    if(upload){
-            traffic.up = traffic.up + a;    
-       }    
-    if(!upload){
-            traffic.down = traffic.down + a;
-            
-       }
-    var out = {"size": a,  "traffic":{"down": traffic.down,"up": traffic.up}, "upload": upload, "ip": ip };
-    //sizeDia.push(out);
-    //console.log(sizeDia);
-    return out 
-}
-
-function speedtest(size, time){
-    var nowTime = Date.now()
-    var speed = size / time;
-    var out = speed.toFixed(2)
-    return out;
 }
 
 ipscan();
