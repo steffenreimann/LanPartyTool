@@ -10,7 +10,8 @@ const uuidv4 = require('uuid/v4');
 var ping = require('ping');
 var splitFile = require('./split-file.js'); 
 
-const {app, BrowserWindow, Menu, ipcMain} = electron;
+const {app, BrowserWindow, Menu, ipcMain, globalShortcut} = electron;
+
 
 // Testing swissKnife
 const toClone = {name: 'Jonas', inner: {items: ['test', 'test2']}};
@@ -111,7 +112,7 @@ if (!configHelper.Init()) {
 
 
 
-// Fast-TCP Testung ---------------------------------------------------
+// Fast-TCP Testung -----------------------------------------------------------------------------------------------------------------------------------------------------------
 var Server = require('fast-tcp').Server;
 var Socket = require('fast-tcp').Socket;
 var server = new Server();
@@ -143,7 +144,7 @@ server.on('connection', function (socket) {
 		}
 	});
 	readStream.on('end', function() {
-		writeStream.end();
+		Wstream.end();
 		
 		console.log("File end");
 	});
@@ -160,10 +161,13 @@ server.listen('8090');
 var socket = new Socket({
 	host: 'localhost',
 	port: 8090
-  });
+});
    
+var startTime = Date.now();
+const inpu = fs.createReadStream('./games/GOPR0292.zip');
+  var inpu_size = 0
   //socket.emit('login', new User('alex', '1234'));
-  var writeStream = socket.stream('zip', './games/LanPartyTool-win32-ia32-copy.zip' );
+  var writeStream = socket.stream('zip', './games/GOPR0292-copy2.zip' );
   //fs.createReadStream('./games/img.zip').pipe(writeStream);
 
   //Pseudocode
@@ -174,13 +178,9 @@ var socket = new Socket({
 
   // END
 
-  const inpu = fs.createReadStream('./games/LanPartyTool-win32-ia32.zip');
-  var inpu_size = 0
-  var startTime = Date.now();
- 
   inpu.on('data', function(data){
 
-	  var datas = steamDataSize(data.length, false, "192.168.178.260" );
+	  var datas = steamDataSize(data.length, false, "localhost" );
 	  inpu_size = inpu_size + datas.size;
 	  
 	  var sectionTime = Date.now() - startTime;
@@ -218,7 +218,11 @@ var socket = new Socket({
 
 
 
-// Fast-TCP Testung ---------------------------------------------------
+
+
+
+// Fast-TCP Testung END----------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 
@@ -240,7 +244,26 @@ app.on('ready', function(){
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
 	// Insert menu
 	Menu.setApplicationMenu(mainMenu);
+
+	// Register a 'CommandOrControl+X' shortcut listener.
+	const ret = globalShortcut.register('X', () => {
+		console.log('CommandOrControl+X is pressed')
+	})
+	if (!ret) {
+		console.log('registration failed')
+	}
+	// Check whether a shortcut is registered.
+	console.log(globalShortcut.isRegistered('CommandOrControl+X'))
 });
+
+app.on('will-quit', () => {
+	// Unregister a shortcut.
+	globalShortcut.unregister('CommandOrControl+X')
+  
+	// Unregister all shortcuts.
+	globalShortcut.unregisterAll()
+  })
+
 ipcMain.on('openFile', (event, path) => { 
     openSplitFile(path)
 }) 
@@ -324,7 +347,7 @@ function savefile(data) {
 			if(err) {
 				return console.log(err); //Handle error
 			}
-			isFile = stats.isFile()	
+			var isFile = stats.isFile()	
 			var path = data.path
 			path = path.split('\\');
 			var name = path.pop()
@@ -334,7 +357,7 @@ function savefile(data) {
 				console.log(`!!!!!path: ${path}`);
 
 				//addGame(path,name, "true")
-				var addGameData = {path: x, size: 400, split: true}
+				var addGameData = {path: data.path, size: 400, split: true}
 				addGame(addGameData)
 			}    
 		});
@@ -363,7 +386,8 @@ function openMergeFile(){
 	const fs = require('fs') 
 	console.log('openfile');
 	
-	var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections', 'openDirectory' ]});
+	var selectedFiles = dialog.showOpenDialog({properties: ['openFile', 'multiSelections', 'openDirectory' ], filters: [
+     {extensions: ['*']}]});
 	console.log('selectedFiles = ' + selectedFiles)
 
     if(selectedFiles != undefined) {
@@ -372,8 +396,8 @@ function openMergeFile(){
 				return console.log(err); //Handle error
 			}
 			
-			isFile = stats.isFile()
-			isDirectory = stats.isDirectory()
+			var isFile = stats.isFile()
+			var isDirectory = stats.isDirectory()
 			console.log(isFile)
 			if(isDirectory){
 				fs.readdir(selectedFiles  + "/", (err, files) => {
@@ -434,6 +458,7 @@ function openSplitFile(path){
 			var FileSize = stats.size / 1000000;
 			console.log(FileSize);
 			FileSize = Math.round(FileSize)
+			var sizeMGB = 0
 			if(FileSize >= 1000){
 			
 				sizeMGB = FileSize / 1000
@@ -484,12 +509,12 @@ function addGame(da) {
 		if(err) {
 			return console.log(err); //Handle error
 		}
-		isFile = stats.isFile()
-		isDirectory = stats.isDirectory() 
+		var isFile = stats.isFile()
+		var isDirectory = stats.isDirectory() 
 		if(isFile && !ignore(basename))	{
 			console.log(`-- add game -- Is File: ${basename} --`);
 			var tmpFiles = {name: da.path, stats: stats }
-			FilePaths.myFiles.push(tmpFiles);
+			//FilePaths.myFiles.push(tmpFiles);
 			if(da.split){
 				checkFilestatus(da, LTsplit);
 			}
