@@ -103,7 +103,6 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 
-
 // Check Configuration directory
 if (!configHelper.Init()) {
 	configHelper.InitDirs();
@@ -165,20 +164,20 @@ var socket = new Socket({
    
 var startTime = Date.now();
 const inpu = fs.createReadStream('./games/GOPR0292.zip');
-  var inpu_size = 0
-  //socket.emit('login', new User('alex', '1234'));
-  var writeStream = socket.stream('zip', './games/GOPR0292-copy2.zip' );
-  //fs.createReadStream('./games/img.zip').pipe(writeStream);
+var inpu_size = 0
+//socket.emit('login', new User('alex', '1234'));
+var writeStream = socket.stream('zip', './games/GOPR0292-copy2.zip' );
+//fs.createReadStream('./games/img.zip').pipe(writeStream);
 
-  //Pseudocode
+//Pseudocode
 
-  var buffer = [];
+var buffer = [];
 
-  //fs.read('file', buffer, 0, length, positionFromRequest, function(data){s.write(data);});
+//fs.read('file', buffer, 0, length, positionFromRequest, function(data){s.write(data);});
 
-  // END
+// END
 
-  inpu.on('data', function(data){
+inpu.on('data', function(data){
 
 	  var datas = steamDataSize(data.length, false, "localhost" );
 	  inpu_size = inpu_size + datas.size;
@@ -197,8 +196,8 @@ const inpu = fs.createReadStream('./games/GOPR0292.zip');
 			  inpu.resume();
 		  });      
 	  }
-  })
-  inpu.on('end', function(data){
+})
+inpu.on('end', function(data){
 	writeStream.end();
 	  console.log('-- END --');
 	  console.log(inpu_size);
@@ -210,13 +209,10 @@ const inpu = fs.createReadStream('./games/GOPR0292.zip');
 	  //console.log(datas);
 	 // steamSpeedAnalyse("false", speed, inpu_size, params.ip);
   })
-  inpu.on('error', function(data){
+inpu.on('error', function(data){
 	  console.log('-- ERROR --');
 	  console.log(data);
-  })	
-
-
-
+})	
 
 
 
@@ -238,27 +234,20 @@ app.on('ready', function(){
 	loadHTML('public/mainWindow.html');
   	// Quit app when closed
 	mainWindow.on('closed', function(){
+		globalShortcut.unregisterAll()
 		app.quit();
+
 	});
   	// Build menu from template
 	const mainMenu = Menu.buildFromTemplate(mainMenuTemplate);
-	// Insert menu
+	// Insert Builded menu
 	Menu.setApplicationMenu(mainMenu);
-
-	// Register a 'CommandOrControl+X' shortcut listener.
-	const ret = globalShortcut.register('X', () => {
-		console.log('CommandOrControl+X is pressed')
-	})
-	if (!ret) {
-		console.log('registration failed')
-	}
-	// Check whether a shortcut is registered.
-	console.log(globalShortcut.isRegistered('CommandOrControl+X'))
+	KeyReg('CommandOrControl+p', true, ipscan)
 });
 
+
 app.on('will-quit', () => {
-	// Unregister a shortcut.
-	globalShortcut.unregister('CommandOrControl+X')
+	
   
 	// Unregister all shortcuts.
 	globalShortcut.unregisterAll()
@@ -322,7 +311,13 @@ ipcMain.on('saveSplitFile', (event, data) => {
     savefile(data)
 })
 ipcMain.on('DOM', (event, data) => {
-    console.log("DOM Data : " + data);      
+	console.log("DOM Data : " + data);      
+	KeyReg('x', true);
+})
+ipcMain.on('regkey', (event, data) => {
+	console.log("regkey : ");      
+	console.log(data);      
+	KeyReg(data.key, data.reg, ipscan);
 })
 ipcMain.on('ipscan', (event, data) => {
     console.log("DOM Data : " + data);    
@@ -723,4 +718,50 @@ function ipscan(data){
 	}
 }
 
-ipscan();
+// global Key register with callback 
+// The callback are Fired on Pressed registrated key
+
+// Der callback wird aufgerufen sobalt eine registrierte Taste gedückt wird.
+function KeyReg(key, reg, callback){
+	
+	if(key != 'all'){
+		if(reg){
+			console.log('try to register key= ' + key )
+			const ret = globalShortcut.register(key, () => {
+				console.log(key + ' is pressed')
+				console.log(callback + ' is fired')
+				return callback(key, reg);
+			})
+			if (!ret) {
+				console.log('registration failed')
+			}else{
+				console.log('registration')
+			}
+			const rett = globalShortcut.isRegistered(key)
+			console.log(rett);
+
+		}else{
+			console.log('try to unregister key = ' + key)
+			globalShortcut.unregister(key)
+			const ret = globalShortcut.isRegistered(key)
+			console.log("ret unregister data= ");
+			console.log(ret);
+			if (!ret) {
+				console.log('unregister key true')
+			}else{
+				console.log('unregister key fail')
+			}
+		}
+	}else{
+		console.log('try to register all keys = ' + key )
+		const ret = globalShortcut.registerAll(key ,() => {
+			console.log(key + ' is pressed')
+		})
+		if (!ret) {
+			console.log('registration failed')
+		}
+	}
+
+}
+
+//ipscan();
