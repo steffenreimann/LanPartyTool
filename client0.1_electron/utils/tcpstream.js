@@ -10,7 +10,7 @@ var server = new Server();
 var Socket = require('fast-tcp').Socket;
 var socket;
  /**
- * Creates TCP Server tets
+ * Creates TCP Server
  * @param number {number}
  * @return {Object} {error:boolean, obj:cloned object}
  */

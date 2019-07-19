@@ -81,8 +81,33 @@ function strKeyFormat(str, values) {
     return formatted;
 }
 
+
+/**
+ * Return false if data and filter are equal
+ * @param data {array} 
+ * @param filter {array}
+ * @returns boolean {boolean}
+ */
+function isequal(data, filter){
+    if()
+    for (let index = 0; index < data.length; index++) {
+        const dataelement = data[index];
+        for (let idex = 0; idex < filter.length; idex++) {
+            const filterelement = filter[idex];
+            if(dataelement == filterelement){
+                console.log("isNotCorrect");
+                console.log("data element" + dataelement);
+                console.log("filter element" + filterelement);
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 module.exports = {
   frm: strFormat,
   frmObj: strKeyFormat,
-  Clone: clone
+  Clone: clone,
+  isEqual: isequal
 };
