@@ -171,7 +171,7 @@ ipcMain.on('splitfile', (event, path) => {
 })  
 ipcMain.on('saveConfig', (event, data) => { 
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
-	const cleanObject = {'config_user': data.config_user, 'config_uuid': null }
+	const cleanObject = {'config_user': data.config_user, 'config_uuid': null, tmp_path: null, files: [] }
 	if(readUserConfig.fileExists && readUserConfig.parseError){
 		return;
 	}

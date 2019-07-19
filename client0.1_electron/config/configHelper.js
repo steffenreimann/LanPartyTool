@@ -56,11 +56,15 @@ function loadUserConfig(pwd) {
  * @returns {boolean}
  */
 function writeUserConfig(pwd, userCfgObj) {
+    var user_path = cfgPaths.GetUserCfgPath();
+    userCfgObj.tmp = user_path
     const jsonText = JSON.stringify(userCfgObj);
     const jsonBytes = new Buffer(jsonText, 'utf8');
     const encrypted = aes.EncryptBuffer(pwd, jsonBytes);
     try {
-        fs.writeFileSync(cfgPaths.GetUserCfgPath(), encrypted);
+        var user_path = cfgPaths.GetUserCfgPath();
+        console.log(user_path);
+        fs.writeFileSync(user_path, encrypted);
         return true;
     } catch (e) {
         console.error('Could not write UserConfig');
