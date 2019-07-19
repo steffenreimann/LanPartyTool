@@ -72,7 +72,7 @@ ipcRenderer.on('loadConfig', (event, data) => {
 
 
 /**
- * Return false if data and filter are equal
+ * Return false if data and filter are equal tetstå
  * @param data {array} 
  * @param filter {array}
  * @returns boolean {boolean}
