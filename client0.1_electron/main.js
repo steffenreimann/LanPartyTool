@@ -112,110 +112,17 @@ if (!configHelper.Init()) {
 
 
 // Fast-TCP Testung -----------------------------------------------------------------------------------------------------------------------------------------------------------
-var Server = require('fast-tcp').Server;
-var Socket = require('fast-tcp').Socket;
-var server = new Server();
-server.on('connection', function (socket) {
-  socket.on('login', function (username) {
-    console.log('Trying to login: ' + username);
-  });
-  socket.on('LT-Broadcast', function (data) {
-    console.log('LT-Broadcast');
-    console.log(data);
-  });
-  socket.on('zip', function (readStream, info) {
-	  console.log('Started stream');
-	const Wstream = fs.createWriteStream(path.join(info));
 
-	readStream.on('data', function(data){
-		//console.log("Data came");
-		//console.log(data);
-		//var datas = steamDataSize(data.length, false, "192.168.178.260" );
-		const isReady = Wstream.write(data);
-		if(!isReady){
-			 //wird der Inputstream gestoppt
-			 readStream.pause();
-			 //ist der resultstream wieder aufnahmefähig 
-			 Wstream.once('drain', function(){
-				 //wird der inputstream gestartet
-				 readStream.resume();
-			 });  
-		}
-	});
-	readStream.on('end', function() {
-		Wstream.end();
-		
-		console.log("File end");
-	});
-
-
-  });
-});
-server.listen('8090');
 // Broadcast event to everyone, exclude sender
 //socket.emit('LT-Broadcast', 'Hello, World!', { broadcast: true });
 //socket.emit('login', 'alejandro');
 
-// Client
-var socket = new Socket({
-	host: 'localhost',
-	port: 8090
-});
-   
-var startTime = Date.now();
-const inpu = fs.createReadStream('./games/GOPR0292.zip');
-var inpu_size = 0
-//socket.emit('login', new User('alex', '1234'));
-var writeStream = socket.stream('zip', './games/GOPR0292-copy2.zip' );
-//fs.createReadStream('./games/img.zip').pipe(writeStream);
-
-//Pseudocode
-
-var buffer = [];
-
-//fs.read('file', buffer, 0, length, positionFromRequest, function(data){s.write(data);});
-
-// END
-
-inpu.on('data', function(data){
-
-	  var datas = steamDataSize(data.length, false, "localhost" );
-	  inpu_size = inpu_size + datas.size;
-	  
-	  var sectionTime = Date.now() - startTime;
-	  sectionTime = sectionTime / 1000;
-	  //Schreibt Datenstream in result 
-	  const isReady = writeStream.write(data);
-	  //Wenn Result nicht Bereit ist 
-	  if(!isReady){
-		  //wird der Inputstream gestoppt
-		 inpu.pause();
-		  //ist der resultstream wieder aufnahmefiähig 
-		  writeStream.once('drain', function(){
-			  //wird der inputstream gestartet
-			  inpu.resume();
-		  });      
-	  }
-})
-inpu.on('end', function(data){
-	writeStream.end();
-	  console.log('-- END --');
-	  console.log(inpu_size);
-	  var fullTime = Date.now() - startTime;
-	  fullTime = fullTime / 1000;
-	  var speed = speedtest(inpu_size, fullTime)
-	  console.log(fullTime);
-	  console.log(speed);
-	  //console.log(datas);
-	 // steamSpeedAnalyse("false", speed, inpu_size, params.ip);
-  })
-inpu.on('error', function(data){
-	  console.log('-- ERROR --');
-	  console.log(data);
-})	
+var tcp = require('./utils/tcpstream.js');
 
 
-
+tcp.runServer(8090);
+tcp.runClient('localhost',8090);
+//tcp.upload('./games/GOPR0292.zip');
 
 // Fast-TCP Testung END----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -324,7 +231,8 @@ ipcMain.on('ipscan', (event, data) => {
 })
 ipcMain.on('tcpconnect', (event, data) => {
 	console.log("tcpconnect Data : " + data);
-	connectToServer(data);
+	tcp.runClient(data,8090);
+	//connectToServer(data);
 })
 function savefile(data) {
     const {dialog} = require('electron') 
@@ -422,13 +330,6 @@ function openMergeFile(){
         console.log('Bitte etwas auswählen');
     }
 }  
-function connectToServer(ip){
-	var socket = new Socket({
-		host: ip,
-		port: 8090
-	  });
-	socket.emit('login', 'alejandro');
-}
 function openSplitFile(path){
 	const {dialog} = require('electron') 
   	const fs = require('fs') 
