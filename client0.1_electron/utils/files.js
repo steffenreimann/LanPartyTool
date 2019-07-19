@@ -3,16 +3,20 @@
  * Initial author: Steffen Reimann
  * Created: 20.07.2019
  */
+const os = require('os');
 const path = require('path');
 var fs = require('fs')
 const cfgPaths = require('./configPaths');
 
-function intiGameDir(dir) {
-    if(dir){
 
+function intiGameDir(dir, pw) {
+    const UserConfig = configHelper.LoadUserConfig(pw);
+    if(fs.existsSync(UserConfig.tmp)){
+        console.log(dir);
+    }else{
+        fs.mkdirSync(dir);
     }
-
     console.log(cfgPaths.GetBaseDir());
-    //fs.mkdirSync(cfgPaths.GetBaseDir());
+    
     
 }
