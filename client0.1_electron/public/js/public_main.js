@@ -70,9 +70,9 @@ $( "#split-file" ).click(function() {
   
 $( "#upload" ).click(function() {
     console.log('upload');
-    var path = $( "#uploadfile" ).val();
+    var path = $( "#out" ).val();
     console.log(path)
-    
+
     ipcRenderer.send('uploadfile', path , () => { 
         console.log("Event sent to nodejs"); 
     })
