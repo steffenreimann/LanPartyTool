@@ -72,6 +72,7 @@ $( "#upload" ).click(function() {
     console.log('upload');
     var path = $( "#uploadfile" ).val();
     console.log(path)
+    
     ipcRenderer.send('uploadfile', path , () => { 
         console.log("Event sent to nodejs"); 
     })
