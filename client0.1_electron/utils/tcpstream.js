@@ -16,7 +16,7 @@ var messure = require('./messure.js');
  * @param number {number}
  * @return {Object} {error:boolean, obj:cloned object}
  */
-function runTCP_Server(port) {
+function runTCP_Server(port, dir) {
     
     server.on('connection', function (socket) {
         console.log(socket);
@@ -30,8 +30,11 @@ function runTCP_Server(port) {
         socket.on('upload', function (readStream, info) {
             var str = JSON.stringify(info.client); 
             console.log('Server upload new path');
-            console.log(path.join(info.path + str));
-            const Wstream = fs.createWriteStream(path.join(info.path + str));
+            var base = path.basename(info.path)
+            var tmp_path = path.join(dir, str + base)
+            console.log(base);
+            console.log(tmp_path);
+            const Wstream = fs.createWriteStream(tmp_path);
             readStream.on('data', function(data){
                 const isReady = Wstream.write(data);
                 if(!isReady){

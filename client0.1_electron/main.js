@@ -3,6 +3,7 @@ const electron = require('electron');
 const path = require('path');
 const url = require('url');
 const configHelper = require('./config/configHelper');
+const configPath = require('./config/configPaths');
 const util = require('./utils/swissKnife');
 const encryptAes = require('./utils/aesEncrypt');
 var fs = require('fs')
@@ -106,7 +107,7 @@ if(process.env.NODE_ENV !== 'production'){
 // Check Configuration directory
 if (!configHelper.Init()) {
 	configHelper.InitDirs();
-	console.log('Created directory' + configHelper.GetBaseDir());
+	console.log('Created directory' + configPath.GetBaseDir());
 }
 
 
@@ -120,7 +121,7 @@ if (!configHelper.Init()) {
 var tcp = require('./utils/tcpstream.js');
 
 
-tcp.runServer(8090);
+tcp.runServer(8090, configPath.GetBaseDir());
 //tcp.runClient('localhost',8090);
 //tcp.runClient('localhost',8090);
 //tcp.runClient('localhost',8090);
