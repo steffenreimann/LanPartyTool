@@ -89,7 +89,7 @@ function strKeyFormat(str, values) {
  * @returns boolean {boolean}
  */
 function isequal(data, filter){
-    if()
+
     for (let index = 0; index < data.length; index++) {
         const dataelement = data[index];
         for (let idex = 0; idex < filter.length; idex++) {

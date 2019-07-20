@@ -8,7 +8,9 @@ var fs = require('fs')
 var Server = require('fast-tcp').Server;
 var server = new Server(); 
 var Socket = require('fast-tcp').Socket;
-var socket;
+var socket = [];
+var messurement = require('./messurement.js'); 
+
  /**
  * Creates TCP Server
  * @param number {number}
@@ -17,6 +19,7 @@ var socket;
 function runTCP_Server(port) {
     
     server.on('connection', function (socket) {
+        console.log(socket);
         socket.on('login', function (username) {
           console.log('Trying to login: ' + username);
         });
@@ -25,8 +28,10 @@ function runTCP_Server(port) {
           console.log(data);
         });
         socket.on('zip', function (readStream, info) {
-            console.log('Server upload');
-            const Wstream = fs.createWriteStream(path.join(info));
+            var str = JSON.stringify(info.client); 
+            console.log('Server upload new path');
+            console.log(path.join(info.path + str));
+            const Wstream = fs.createWriteStream(path.join(info.path + str));
             readStream.on('data', function(data){
                 const isReady = Wstream.write(data);
                 if(!isReady){
@@ -67,10 +72,11 @@ function stopTCP_Server(port) {
  */
 function runTCP_Client(host, port) {
     // Client
-    socket = new Socket({
+    socket.push(new Socket({
         host: host,
         port: port
-    }); 
+    }));
+    console.log(socket); 
     //socket.emit('login', 'alejandro');
 }
  /**
@@ -96,19 +102,21 @@ function upload2server(params) {
  * @param obj {Object}
  * @return {Object} {error:boolean, obj:cloned object}
  */
-function upload(file) {
+function upload(file, server) {
     var startTime = Date.now();
     //const inpu = fs.createReadStream('./games/GOPR0292.zip');
+    console.log(file);
     console.log(fs.lstatSync(file).isFile());
     const inpu = fs.createReadStream(file);
     var inpu_size = 0
     //socket.emit('login', new User('alex', '1234'));
-    var writeStream = socket.stream('zip', file);
+    var writeStream = socket[server].stream('zip', {'path': file, 'client': server});
+    console.log('write stream to server ' + server);
     //fs.createReadStream('./games/img.zip').pipe(writeStream);
 
     inpu.on('data', function(data){
 
-        var datas = steamDataSize(data.length, false, "localhost" );
+        var datas = messurement.streamSize(data.length, false, "localhost" );
         inpu_size = inpu_size + datas.size;
         
         var sectionTime = Date.now() - startTime;
@@ -132,7 +140,7 @@ function upload(file) {
         console.log(inpu_size);
         var fullTime = Date.now() - startTime;
         fullTime = fullTime / 1000;
-        var speed = speedtest(inpu_size, fullTime)
+        var speed = messurement.speed(inpu_size, fullTime)
         console.log(fullTime);
         console.log(speed);
         //console.log(datas);
@@ -143,8 +151,6 @@ function upload(file) {
         console.log(data);
     })	
 }
-
-
 
 
 module.exports = {

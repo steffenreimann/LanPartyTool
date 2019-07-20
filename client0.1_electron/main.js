@@ -122,7 +122,10 @@ var tcp = require('./utils/tcpstream.js');
 
 tcp.runServer(8090);
 tcp.runClient('localhost',8090);
-//tcp.upload('./games/GOPR0292.zip');
+tcp.runClient('localhost',8090);
+tcp.runClient('localhost',8090);
+//tcp.upload('./games/GOPR0292.zip', 0);
+
 
 // Fast-TCP Testung END----------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -132,7 +135,10 @@ tcp.runClient('localhost',8090);
 // Listen for app to be ready
 app.on('ready', function(){
   	//Create new window
-  	//const readUserConfig = configHelper.LoadUserConfig("");
+	  //const readUserConfig = configHelper.LoadUserConfig("");
+	  tcp.upload('./games/test.zip', 0);
+tcp.upload('./games/test.zip', 1);
+tcp.upload('./games/test.zip', 2);
 	mainWindow = new BrowserWindow({
 		webPreferences: {
 			nodeIntegration: true
