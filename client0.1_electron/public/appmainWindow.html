@@ -73,7 +73,7 @@
 	</div>
 	<div class="panel panel-info"> 
 		<div class="panel-heading" role="tab" id="headingFour">
-			<h4 class="panel-title"><a  data-toggle="collapse" data-parent="#accordion4" href="#collapseFour4" aria-expanded="false" aria-controls="collapseFour4"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">account_box</i> Einstellungen </a> </h4>
+			<h4 class="panel-title"><a  data-toggle="collapse" data-parent="#accordion4" href="#collapseFour4" aria-expanded="false" aria-controls="collapseFour4"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">account_box</i> TCP Connect </a> </h4>
 		</div>
 		<div id="collapseFour4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
 			<div class="panel-body">
@@ -81,9 +81,25 @@
                   <label for="IpAddress" class="control-label">
                     IP Field
                   </label>
-									<input type="text" title="test" id="ip" class=" form-control" >
+									<input type="text" title="test" id="ip" class=" form-control" value="localhost" >
                 </div>
-                <button onclick="tcp_connect()" type="button" class="btn btn-primary">Connect</button >
+                <button id="tcpconnect" type="button" class="btn btn-primary">Connect</button >
+            </div>
+		</div>
+	</div>
+	<div class="panel panel-info"> 
+		<div class="panel-heading" role="tab" id="headingv">
+			<h4 class="panel-title"><a  data-toggle="collapse" data-parent="#accordionv" href="#collapsev" aria-expanded="false" aria-controls="collapsev"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">account_box</i> Upload </a> </h4>
+		</div>
+		<div id="collapsev" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingv">
+			<div class="panel-body">
+                <div class="form-group pmd-textfield">
+                  <label for="uploadfile" class="control-label">
+                    File
+                  </label>
+									<input type="text" title="test" id="uploadfile" class=" form-control" >
+                </div>
+                <button id="upload" type="button" class="btn btn-primary">upload</button >
             </div>
 		</div>
 	</div>
@@ -97,17 +113,17 @@
 <script>window.$ = window.jQuery = require('./js/jquery.js');</script>
 <script src="../node_modules/propellerkit/dist/js/bootstrap.js"></script>
 <script src="../node_modules/propellerkit/dist/js/propeller.js"></script>
-
+<script language="javascript" type="text/javascript" src="./js/public_main.js"></script>
 <script type="text/javascript" src="./js/qrcode.js"></script>
 <script src="https://wzrd.in/standalone/uuid%2Fv1@latest"></script>
 
-<script language="javascript" type="text/javascript" src="./js/public_main.js"></script>
+
 <script type="text/javascript" src="https://propeller.in/components/textfield/js/textfield.js"></script>
 <script type="text/javascript" src="https://propeller.in/components/select2/js/select2.full.js"></script>
 <script type="text/javascript" src="https://propeller.in/components/select2/js/pmd-select2.js"></script>
 <script type="text/javascript">
 	$(document).ready(function() {
-		<!-- Select & Add Multiple Tags -->
+		
 		$(".select-add-tags").select2({
 			tags: true,
 			theme: "bootstrap",

@@ -42,10 +42,6 @@ ipcRenderer.on('split-info', function(event, data){
      
     });
 
-function tcp_connect(){
-        var ip = $( "#ip" ).val();
-        ipcRenderer.send('tcpconnect', ip);
-}
 
 //ul.addEventListener('dblclick', removeItem);
   
@@ -69,8 +65,25 @@ $( "#split-file" ).click(function() {
     ipcRenderer.send('saveSplitFile', {'path': path, 'name': 'ka', 'packSize': packSize } , () => { 
                 console.log("Event sent."); 
             })
-   
-    
+  });
+
+  
+$( "#upload" ).click(function() {
+    console.log('upload');
+    var path = $( "#uploadfile" ).val();
+    console.log(path)
+    ipcRenderer.send('uploadfile', path , () => { 
+        console.log("Event sent to nodejs"); 
+    })
+  });
+
+$( "#tcpconnect" ).click(function() {
+    console.log('tcpconnect');
+    var ip = $( "#tcpconnectip" ).val();
+    console.log(ip)
+    ipcRenderer.send('tcpconnect', ip , () => { 
+        console.log("Event sent."); 
+    })
   });
 
       

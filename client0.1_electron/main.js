@@ -121,9 +121,9 @@ var tcp = require('./utils/tcpstream.js');
 
 
 tcp.runServer(8090);
-tcp.runClient('localhost',8090);
-tcp.runClient('localhost',8090);
-tcp.runClient('localhost',8090);
+//tcp.runClient('localhost',8090);
+//tcp.runClient('localhost',8090);
+//tcp.runClient('localhost',8090);
 //tcp.upload('./games/GOPR0292.zip', 0);
 
 
@@ -136,9 +136,10 @@ tcp.runClient('localhost',8090);
 app.on('ready', function(){
   	//Create new window
 	  //const readUserConfig = configHelper.LoadUserConfig("");
-	  tcp.upload('./games/test.zip', 0);
-tcp.upload('./games/test.zip', 1);
-tcp.upload('./games/test.zip', 2);
+	
+	//console.log(tcp.upload('./games/test.zip', 0));;
+	//console.log(tcp.upload('./games/test.zip', 1));;
+	//console.log(tcp.upload('./games/test.zip', 2));;
 	mainWindow = new BrowserWindow({
 		webPreferences: {
 			nodeIntegration: true
@@ -238,6 +239,12 @@ ipcMain.on('ipscan', (event, data) => {
 ipcMain.on('tcpconnect', (event, data) => {
 	console.log("tcpconnect Data : " + data);
 	tcp.runClient(data,8090);
+	//connectToServer(data);
+})
+
+ipcMain.on('uploadfile', (event, data) => {
+	console.log("tcpconnect Data : " + data);
+	console.log(tcp.upload(data, 0));;
 	//connectToServer(data);
 })
 function savefile(data) {

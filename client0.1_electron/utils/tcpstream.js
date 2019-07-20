@@ -9,7 +9,7 @@ var Server = require('fast-tcp').Server;
 var server = new Server(); 
 var Socket = require('fast-tcp').Socket;
 var socket = [];
-var messurement = require('./messurement.js'); 
+var messure = require('./messure.js'); 
 
  /**
  * Creates TCP Server
@@ -27,7 +27,7 @@ function runTCP_Server(port) {
           console.log('LT-Broadcast');
           console.log(data);
         });
-        socket.on('zip', function (readStream, info) {
+        socket.on('upload', function (readStream, info) {
             var str = JSON.stringify(info.client); 
             console.log('Server upload new path');
             console.log(path.join(info.path + str));
@@ -79,6 +79,7 @@ function runTCP_Client(host, port) {
     console.log(socket); 
     //socket.emit('login', 'alejandro');
 }
+
  /**
  * Stops an Client connection to server
  * @param obj {Object}
@@ -98,7 +99,7 @@ function upload2server(params) {
 }
 
  /**
- * Stops an Client connection to server
+ * Upload an File to server
  * @param obj {Object}
  * @return {Object} {error:boolean, obj:cloned object}
  */
@@ -110,13 +111,13 @@ function upload(file, server) {
     const inpu = fs.createReadStream(file);
     var inpu_size = 0
     //socket.emit('login', new User('alex', '1234'));
-    var writeStream = socket[server].stream('zip', {'path': file, 'client': server});
+    var writeStream = socket[server].stream('upload', {'path': file, 'client': server});
     console.log('write stream to server ' + server);
     //fs.createReadStream('./games/img.zip').pipe(writeStream);
 
     inpu.on('data', function(data){
 
-        var datas = messurement.streamSize(data.length, false, "localhost" );
+        var datas = messure.streamSize(data.length, true, "localhost" );
         inpu_size = inpu_size + datas.size;
         
         var sectionTime = Date.now() - startTime;
@@ -140,15 +141,17 @@ function upload(file, server) {
         console.log(inpu_size);
         var fullTime = Date.now() - startTime;
         fullTime = fullTime / 1000;
-        var speed = messurement.speed(inpu_size, fullTime)
+        var speed = messure.speed(inpu_size, fullTime)
         console.log(fullTime);
         console.log(speed);
         //console.log(datas);
-        // steamSpeedAnalyse("false", speed, inpu_size, params.ip);
+        
+        return messure.streamAnalyse(true, speed, inpu_size, "localhost");
     })
     inpu.on('error', function(data){
         console.log('-- ERROR --');
         console.log(data);
+        return data
     })	
 }
 
