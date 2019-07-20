@@ -9,10 +9,11 @@ function saveConfig() {
 	//Hashing eines Passwords 
 	var config_pw = $( "#config_pw" ).val();
 	var config_user = $( "#config_user" ).val();
+	var config_updir = $( "#config_updir" ).val();
     //var config_uuid = uuidv1(); // -> v1 UUID
     
     if(isCorrect([config_pw, config_user],["","0"])){
-        ipcRenderer.send('saveConfig', {'config_pw': config_pw, 'config_user': config_user, 'config_uuid': null } , () => {})
+        ipcRenderer.send('saveConfig', {'config_pw': config_pw, 'config_user': config_user, 'config_uuid': null, 'config_updir': config_updir } , () => {})
     }else{
         console.log("isNotCorrect");
     }
@@ -23,6 +24,7 @@ ipcRenderer.on('saveConfig', (event, data) => {
     console.log(data);
     $( "#config_user" ).val(data.config_user)
     $( "#config_uuid" ).val(data.config_uuid)
+    $( "#config_updir" ).val(data.config_updir)
 })
 
 ipcRenderer.on('applogin', (event, data) => { 
@@ -46,6 +48,7 @@ ipcRenderer.on('loadConfig', (event, data) => {
     if(data != null){
         $( "#config_user" ).val(data.config_user)
         $( "#config_uuid" ).val(data.config_uuid)
+        $( "#config_updir" ).val(data.config_updir)
         var token = handshake.GenerateToken(data.config_uuid);
         console.log(token.toString());
 

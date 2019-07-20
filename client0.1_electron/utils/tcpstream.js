@@ -17,9 +17,10 @@ var messure = require('./messure.js');
  * @return {Object} {error:boolean, obj:cloned object}
  */
 function runTCP_Server(port, dir) {
-    
+    console.log('TCP Server Starting ...');
     server.on('connection', function (socket) {
-        console.log(socket);
+        //console.log(socket);
+        console.log('TCP Server Client Connection ...');
         socket.on('login', function (username) {
           console.log('Trying to login: ' + username);
         });

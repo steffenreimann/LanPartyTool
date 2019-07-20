@@ -121,7 +121,6 @@ if (!configHelper.Init()) {
 var tcp = require('./utils/tcpstream.js');
 
 
-tcp.runServer(8090, configPath.GetBaseDir());
 //tcp.runClient('localhost',8090);
 //tcp.runClient('localhost',8090);
 //tcp.runClient('localhost',8090);
@@ -179,7 +178,7 @@ ipcMain.on('splitfile', (event, path) => {
 })  
 ipcMain.on('saveConfig', (event, data) => { 
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
-	const cleanObject = {'config_user': data.config_user, 'config_uuid': null, tmp_path: null, files: [] }
+	const cleanObject = {'config_user': data.config_user, 'config_uuid': null, tmp_path: null, 'files': [], 'config_updir': data.config_updir }
 	if(readUserConfig.fileExists && readUserConfig.parseError){
 		return;
 	}
@@ -206,12 +205,20 @@ ipcMain.on('loadConfig', (event, data) => {
 
 ipcMain.on('applogin', (event, data) => { 
 	console.log(data);
-	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
+	const con = configHelper.LoadUserConfig(data.config_pw);
 	user.uuid = true;
+	console.log(con.userCfg.config_updir);
+	if(con.config_updir == '' || con.userCfg.config_updir == undefined ){
+		con.userCfg.config_updir = configPath.GetBaseDir()
+	}
 
+	console.log('con.userCfg.config_updir');
+	console.log(con.userCfg.config_updir);
+
+	tcp.runServer(8090, con.userCfg.config_updir);
 	loadHTML('public/appmainWindow.html');
 
-	mainWindow.webContents.send('applogin', readUserConfig.userCfg );
+	mainWindow.webContents.send('applogin', con.userCfg );
 	if(pwWindow != undefined){
 		pwWindow.hide();
 		pwWindow = null;
