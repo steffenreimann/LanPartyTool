@@ -1,4 +1,5 @@
 'use strict';
+var events = require('events');
 const electron = require('electron');
 const path = require('path');
 const url = require('url');
@@ -12,6 +13,8 @@ var ping = require('ping');
 var splitFile = require('./split-file.js'); 
 
 const {app, BrowserWindow, Menu, ipcMain, globalShortcut} = electron;
+
+
 
 
 // Testing swissKnife
@@ -253,13 +256,33 @@ ipcMain.on('tcpconnect', (event, data) => {
 ipcMain.on('uploadfile', (event, data) => {
 	console.log("tcpconnect Data : " + data);
 	console.log(tcp.upload(data, 0));;
+	tcp.setlog(true);
 	//connectToServer(data);
 })
 ipcMain.on('downloadfile', (event, data) => {
-	console.log("tcpconnect Data : " + data);
+	console.log("tcpconnect DataSize : " + data);
 	console.log(tcp.download(data.path, data.file, data.server));
-
+	
 })
+
+// register event listener
+tcp.traffic.on("downloading", function(data) {
+	// process data when someEvent occurs
+	
+	mainWindow.webContents.send('DOM', {"id": "#size", "val": data} );
+});
+
+tcp.traffic.on("uploading", function(data) {
+	// process data when someEvent occurs
+	
+	mainWindow.webContents.send('DOM', {"id": "#size", "val": data} );
+});
+
+
+
+
+
+
 function savefile(data) {
     const {dialog} = require('electron') 
     const fs = require('fs') 

@@ -93,3 +93,5 @@ typings/
 .idea/
 client0.1_electron/games/test.zip
 .DS_Store
+.DS_Store
+client0.1_electron/.DS_Store

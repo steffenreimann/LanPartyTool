@@ -9,11 +9,17 @@ ipcRenderer.on('selectedFiles', function(e, data){
     $( "#out" ).val(data.path);
 });
 
+ipcRenderer.on('progrss', function(e, data){
+    console.log(data);
+    $( "#out" ).val(data.path);
+});
+
 ipcRenderer.on('DOM', function(event, data){
     
     console.log("DOM Event ID : " + data.id);
     console.log("DOM Event val : " + data.val);
     console.log("DOM Event show : " + data.show);
+
     if(data.val && data.id != undefined){
         $( data.id ).val(data.val)
         $( data.id ).html(data.val)

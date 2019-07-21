@@ -8,8 +8,16 @@ var fs = require('fs')
 var Server = require('fast-tcp').Server;
 var server = new Server(); 
 var Socket = require('fast-tcp').Socket;
-var socket = [];
+var client_sockets = [];
 var messure = require('./messure.js'); 
+var log = true
+
+// Import events module
+var events = require('events');
+
+// Create an eventEmitter object
+var obj = new events.EventEmitter();
+
 
  /**
  * Creates TCP Server
@@ -31,9 +39,11 @@ function runTCP_Server(port, dir) {
         socket.on('download', function (info) {
             console.log('Server Download request from client');
             const readStream = fs.createReadStream(info.path);
-            var WriteStream = server.stream('download');
+            //console.log(fs.lstatSync(info.path));
+            var WriteStream = server.stream('download', fs.lstatSync(info.path).size);
             readStream.on('data', function(data){
-                console.log('data download');
+                //console.log('data download');
+
                 const isReady = WriteStream.write(data);
                 if(!isReady){
                     //wird der Inputstream gestoppt
@@ -47,8 +57,15 @@ function runTCP_Server(port, dir) {
             });
             readStream.on('end', function() {
                 WriteStream.end();
-                console.log("File end");
+                console.log("File end Server");
+                return true
             });
+            readStream.on('error', function(data){
+                console.log('-- ERROR -- Server');
+                WriteStream.end();
+                console.log(data);
+                return false
+            })
         });
         socket.on('upload', function (readStream, info) {
             var str = JSON.stringify(info.client); 
@@ -72,8 +89,14 @@ function runTCP_Server(port, dir) {
             });
             readStream.on('end', function() {
                 Wstream.end();
-                console.log("File end");
+                console.log("File end server");
+                return true
             });
+            readStream.on('error', function(data){
+                console.log('-- ERROR -- server');
+                console.log(data);
+                return false
+            })
         });
     });
     server.listen(port);
@@ -98,11 +121,11 @@ function stopTCP_Server(port) {
  */
 function runTCP_Client(host, port) {
     // Client
-    socket.push(new Socket({
+    client_sockets.push(new Socket({
         host: host,
         port: port
     }));
-    console.log(socket); 
+    console.log(client_sockets); 
     //socket.emit('login', 'alejandro');
 }
 
@@ -125,6 +148,9 @@ function upload2server(params) {
 }
 
 
+
+
+
 function download(path, file, server) {
     var startTime = Date.now();
     console.log(file);
@@ -135,27 +161,54 @@ function download(path, file, server) {
             //console.log(base);
             //console.log(tmp_path);
     
-    socket[server].emit('download', {'path': file, 'client': server});
+    client_sockets[server].emit('download', {'path': file, 'client': server});
 
-    socket[server].on('download', function (readStream, info) {
-            
+    client_sockets[server].on('download', function (readStream, info) {
+        console.log(info);
+        var inpu_size = 0  
         const WriteStream = fs.createWriteStream(path);
         readStream.on('data', function(data){
+            var datas = messure.streamSize(data.length, false, server );
+            inpu_size = inpu_size + datas.size;
+            
+            var sectionTime = Date.now() - startTime;
+            sectionTime = sectionTime / 1000;
             const isReady = WriteStream.write(data);
+            if (log) {
+                obj.emit("downloading", inpu_size);
+            }
             if(!isReady){
                 //wird der Inputstream gestoppt
                 readStream.pause();
                 //ist der resultstream wieder aufnahmefähig 
                 WriteStream.once('drain', function(){
                     //wird der inputstream gestartet
+                    
+                    
                     readStream.resume();
-                });  
+                    
+                }); 
+                 
             }
+            
         });
         readStream.on('end', function() {
             WriteStream.end();
-            console.log("File end");
+            console.log("File end client");
+            var fullTime = Date.now() - startTime;
+            fullTime = fullTime / 1000;
+            var speed = messure.speed(inpu_size, fullTime)
+            console.log(fullTime);
+            console.log(speed);
+            //console.log(datas);
+            
+            return messure.streamAnalyse(true, speed, inpu_size, server);
         });
+        readStream.on('error', function(data){
+            console.log('-- ERROR -- client');
+            console.log(data);
+            return data
+        })
     });
 
 }
@@ -173,7 +226,7 @@ function upload(file, server) {
     const inpu = fs.createReadStream(file);
     var inpu_size = 0
     //socket.emit('login', new User('alex', '1234'));
-    var writeStream = socket[server].stream('upload', {'path': file, 'client': server});
+    var writeStream = client_sockets[server].stream('upload', {'path': file, 'client': server});
     console.log('write stream to server ' + server);
     //fs.createReadStream('./games/img.zip').pipe(writeStream);
 
@@ -186,6 +239,10 @@ function upload(file, server) {
         sectionTime = sectionTime / 1000;
         //Schreibt Datenstream in result 
         const isReady = writeStream.write(data);
+
+        if (log) {
+            obj.emit("uploading", inpu_size);
+        }
         //Wenn Result nicht Bereit ist 
         if(!isReady){
             //wird der Inputstream gestoppt
@@ -217,6 +274,13 @@ function upload(file, server) {
     })	
 }
 
+function setLog(data) {
+    console.log('set Log');
+    console.log(data);
+    log = data
+}
+
+// export the EventEmitter object so others can use it
 
 module.exports = {
     runServer: runTCP_Server,
@@ -224,5 +288,7 @@ module.exports = {
     runClient: runTCP_Client,
     stopClient: stopTCP_Client,
     upload: upload,
-    download: download
+    download: download,
+    traffic: obj,
+    setlog: setLog
   };
