@@ -255,6 +255,11 @@ ipcMain.on('uploadfile', (event, data) => {
 	console.log(tcp.upload(data, 0));;
 	//connectToServer(data);
 })
+ipcMain.on('downloadfile', (event, data) => {
+	console.log("tcpconnect Data : " + data);
+	console.log(tcp.download(data.path, data.file, data.server));
+
+})
 function savefile(data) {
     const {dialog} = require('electron') 
     const fs = require('fs') 
@@ -686,4 +691,4 @@ function KeyReg(key, reg, callback){
 
 }
 
-//ipscan();
+ipscan();

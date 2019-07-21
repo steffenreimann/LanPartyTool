@@ -28,6 +28,27 @@ function runTCP_Server(port, dir) {
           console.log('LT-Broadcast');
           console.log(data);
         });
+        socket.on('download', function (info) {
+            
+            const readStream = fs.createReadStream(info.path);
+            var WriteStream = server.stream('download', 'Hello, World!', { except: [socket] });
+            readStream.on('data', function(data){
+                const isReady = WriteStream.write(data);
+                if(!isReady){
+                    //wird der Inputstream gestoppt
+                    readStream.pause();
+                    //ist der resultstream wieder aufnahmefähig 
+                    WriteStream.once('drain', function(){
+                        //wird der inputstream gestartet
+                        readStream.resume();
+                    });  
+                }
+            });
+            readStream.on('end', function() {
+                WriteStream.end();
+                console.log("File end");
+            });
+        });
         socket.on('upload', function (readStream, info) {
             var str = JSON.stringify(info.client); 
             console.log('Server upload new path');
@@ -102,6 +123,42 @@ function upload2server(params) {
     
 }
 
+
+function download(path, file, server) {
+    var startTime = Date.now();
+    console.log(file);
+    console.log(server);
+    console.log('Client Download new path');
+            //var base = path.basename(info.path)
+            ///var tmp_path = path.join(dir, str + base)
+            //console.log(base);
+            //console.log(tmp_path);
+    
+    socket[server].emit('download', {'path': file, 'client': server});
+
+    socket[server].on('download', function (readStream, info) {
+            
+        const WriteStream = fs.createWriteStream(path);
+        readStream.on('data', function(data){
+            const isReady = WriteStream.write(data);
+            if(!isReady){
+                //wird der Inputstream gestoppt
+                readStream.pause();
+                //ist der resultstream wieder aufnahmefähig 
+                WriteStream.once('drain', function(){
+                    //wird der inputstream gestartet
+                    readStream.resume();
+                });  
+            }
+        });
+        readStream.on('end', function() {
+            WriteStream.end();
+            console.log("File end");
+        });
+    });
+
+}
+
  /**
  * Upload an File to server
  * @param obj {Object}
@@ -165,5 +222,6 @@ module.exports = {
     stopServer: stopTCP_Server,
     runClient: runTCP_Client,
     stopClient: stopTCP_Client,
-    upload: upload
+    upload: upload,
+    download: download
   };

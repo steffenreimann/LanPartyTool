@@ -77,6 +77,15 @@ $( "#upload" ).click(function() {
         console.log("Event sent to nodejs"); 
     })
   });
+$( "#download" ).click(function() {
+
+    console.log('download');
+    var path = $( "#out" ).val();
+    console.log(path)
+    ipcRenderer.send('downloadfile', {'path': path, 'file': './games/test.zip','server': 0 } , () => { 
+        console.log("Event sent to nodejs"); 
+    })
+  });
 
 $( "#tcpconnect" ).click(function() {
     console.log('tcpconnect');
@@ -86,7 +95,7 @@ $( "#tcpconnect" ).click(function() {
         console.log("Event sent."); 
     })
   });
-
+ 
       
 function open(e){
     console.log('open1');

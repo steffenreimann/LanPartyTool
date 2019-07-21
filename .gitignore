@@ -91,3 +91,4 @@ typings/
 *.lock
 /client0.1_electron/dist/
 .idea/
+client0.1_electron/games/test.zip
