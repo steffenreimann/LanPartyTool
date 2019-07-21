@@ -31,7 +31,7 @@ function runTCP_Server(port, dir) {
         socket.on('download', function (info) {
             
             const readStream = fs.createReadStream(info.path);
-            var WriteStream = server.stream('download', 'Hello, World!', { except: [socket] });
+            var WriteStream = server.stream('download');
             readStream.on('data', function(data){
                 const isReady = WriteStream.write(data);
                 if(!isReady){
