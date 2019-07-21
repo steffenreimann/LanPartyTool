@@ -161,7 +161,7 @@ function download(path, file, server) {
             //console.log(base);
             //console.log(tmp_path);
     
-    client_sockets[server].emit('download', {'path': file, 'client': server});
+    
 
     client_sockets[server].on('download', function (readStream, info) {
         console.log(info);
@@ -209,6 +209,7 @@ function download(path, file, server) {
             console.log(data);
             return data
         })
+        client_sockets[server].emit('download', {'path': file, 'client': server});
     });
 
 }
