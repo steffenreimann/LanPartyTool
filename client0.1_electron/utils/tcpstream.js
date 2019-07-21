@@ -29,10 +29,11 @@ function runTCP_Server(port, dir) {
           console.log(data);
         });
         socket.on('download', function (info) {
-            
+            console.log('Server Download request from client');
             const readStream = fs.createReadStream(info.path);
             var WriteStream = server.stream('download');
             readStream.on('data', function(data){
+                console.log('data download');
                 const isReady = WriteStream.write(data);
                 if(!isReady){
                     //wird der Inputstream gestoppt
@@ -128,7 +129,7 @@ function download(path, file, server) {
     var startTime = Date.now();
     console.log(file);
     console.log(server);
-    console.log('Client Download new path');
+    console.log('Client Download request to server');
             //var base = path.basename(info.path)
             ///var tmp_path = path.join(dir, str + base)
             //console.log(base);
