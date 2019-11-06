@@ -253,12 +253,18 @@ ipcMain.on('ipscan', (event, data) => {
 })
 ipcMain.on('tcpconnect', (event, data) => {
 	console.log("tcpconnect Data : " + data);
-	tcp.runClient(data,8090);
+	tcp.runClient(data,8090)
+	
 	//connectToServer(data);
 })
 ipcMain.on('tcpstartServer', (event, data) => {
 	console.log("tcp start server Data : " + data);
 	tcp.runServer(8090, applogindata.config_updir);
+	//connectToServer(data);
+})
+ipcMain.on('list', (event, data) => {
+	console.log("tcp list server Data : " + JSON.stringify(tcp.list(0)));
+	mainWindow.webContents.send('list', tcp.list(0) );
 	//connectToServer(data);
 })
 
@@ -760,4 +766,4 @@ function KeyReg(key, reg, callback){
 
 }
 
-ipscan();
+//ipscan();

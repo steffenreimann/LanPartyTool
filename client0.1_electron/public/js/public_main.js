@@ -18,6 +18,9 @@ ipcRenderer.on('clientValid', function(e, data){
     console.log(data);
     
 });
+ipcRenderer.on('list', function(e, data){
+    console.log(data);
+});
 
 ipcRenderer.on('DOM', function(event, data){
     
@@ -112,6 +115,12 @@ $( "#tcpconnect" ).click(function() {
 $( "#tcpserver" ).click(function() {
     console.log('tcp server');
     ipcRenderer.send('tcpstartServer' , () => { 
+        console.log("Event sent."); 
+    })
+  });
+$( "#list" ).click(function() {
+    console.log('tcp server');
+    ipcRenderer.send('list' , () => { 
         console.log("Event sent."); 
     })
   });

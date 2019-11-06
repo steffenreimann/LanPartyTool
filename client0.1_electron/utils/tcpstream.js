@@ -24,8 +24,11 @@ var obj = new events.EventEmitter();
  * @param number {number}
  * @return {Object} {error:boolean, obj:cloned object}
  */
+
 function runTCP_Server(port, dir) {
     console.log('Try Starting TCP Server ...' );
+    var dirList = readDir(dir)
+    
     server.on('connection', function (socket) {
         //console.log(socket);
         console.log('TCP Server ... Client Connection ...');
@@ -39,14 +42,14 @@ function runTCP_Server(port, dir) {
         socket.on('download', function (info) {
 
             var paath = path.join(dir, info.path)
-            console.log('Server Download request from client');
+            console.log('Server // Download request from client');
             console.log(paath);
 
             const readStream = fs.createReadStream(paath);
             console.log(fs.lstatSync(paath));
             var WriteStream = server.stream('download', fs.lstatSync(paath).size);
             readStream.on('data', function(data){
-                console.log('data download');
+                console.log('Server // data download');
 
                 const isReady = WriteStream.write(data);
                 if(!isReady){
@@ -61,11 +64,11 @@ function runTCP_Server(port, dir) {
             });
             readStream.on('end', function() {
                 WriteStream.end();
-                console.log("File end Server");
+                console.log("Server // File end");
                 return true
             });
             readStream.on('error', function(data){
-                console.log('-- ERROR -- Server');
+                console.log('Server // -- ERROR -- ');
                 WriteStream.end();
                 console.log(data);
                 return false
@@ -73,7 +76,7 @@ function runTCP_Server(port, dir) {
         });
         socket.on('upload', function (readStream, info) {
             var str = JSON.stringify(info.client); 
-            console.log('Server upload new path');
+            console.log('Server //  upload new path');
             var base = path.basename(info.path)
             var tmp_path = path.join(dir, str + base)
             console.log(base);
@@ -93,7 +96,7 @@ function runTCP_Server(port, dir) {
             });
             readStream.on('end', function() {
                 Wstream.end();
-                console.log("File end server");
+                console.log("Server // File end upload");
                 return true
             });
             readStream.on('error', function(data){
@@ -102,6 +105,17 @@ function runTCP_Server(port, dir) {
                 return false
             })
         });
+        socket.on('list', function (req, callback) {
+            dirList = readDir(dir)
+            console.log(dirList)
+
+            fs.readdir(dir, (err, files) => {
+                console.log("files : " +  JSON.stringify(files));
+                callback(files);
+                
+              });
+          });
+
     });
     server.listen(port);
 }
@@ -115,6 +129,29 @@ function stopTCP_Server(port) {
     
 }
 
+/**
+ * Read any dir
+ * @param dir string
+ * @return Array
+ */
+function readDir(dir) {
+    var out
+   // console.log("dir : " + dir);
+
+    fs.readdir(dir, (err, files) => {
+       // console.log("files : " +  JSON.stringify(files));
+        out = files
+        files.forEach(file => {
+          //console.log(file);
+        });
+        
+      });
+      return out
+}
+
+
+var client_server_connections = []
+
  /**
  * Start an Client connection to server
  * @param host string
@@ -122,13 +159,35 @@ function stopTCP_Server(port) {
  * @return 
  */
 function runTCP_Client(host, port) {
+
     // Client
     client_sockets.push(new Socket({
         host: host,
-        port: port
+        port: port,
+        reconnect: false
     }));
-    console.log(client_sockets); 
-    //socket.emit('login', 'alejandro');
+
+   // console.log(client_sockets[client_sockets.length - 1]); 
+
+    console.log(client_sockets[client_sockets.length - 1]._socket.connecting); 
+    
+    if(client_sockets[client_sockets.length - 1]._socket.connecting){
+        console.log(); 
+    }
+
+    client_sockets[client_sockets.length - 1].emit('list' , "1", function (response) {
+        console.log('Response Client : ' + response);
+        client_server_connections.push({host: host, port: port, loadable: response, server: client_sockets.length - 1})
+        console.log("Client = " + JSON.stringify(client_server_connections));
+      });
+
+    client_sockets[client_sockets.length - 1].on('close', function() {
+        console.log('Connection closed');
+        client_sockets[client_sockets.length - 1].destroy();
+        client_sockets.splice( client_sockets.length - 1, 1 )
+        console.log( client_sockets.length);
+        return null
+    });
 }
 
  /**
@@ -149,9 +208,31 @@ function upload2server(params) {
     
 }
 
+function loadListFormServer(server) {
+    var i = 0
+    client_sockets[server].emit('list' , "1", function (response) {
+        console.log('Response Client : ' + response);
+        i = response
+        //client_server_connections.push({host: host, port: port, loadable: response, server: server})
+      });
+    return client_server_connections;
+}
+
+function acc(path) {
+    fs.access(path, fs.F_OK, (err) => {
+        if (err) {
+            console.error(err)
+            return false
+        }
+        return true
+        //file exists
+    })
+}
+
+
 function download(dpath, file, server) {
     var startTime = Date.now();
-    var paathh = path.join(dpath, file + "1")
+    var paathh = path.join(dpath, file)
     console.log(file);
     console.log(server);
     console.log('Client Download request to server');
@@ -159,59 +240,58 @@ function download(dpath, file, server) {
             ///var tmp_path = path.join(dir, str + base)
             //console.log(base);
             //console.log(tmp_path);
-            const WriteStream = fs.createWriteStream(paathh);
-    client_sockets[server].emit('download', {'path': file, 'client': server});
 
-    client_sockets[server].on('download', function (readStream, info) {
-        console.log("info");
-        console.log(paathh);
-        var inpu_size = 0  
-        
-        readStream.on('data', function(data){
-            var datas = messure.streamSize(data.length, false, server );
-            inpu_size = inpu_size + datas.size;
-            
-            var sectionTime = Date.now() - startTime;
-            sectionTime = sectionTime / 1000;
-            const isReady = WriteStream.write(data);
-            if (log) {
-                obj.emit("downloading", inpu_size);
-            }
-            if(!isReady){
-                //wird der Inputstream gestoppt
-                readStream.pause();
-                //ist der resultstream wieder aufnahmefähig 
-                WriteStream.once('drain', function(){
-                    //wird der inputstream gestartet
-                    
-                    
-                    readStream.resume();
-                    
-                }); 
-                 
-            }
-            
-        });
-        readStream.on('end', function() {
-            WriteStream.end();
-            console.log("File end client");
-            var fullTime = Date.now() - startTime;
-            fullTime = fullTime / 1000;
-            var speed = messure.speed(inpu_size, fullTime)
-            console.log(fullTime);
-            console.log(speed);
-            //console.log(datas);
-            
-            return messure.streamAnalyse(true, speed, inpu_size, server);
-        });
-        readStream.on('error', function(data){
-            console.log('-- ERROR -- client');
-            console.log(data);
-            return data
-        })
-        
-    });
+    
+    
+    console.log(acc(paathh))
+    if(!acc(paathh)){
+    
+        const WriteStream = fs.createWriteStream(paathh);
 
+        client_sockets[server].emit('download', {'path': file, 'client': server});
+
+        client_sockets[server].on('download', function (readStream, info) {
+            console.log("info");
+            console.log(paathh);
+            var inpu_size = 0    
+            readStream.on('data', function(data){
+                var datas = messure.streamSize(data.length, false, server );
+                inpu_size = inpu_size + datas.size;
+                var sectionTime = Date.now() - startTime;
+                sectionTime = sectionTime / 1000;
+                const isReady = WriteStream.write(data);
+                if (log) {
+                    obj.emit("downloading", inpu_size);
+                }
+                if(!isReady){
+                    //wird der Inputstream gestoppt
+                    readStream.pause();
+                    //ist der resultstream wieder aufnahmefähig 
+                    WriteStream.once('drain', function(){
+                        //wird der inputstream gestartet  
+                        readStream.resume();  
+                    });       
+                }
+            });
+            readStream.on('end', function() {
+                WriteStream.end();
+                console.log("File end client");
+                var fullTime = Date.now() - startTime;
+                fullTime = fullTime / 1000;
+                var speed = messure.speed(inpu_size, fullTime)
+                console.log(fullTime);
+                console.log(speed);
+                //console.log(datas); 
+                return messure.streamAnalyse(false, speed, inpu_size, server);
+            });
+            readStream.on('error', function(data){
+                WriteStream.error();
+                console.log('-- ERROR -- client');
+                console.log(data);
+                return data
+            })  
+        });
+    }   
 }
 
  /**
@@ -291,5 +371,6 @@ module.exports = {
     upload: upload,
     download: download,
     traffic: obj,
-    setlog: setLog
+    setlog: setLog,
+    list: loadListFormServer
   };
