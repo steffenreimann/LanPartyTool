@@ -25,10 +25,10 @@ var obj = new events.EventEmitter();
  * @return {Object} {error:boolean, obj:cloned object}
  */
 function runTCP_Server(port, dir) {
-    console.log('TCP Server Starting ...');
+    console.log('Try Starting TCP Server ...' );
     server.on('connection', function (socket) {
         //console.log(socket);
-        console.log('TCP Server Client Connection ...');
+        console.log('TCP Server ... Client Connection ...');
         socket.on('login', function (username) {
           console.log('Trying to login: ' + username);
         });
@@ -37,12 +37,16 @@ function runTCP_Server(port, dir) {
           console.log(data);
         });
         socket.on('download', function (info) {
+
+            var paath = path.join(dir, info.path)
             console.log('Server Download request from client');
-            const readStream = fs.createReadStream(info.path);
-            //console.log(fs.lstatSync(info.path));
-            var WriteStream = server.stream('download', fs.lstatSync(info.path).size);
+            console.log(paath);
+
+            const readStream = fs.createReadStream(paath);
+            console.log(fs.lstatSync(paath));
+            var WriteStream = server.stream('download', fs.lstatSync(paath).size);
             readStream.on('data', function(data){
-                //console.log('data download');
+                console.log('data download');
 
                 const isReady = WriteStream.write(data);
                 if(!isReady){
@@ -102,7 +106,6 @@ function runTCP_Server(port, dir) {
     server.listen(port);
 }
 
-
  /**
  * Stops TCP Server 
  * @param obj {Object}
@@ -111,7 +114,6 @@ function runTCP_Server(port, dir) {
 function stopTCP_Server(port) {
     
 }
-
 
  /**
  * Start an Client connection to server
@@ -147,12 +149,9 @@ function upload2server(params) {
     
 }
 
-
-
-
-
-function download(path, file, server) {
+function download(dpath, file, server) {
     var startTime = Date.now();
+    var paathh = path.join(dpath, file + "1")
     console.log(file);
     console.log(server);
     console.log('Client Download request to server');
@@ -160,13 +159,14 @@ function download(path, file, server) {
             ///var tmp_path = path.join(dir, str + base)
             //console.log(base);
             //console.log(tmp_path);
-    
-    
+            const WriteStream = fs.createWriteStream(paathh);
+    client_sockets[server].emit('download', {'path': file, 'client': server});
 
     client_sockets[server].on('download', function (readStream, info) {
-        console.log(info);
+        console.log("info");
+        console.log(paathh);
         var inpu_size = 0  
-        const WriteStream = fs.createWriteStream(path);
+        
         readStream.on('data', function(data){
             var datas = messure.streamSize(data.length, false, server );
             inpu_size = inpu_size + datas.size;
@@ -209,7 +209,7 @@ function download(path, file, server) {
             console.log(data);
             return data
         })
-        client_sockets[server].emit('download', {'path': file, 'client': server});
+        
     });
 
 }

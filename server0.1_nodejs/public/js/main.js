@@ -245,7 +245,9 @@ function chat(data) {
     if(data === "!stats"){
             socket.emit('analyticData');
        }else{
+           
            socket.emit('chat', { name: myname, ip: myip, text: data });
+           
        }
     
     

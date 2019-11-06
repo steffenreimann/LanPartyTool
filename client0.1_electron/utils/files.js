@@ -6,7 +6,7 @@
 const os = require('os');
 const path = require('path');
 var fs = require('fs')
-const cfgPaths = require('./configPaths');
+const cfgPaths = require('../config/configPaths');
 
 
 function intiGameDir(dir, pw) {

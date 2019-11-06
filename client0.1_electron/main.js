@@ -11,7 +11,7 @@ var fs = require('fs')
 const uuidv4 = require('uuid/v4');
 var ping = require('ping');
 var splitFile = require('./split-file.js'); 
-
+var Files = require('./utils/files.js'); 
 const {app, BrowserWindow, Menu, ipcMain, globalShortcut} = electron;
 
 
@@ -195,7 +195,9 @@ ipcMain.on('saveConfig', (event, data) => {
 
 	//{'config_pw': config_pw, 'config_user': config_user, 'config_uuid': config_uuid }
 	mainWindow.webContents.send('saveConfig', cleanObject );
+	applogindata = cleanObject
 }) 
+
 ipcMain.on('loadConfig', (event, data) => { 
 	console.log(data);
 	//{'config_pw': config_pw}
@@ -205,7 +207,7 @@ ipcMain.on('loadConfig', (event, data) => {
 
 	mainWindow.webContents.send('loadConfig', readUserConfig.userCfg );
 }) 
-
+var applogindata
 ipcMain.on('applogin', (event, data) => { 
 	console.log(data);
 	const con = configHelper.LoadUserConfig(data.config_pw);
@@ -214,13 +216,15 @@ ipcMain.on('applogin', (event, data) => {
 	if(con.config_updir == '' || con.userCfg.config_updir == undefined ){
 		con.userCfg.config_updir = configPath.GetBaseDir()
 	}
-
+	//intiGameDir("lul", data.config_pw)
 	console.log('con.userCfg.config_updir');
 	console.log(con.userCfg.config_updir);
 
-	tcp.runServer(8090, con.userCfg.config_updir);
+	//tcp.runServer(8090, con.userCfg.config_updir);
 	loadHTML('public/appmainWindow.html');
-
+	applogindata = con.userCfg
+	console.log('applogindata ');
+	console.log(applogindata);
 	mainWindow.webContents.send('applogin', con.userCfg );
 	if(pwWindow != undefined){
 		pwWindow.hide();
@@ -252,6 +256,11 @@ ipcMain.on('tcpconnect', (event, data) => {
 	tcp.runClient(data,8090);
 	//connectToServer(data);
 })
+ipcMain.on('tcpstartServer', (event, data) => {
+	console.log("tcp start server Data : " + data);
+	tcp.runServer(8090, applogindata.config_updir);
+	//connectToServer(data);
+})
 
 ipcMain.on('uploadfile', (event, data) => {
 	console.log("tcpconnect Data : " + data);
@@ -260,9 +269,13 @@ ipcMain.on('uploadfile', (event, data) => {
 	//connectToServer(data);
 })
 ipcMain.on('downloadfile', (event, data) => {
-	console.log("tcpconnect DataSize : " + data);
-	console.log(tcp.download(data.path, data.file, data.server));
+	console.log(applogindata.config_updir);
+	tcp.download(applogindata.config_updir, data.file, data.server)
 	
+})
+ipcMain.on('loadPath', (event, data) => {
+	console.log("loadPath: " + data);
+	openPath();
 })
 
 // register event listener
@@ -414,6 +427,39 @@ function openSplitFile(path){
 			mainWindow.webContents.send('DOM', {"id": "#size", "val": sizeMGB} );
 			mainWindow.webContents.send('DOM', {"id": "#out", "val": selectedFiles[0]} );
 			mainWindow.webContents.send('DOM', {"id": "#time", "val": ""} );
+		});
+	  	//mainWindow.webContents.send('selectedFiles', selectedFiles);
+   	}else{
+	   console.log('Bitte etwas auswählen');
+	}
+}
+
+function openPath(path){
+	const {dialog} = require('electron') 
+  	const fs = require('fs') 
+  	console.log('openfile');
+  	var selected = dialog.showOpenDialog({properties: ['openDirectory']});
+   	if(selected != undefined) {
+	   	console.log(selected)
+		//filestats(selectedFiles[0])
+		
+		fs.lstat(selected[0], (err, stats) => {
+			if(err)
+			return console.log(err); //Handle error
+
+			console.log(`Is file: ${stats.isFile()}`);
+			console.log(`Is directory: ${stats.isDirectory()}`);
+			console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
+			console.log(`Is FIFO: ${stats.isFIFO()}`);
+			console.log(`Is socket: ${stats.isSocket()}`);
+			console.log(`Is character device: ${stats.isCharacterDevice()}`);
+			console.log(`Is block device: ${stats.isBlockDevice()}`);
+			if(stats.isDirectory()){
+				console.log('Ist Ordner');
+				 
+				mainWindow.webContents.send('loadPath', selected[0] );
+				
+			}
 		});
 	  	//mainWindow.webContents.send('selectedFiles', selectedFiles);
    	}else{

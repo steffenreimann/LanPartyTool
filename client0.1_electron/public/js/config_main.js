@@ -31,6 +31,10 @@ ipcRenderer.on('applogin', (event, data) => {
     console.log(data);
 })
 
+ipcRenderer.on('loadPath', (event, data) => { 
+    console.log(data);
+    $( "#config_updir" ).val(data)
+})
 function applogin(){
     var config_pw = $( "#config_pw" ).val();
     ipcRenderer.send('applogin', {'config_pw': config_pw } , () => {})
@@ -40,11 +44,20 @@ function applogin(){
 
 function loadConfig(){
     var config_pw = $( "#config_pw" ).val();
-    ipcRenderer.send('loadConfig', {'config_pw': config_pw } , () => {})
+    ipcRenderer.send('loadConfig' , {'config_pw': config_pw}, () => {
+        console.log(data)
+    })
+}
+
+function loadPath(){
+    var config_pw = $( "#config_pw" ).val();
+    ipcRenderer.send('loadPath' , {'config_pw': config_pw}, () => {
+        console.log(data)
+    })
 }
 
 ipcRenderer.on('loadConfig', (event, data) => { 
-    //console.log(data);
+    console.log(data);
     if(data != null){
         $( "#config_user" ).val(data.config_user)
         $( "#config_uuid" ).val(data.config_uuid)

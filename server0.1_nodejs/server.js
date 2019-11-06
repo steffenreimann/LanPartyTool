@@ -22,13 +22,12 @@ var files
     if(ex.code == 'MODULE_NOT_FOUND'){
 	    console.log(ex)
 	    //exec("npm install ", puts);
-	    
     }
-    
 }
 
 function startServer(){
 	Object.keys(ifaces).forEach(function (ifname) {
+        console.log(ifname)
 		var alias = 0;
 	  ifaces[ifname].forEach(function (iface) {
 	    if ('IPv4' !== iface.family || iface.internal !== false) {
@@ -50,7 +49,7 @@ function startServer(){
 	});
     
 	httpServer.listen("8081");
-	console.log('Server Läuft unter http://' + intip + ':' + '80/');
+	console.log('Server Läuft unter http://' + intip + ':' + '8081/');
 	app.use(express.static(__dirname + '/upload'));
     app.use(express.static(__dirname + '/public/files'));
     app.use(express.static(__dirname + '/public'));
@@ -58,10 +57,9 @@ function startServer(){
 		res.sendFile(__dirname + '/public/index.html');
 		console.log("Zugriff")			
 	});
+    
 	// opens the url in the default browser 
 	//opn('http://' + intip + ':' + '8081/');
-    
-
     
     console.log(intip);
     

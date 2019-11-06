@@ -14,6 +14,11 @@ ipcRenderer.on('progrss', function(e, data){
     $( "#out" ).val(data.path);
 });
 
+ipcRenderer.on('clientValid', function(e, data){
+    console.log(data);
+    
+});
+
 ipcRenderer.on('DOM', function(event, data){
     
     console.log("DOM Event ID : " + data.id);
@@ -86,9 +91,11 @@ $( "#upload" ).click(function() {
 $( "#download" ).click(function() {
 
     console.log('download');
-    var path = $( "#out" ).val();
-    console.log(path)
-    ipcRenderer.send('downloadfile', {'path': path, 'file': './games/test.zip','server': 0 } , () => { 
+    
+    
+    //tmp dir nutzen !!
+
+    ipcRenderer.send('downloadfile', {'path': 'path', 'file': 'test.zip','server': 0 } , () => { 
         console.log("Event sent to nodejs"); 
     })
   });
@@ -101,7 +108,17 @@ $( "#tcpconnect" ).click(function() {
         console.log("Event sent."); 
     })
   });
+
+$( "#tcpserver" ).click(function() {
+    console.log('tcp server');
+    ipcRenderer.send('tcpstartServer' , () => { 
+        console.log("Event sent."); 
+    })
+  });
  
+
+
+  
       
 function open(e){
     console.log('open1');
