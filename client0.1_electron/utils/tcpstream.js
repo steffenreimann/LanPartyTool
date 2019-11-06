@@ -107,11 +107,42 @@ function runTCP_Server(port, dir) {
         });
         socket.on('list', function (req, callback) {
             dirList = readDir(dir)
-            console.log(dirList)
-
+            //console.log(dirList)
+            var out = []
             fs.readdir(dir, (err, files) => {
-                console.log("files : " +  JSON.stringify(files));
-                callback(files);
+                //console.log("files : " +  JSON.stringify(files));
+                var i = 0  
+                files.forEach(element => {
+                                 
+                    fs.lstat(path.join(dir, element), (err, stats) => {
+                        i++
+                        //console.log(`Is file: ${stats.isFile()}`);
+			            //console.log(`Is directory: ${stats.isDirectory()}`);
+                        var FileSize = stats.size / 1000000;
+                        //console.log(FileSize);
+                        FileSize = Math.round(FileSize)
+                        var sizeMGB = 0
+                        if(FileSize >= 1000){
+                        
+                            sizeMGB = FileSize / 1000
+                            sizeMGB = sizeMGB + " GB"
+                        }else{
+                            sizeMGB = FileSize + " MB"
+                        }
+                        out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB })
+                        //console.log(out);
+                        //console.log("i " + i);
+                        //console.log("files.length " + files.length);
+                        if(i == files.length){
+                            console.log("Out " + out);
+                            callback(out);
+                        }
+                    });
+                    
+                });
+                
+               
+                
                 
               });
           });

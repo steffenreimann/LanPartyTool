@@ -20,7 +20,56 @@ ipcRenderer.on('clientValid', function(e, data){
 });
 ipcRenderer.on('list', function(e, data){
     console.log(data);
+    serverList(data)
 });
+
+function serverList(data) {
+    var fileOut = ""
+    var out = ""
+    data.forEach(element => {
+        element.loadable.forEach(file => {
+            fileOut += `<tr>
+                            <td data-title="File">${file.filename}</td>
+                            <td data-title="Folder">${file.isDir}</td>
+                            <td data-title="Größe">${file.size}</td>
+                            <td data-title="Download"><button onclick="DFFS(${element.server},'${file.filename}');" type="button" class="btn btn-primary">download</button ></td>
+                        </tr>`
+        });
+
+        out += `<div class="panel panel-info"> 
+            <div class="panel-heading" role="tab" id="heading${element.server}">
+                <h4 class="panel-title"><a  data-toggle="collapse" data-parent="#accordion${element.server}" href="#collapse${element.server}" aria-expanded="false" aria-controls="collapseFour${element.server}"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">account_box</i> Server ${element.server} </a> </h4>
+            </div>
+            <div id="collapse${element.server}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${element.server}">
+                <div class="panel-body">
+                    <!-- Striped table -->
+                        <div class="pmd-card pmd-z-depth">
+                            <div class="table-responsive">
+                                <!-- Table -->
+                                <table class="table pmd-table table-striped table-mc-red">
+                                <thead>
+                                    <tr>
+                                    <th>File</th>
+                                    <th>Folder?</th>
+                                    <th>Größe</th>
+                                    <th>Download</th>
+                                    </tr>
+                                </thead>
+                                <tbody>	
+                                    ${fileOut}
+                                </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>`
+    });
+
+    $("#servers").html(out)
+
+}
 
 ipcRenderer.on('DOM', function(event, data){
     
@@ -126,7 +175,11 @@ $( "#list" ).click(function() {
   });
  
 
-
+function DFFS(server, file) {
+    ipcRenderer.send('downloadfile', {'path': 'path', 'file': file,'server': server } , () => { 
+        console.log("Event sent to nodejs"); 
+    })
+}
   
       
 function open(e){
