@@ -14,14 +14,6 @@ var splitFile = require('./split-file.js');
 var Files = require('./utils/files.js'); 
 const {app, BrowserWindow, Menu, ipcMain, globalShortcut} = electron;
 
-
-
-
-// Testing swissKnife
-const toClone = {name: 'Jonas', inner: {items: ['test', 'test2']}};
-const cloned = util.Clone(toClone);
-console.log(util.frm('Object: {0}', [cloned]));
-
 let mainWindow;
 let pwWindow;
 var user = {uuid: "", name: "",ip: ""};
@@ -253,17 +245,25 @@ ipcMain.on('ipscan', (event, data) => {
 })
 ipcMain.on('tcpconnect', (event, data) => {
 	console.log("tcpconnect Data : " + data);
+	console.log("user data to login : " + user);
 	tcp.runClient(data,8090)
+	tcp.login(applogindata)
+	//connectToServer(data);
+})
+ipcMain.on('tcpdisconnect', (event, data) => {
+	console.log("tcp disconnect : " + data);
+	tcp.stopClient(data);
 	
 	//connectToServer(data);
 })
+
 ipcMain.on('tcpstartServer', (event, data) => {
 	console.log("tcp start server Data : " + data);
 	tcp.runServer(8090, applogindata.config_updir);
 	//connectToServer(data);
 })
 ipcMain.on('list', (event, data) => {
-	console.log("tcp list server Data : " + JSON.stringify(tcp.list(0)));
+	//console.log("tcp list server Data : " + JSON.stringify(tcp.list(0)));
 	mainWindow.webContents.send('list', tcp.list(0) );
 	//connectToServer(data);
 })

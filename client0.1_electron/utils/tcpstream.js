@@ -19,21 +19,23 @@ var events = require('events');
 var obj = new events.EventEmitter();
 
 
+var server_client_connections = []
  /**
  * Creates TCP Server
  * @param number {number}
  * @return {Object} {error:boolean, obj:cloned object}
  */
-
 function runTCP_Server(port, dir) {
     console.log('Try Starting TCP Server ...' );
     var dirList = readDir(dir)
     
     server.on('connection', function (socket) {
-        //console.log(socket);
+        
+        console.log(server_client_connections);
         console.log('TCP Server ... Client Connection ...');
-        socket.on('login', function (username) {
-          console.log('Trying to login: ' + username);
+        socket.on('login', function (data) {
+            console.log('Trying to login: ' + JSON.stringify(data));
+            server_client_connections.push({socket: socket, ip: "data.ip", username: data.config_user, user_uuid: data.config_uuid});
         });
         socket.on('LT-Broadcast', function (data) {
           console.log('LT-Broadcast');
@@ -112,8 +114,7 @@ function runTCP_Server(port, dir) {
             fs.readdir(dir, (err, files) => {
                 //console.log("files : " +  JSON.stringify(files));
                 var i = 0  
-                files.forEach(element => {
-                                 
+                files.forEach(element => {        
                     fs.lstat(path.join(dir, element), (err, stats) => {
                         i++
                         //console.log(`Is file: ${stats.isFile()}`);
@@ -123,7 +124,6 @@ function runTCP_Server(port, dir) {
                         FileSize = Math.round(FileSize)
                         var sizeMGB = 0
                         if(FileSize >= 1000){
-                        
                             sizeMGB = FileSize / 1000
                             sizeMGB = sizeMGB + " GB"
                         }else{
@@ -136,18 +136,21 @@ function runTCP_Server(port, dir) {
                         if(i == files.length){
                             console.log("Out " + out);
                             callback(out);
+                            out = ""
                         }
                     });
-                    
-                });
-                
-               
-                
-                
+                }); 
               });
-          });
-
+        });
+        socket.on('close', function() {
+            console.log('Server // Client closed Connection ');
+            //client_sockets[client_sockets.length - 1].destroy();
+            //client_sockets.splice( client_sockets.length - 1, 1 )
+            //console.log( client_sockets.length);
+            //return null
+        });
     });
+    
     server.listen(port);
 }
 
@@ -189,8 +192,9 @@ var client_server_connections = []
  * @param port number
  * @return 
  */
-function runTCP_Client(host, port) {
-
+function runTCP_Client(data, port) {
+var host = data.ip    
+var name = data.name
     // Client
     client_sockets.push(new Socket({
         host: host,
@@ -208,13 +212,13 @@ function runTCP_Client(host, port) {
 
     client_sockets[client_sockets.length - 1].emit('list' , "1", function (response) {
         console.log('Response Client : ' + response);
-        client_server_connections.push({host: host, port: port, loadable: response, server: client_sockets.length - 1})
+        client_server_connections.push({host: host, port: port, loadable: response, server: client_sockets.length - 1, name: name})
         console.log("Client = " + JSON.stringify(client_server_connections));
       });
 
     client_sockets[client_sockets.length - 1].on('close', function() {
         console.log('Connection closed');
-        client_sockets[client_sockets.length - 1].destroy();
+        //client_sockets[client_sockets.length - 1].destroy();
         client_sockets.splice( client_sockets.length - 1, 1 )
         console.log( client_sockets.length);
         return null
@@ -226,8 +230,13 @@ function runTCP_Client(host, port) {
  * @param obj {Object}
  * @return {Object} {error:boolean, obj:cloned object}
  */
-function stopTCP_Client(port) {
+function stopTCP_Client(server) {
+    client_sockets[server].destroy();
+    console.log('stopTCP_Client : ' + server);
     
+    client_server_connections.splice( server, 1 )
+    //loadListFormServer();
+    console.log('client_server_connections : ' + client_server_connections.length);
 }
 
  /**
@@ -241,11 +250,20 @@ function upload2server(params) {
 
 function loadListFormServer(server) {
     var i = 0
-    client_sockets[server].emit('list' , "1", function (response) {
-        console.log('Response Client : ' + response);
-        i = response
+    console.log('client_server_connections.length : ' + client_server_connections.length);
+    if(client_server_connections.length >= 1){
+
+    
+        client_server_connections.forEach(element => {
+            client_sockets[element.server].emit('list' , "1", function (response) {
+                console.log('Response Client : ' + response);
+                i = response
+                client_server_connections[element.server].loadable = response
+            });
+        });
+    }
         //client_server_connections.push({host: host, port: port, loadable: response, server: server})
-      });
+     
     return client_server_connections;
 }
 
@@ -258,6 +276,13 @@ function acc(path) {
         return true
         //file exists
     })
+}
+
+function login(data){
+    client_sockets[client_sockets.length - 1].emit('login' , data, function (response) {
+        console.log('Response login Client : ' + response);
+        
+    });
 }
 
 
@@ -403,5 +428,6 @@ module.exports = {
     download: download,
     traffic: obj,
     setlog: setLog,
-    list: loadListFormServer
+    list: loadListFormServer,
+    login: login
   };

@@ -23,54 +23,6 @@ ipcRenderer.on('list', function(e, data){
     serverList(data)
 });
 
-function serverList(data) {
-    var fileOut = ""
-    var out = ""
-    data.forEach(element => {
-        element.loadable.forEach(file => {
-            fileOut += `<tr>
-                            <td data-title="File">${file.filename}</td>
-                            <td data-title="Folder">${file.isDir}</td>
-                            <td data-title="Größe">${file.size}</td>
-                            <td data-title="Download"><button onclick="DFFS(${element.server},'${file.filename}');" type="button" class="btn btn-primary">download</button ></td>
-                        </tr>`
-        });
-
-        out += `<div class="panel panel-info"> 
-            <div class="panel-heading" role="tab" id="heading${element.server}">
-                <h4 class="panel-title"><a  data-toggle="collapse" data-parent="#accordion${element.server}" href="#collapse${element.server}" aria-expanded="false" aria-controls="collapseFour${element.server}"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">account_box</i> Server ${element.server} </a> </h4>
-            </div>
-            <div id="collapse${element.server}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${element.server}">
-                <div class="panel-body">
-                    <!-- Striped table -->
-                        <div class="pmd-card pmd-z-depth">
-                            <div class="table-responsive">
-                                <!-- Table -->
-                                <table class="table pmd-table table-striped table-mc-red">
-                                <thead>
-                                    <tr>
-                                    <th>File</th>
-                                    <th>Folder?</th>
-                                    <th>Größe</th>
-                                    <th>Download</th>
-                                    </tr>
-                                </thead>
-                                <tbody>	
-                                    ${fileOut}
-                                </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>`
-    });
-
-    $("#servers").html(out)
-
-}
-
 ipcRenderer.on('DOM', function(event, data){
     
     console.log("DOM Event ID : " + data.id);
@@ -107,6 +59,71 @@ ipcRenderer.on('split-info', function(event, data){
 
 
 //ul.addEventListener('dblclick', removeItem);
+
+function serverList(data) {
+    var fileOut = ""
+    var out = ""
+    data.forEach(element => {
+        element.loadable.forEach(file => {
+            var filetyp = "insert_drive_file"
+            if(file.isDir){
+                filetyp = "folder"
+            }
+            fileOut += `<tr>
+                            <td data-title=""><i class="material-icons pmd-sm pmd-accordion-icon-left">${filetyp}</i></td>
+                            <td data-title="Name">${file.filename}</td>
+                            
+                            <td data-title="Größe">${file.size}</td>
+                            
+                            <td data-title="Download"> <i onclick="DFFS(${element.server},'${file.filename}');" class="c material-icons pmd-sm pmd-accordion-icon-left">file_download</i></td>
+
+                        </tr>`
+        });
+
+        out += `<div class="panel panel-info"> 
+            <div class="panel-heading" role="tab" id="heading${element.server}">
+                <h4 class="panel-title">
+                    <a  data-toggle="collapse" data-parent="#accordion${element.server}" href="#collapse${element.server}" aria-expanded="false" aria-controls="collapse${element.server}"  data-expandable="false">
+                        <i class="material-icons pmd-sm pmd-accordion-icon-left">cloud</i> 
+                         ${element.name} -- ${element.host}
+                        <i onclick="tcpdisconnect(${element.server})" class="material-icons pmd-sm pmd-accordion-icon-right">block</i> 
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse${element.server}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading${element.server}">
+                    <!-- Striped table -->
+                        <div class="pmd-card pmd-z-depth">
+                            <div class="table-responsive">
+                                <!-- Table -->
+                                <table class="table pmd-table table-striped table-mc-red">
+                                <thead>
+                                    <tr>
+                                    <th>Art</th>
+                                    <th>Name</th>
+                                    
+                                    <th>Größe</th>
+                                    <th>Download</th>
+                                    </tr>
+                                </thead>
+                                <tbody>	
+                                    ${fileOut}
+                                </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                
+            </div>
+        </div>`
+        fileOut = ""
+    });
+
+    $("#servers").html(out)
+    
+    out = ""
+}
+
+
   
 function removeItem(e){
       console.log('hallo');
@@ -155,8 +172,9 @@ $( "#download" ).click(function() {
 $( "#tcpconnect" ).click(function() {
     console.log('tcpconnect');
     var ip = $( "#tcpconnectip" ).val();
+    var name = $( "#tcpconnectname" ).val();
     console.log(ip)
-    ipcRenderer.send('tcpconnect', ip , () => { 
+    ipcRenderer.send('tcpconnect', {ip: ip, name: name }, () => { 
         console.log("Event sent."); 
     })
   });
@@ -181,6 +199,12 @@ function DFFS(server, file) {
     })
 }
   
+function tcpdisconnect(server) {
+    
+    ipcRenderer.send('tcpdisconnect', server , () => { 
+        console.log("Event sent to nodejs"); 
+    })
+}
       
 function open(e){
     console.log('open1');
