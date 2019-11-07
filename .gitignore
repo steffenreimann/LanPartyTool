@@ -92,6 +92,9 @@ typings/
 /client0.1_electron/dist/
 .idea/
 client0.1_electron/games/test.zip
+
 .DS_Store
-.DS_Store
+
 client0.1_electron/.DS_Store
+
+client0.1_electron/release-builds/
