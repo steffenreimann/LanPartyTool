@@ -307,7 +307,7 @@ function download(dpath, file, server) {
     console.log(acc(paathh))
     if(!acc(paathh)){
     
-        const WriteStream = fs.createWriteStream(paathh);
+        var WriteStream = fs.createWriteStream(paathh);
 
         client_sockets[server].emit('download', {'path': file, 'client': server});
 
@@ -343,12 +343,14 @@ function download(dpath, file, server) {
                 console.log(fullTime);
                 console.log(speed);
                 //console.log(datas); 
+                WriteStream = ""
                 return messure.streamAnalyse(false, speed, inpu_size, server);
             });
             readStream.on('error', function(data){
                 WriteStream.error();
                 console.log('-- ERROR -- client');
                 console.log(data);
+                WriteStream = ""
                 return data
             })  
         });
