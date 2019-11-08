@@ -151,12 +151,15 @@ function stopTCP_Server(port) {
 function readDir(dir, callback) {
     var out = []
     var algo = 'md5';
+    user_data.emit("tempDir", "read Dir");
     fs.readdir(dir, (err, files) => {
+        user_data.emit("tempDir", files);
         //console.log("files : " +  JSON.stringify(files));
         var i = 0  
         files.forEach(element => {    
             fs.lstat(path.join(dir, element), (err, stats) => {
-                
+                user_data.emit("tempDir", element)
+                user_data.emit("tempDir", stats.isFile())
                 //console.log(`Is file: ${stats.isFile()}`);
                 //console.log(`Is directory: ${stats.isDirectory()}`);
                 var FileSize = stats.size / 1000000;
@@ -169,7 +172,7 @@ function readDir(dir, callback) {
                 }else{
                     sizeMGB = FileSize + " MB"
                 }
-
+                
                 if(stats.isFile()){
                     var shasum = crypto.createHash(algo);
 
