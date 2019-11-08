@@ -288,8 +288,7 @@ ipcMain.on('tcpstartServer', (event, data) => {
 })
 ipcMain.on('list', (event, data) => {
 	//console.log("tcp list server Data : " + JSON.stringify(tcp.list(0)));
-	serverFiles = tcp.list(0)
-	mainWindow.webContents.send('list', serverFiles );
+	tcp.list(0)
 	//connectToServer(data);
 })
 
@@ -331,6 +330,18 @@ tcp.traffic.on("uploading", function(data) {
 	// process data when someEvent occurs
 	
 	mainWindow.webContents.send('DOM', {"id": "#size", "val": data} );
+});
+
+tcp.user.on("tempDir", function(tempDir) {
+	// process data when someEvent occurs
+	//serverFiles = tempDir
+	//mainWindow.webContents.send('list', serverFiles );
+});
+
+tcp.user.on("client_server_connections", function(tempDir) {
+	// process data when someEvent occurs
+	serverFiles = tempDir
+	mainWindow.webContents.send('list', tempDir );
 });
 
 

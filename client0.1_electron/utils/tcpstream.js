@@ -17,7 +17,7 @@ var events = require('events');
 var tempDir = []
 // Create an eventEmitter object
 var obj = new events.EventEmitter();
-
+var user_data = new events.EventEmitter();
 
 var server_client_connections = []
  /**
@@ -31,6 +31,7 @@ function runTCP_Server(port, dir) {
         console.log('Reading Dir ...' );
         console.log(data);
         tempDir = data
+        user_data.emit("tempDir", tempDir);
     })
     
     server.on('connection', function (socket) {
@@ -268,6 +269,7 @@ function upload2server(params) {
 }
 
 function loadListFormServer(server) {
+    
     var i = 0
     console.log('client_server_connections.length : ' + client_server_connections.length);
     if(client_server_connections.length >= 1){
@@ -278,6 +280,7 @@ function loadListFormServer(server) {
                 console.log('Response Client : ' + response);
                 i = response
                 client_server_connections[element.server].loadable = response
+                user_data.emit("client_server_connections", client_server_connections);
             });
         });
     }
@@ -348,6 +351,8 @@ function download(dpath, file, server) {
                 const isReady = WriteStream.write(data);
                 if (log) {
                     obj.emit("downloading", {finishSize: inpu_size, size: info, file: file, server: server});
+
+                    
                 }
                 if(!isReady){
                     //wird der Inputstream gestoppt
@@ -460,6 +465,7 @@ module.exports = {
     upload: upload,
     download: download,
     traffic: obj,
+    user: user_data,
     setlog: setLog,
     list: loadListFormServer,
     login: login,
