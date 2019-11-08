@@ -50,7 +50,7 @@ function runTCP_Server(port, dir) {
 
             const readStream = fs.createReadStream(paath);
             console.log(fs.lstatSync(paath));
-            var WriteStream = server.stream('download', fs.lstatSync(paath).size);
+            var WriteStream = server.stream('download' + info.path, fs.lstatSync(paath).size);
             readStream.on('data', function(data){
                 console.log('Server // data download');
 
@@ -311,7 +311,7 @@ function download(dpath, file, server) {
 
         client_sockets[server].emit('download', {'path': file, 'client': server});
 
-        client_sockets[server].on('download', function (readStream, info) {
+        client_sockets[server].on('download' + file, function (readStream, info) {
             console.log(info);
             console.log(paathh);
             var inpu_size = 0    
