@@ -31,11 +31,12 @@ ipcRenderer.on('loadClients', function(e, data){
 
 ipcRenderer.on('DOM', function(event, data){
     
-    console.log("DOM Event ID : " + data.id);
-    console.log("DOM Event val : " + data.val);
+    //console.log("DOM Event ID : " + data.id);
+    console.log(data.val);
     console.log("DOM Event show : " + data.show);
 
     if(data.val && data.id != undefined){
+        DownloadProcess(data)
         $( data.id ).val(data.val)
         $( data.id ).html(data.val)
        }
@@ -49,7 +50,31 @@ ipcRenderer.on('DOM', function(event, data){
     }
     });
 
-
+function DownloadProcess(d) {
+    //data = {finishSize: inpu_size, size: info, file: file, server: server}
+    //{element.server}progress${file.filename}
+var data = d.val
+console.log(d.id);
+    var finishSize =  data.finishSize.toFixed(2)
+    var size = data.size.toFixed(2)
+    console.log(finishSize);
+    //console.log(prog);
+    console.log('size');
+    console.log(size);
+    size = size / 1000000
+    size = size.toFixed(2);
+   
+    console.log(size);
+    console.log(finishSize);
+    var prog = finishSize / size * 100
+    prog = prog.toFixed(2);
+    var progid = data.server + "progress" + data.file
+    var elem = document.getElementById(progid);
+    elem.style.width = prog + "%";
+    //$(progid).css('width', prog + "%" )
+    console.log(prog + "%");
+    console.log(progid);
+}
     
 ipcRenderer.on('ip', function(event, data){
     
@@ -159,7 +184,13 @@ function serverList(data, id) {
                             
                             <td data-title="Größe">${file.size}</td>
                             
-                            <td data-title="Download"> <i onclick="DFFS(${element.server},'${file.filename}');" class="c material-icons pmd-sm pmd-accordion-icon-left">file_download</i></td>
+                            <td data-title="Download"> 
+                                <i onclick="DFFS('${element.server}','${file.filename}');" class="c material-icons pmd-sm pmd-accordion-icon-left">file_download</i>
+                                <div id="progress" class=" progress-rounded progress progress-striped pmd-progress active">
+                                    <div class="progress-bar progress-bar-success" id="${element.server}progress${file.filename}" style="width: 0%;">
+                                    </div>
+                                </div>
+                            </td>
 
                         </tr>`
         });
