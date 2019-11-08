@@ -259,8 +259,11 @@ ipcMain.on('ipscan', (event, data) => {
     console.log("DOM Data : " + data);    
 })
 ipcMain.on('tcpconnect', (event, data) => {
-	console.log("tcpconnect Data : " + data);
-	console.log("user data to login : " + user);
+	console.log("tcpconnect Data : ");
+	console.log(data);
+	console.log("tcpconnect user : ");
+	console.log(user);
+
 	tcp.runClient(data,8090)
 	var applogin = {data: applogindata, ip: localip }
 	tcp.login(applogin)
@@ -765,7 +768,7 @@ function ipscan(data){
 					alive.push(host);	
 					console.log("Alive Host on IP = " + host)		  		
 				}
-				console.log("round = " + rounds)	
+				//console.log("round = " + rounds)	
 				
 				rounds++
 				if (rounds == a.length) {
@@ -799,7 +802,7 @@ async function getAliveHosts(data) {
 					alive.push(host);	
 					console.log("Alive Host on IP = " + host)		  		
 				}
-				console.log("round = " + rounds)	
+				//console.log("round = " + rounds)	
 				
 				rounds++
 				if (rounds == a.length) {

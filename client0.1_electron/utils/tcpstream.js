@@ -14,7 +14,7 @@ var log = true
 var crypto = require('crypto');
 // Import events module
 var events = require('events');
-
+var tempDir = []
 // Create an eventEmitter object
 var obj = new events.EventEmitter();
 
@@ -27,7 +27,11 @@ var server_client_connections = []
  */
 function runTCP_Server(port, dir) {
     console.log('Try Starting TCP Server ...' );
-    var dirList = readDir(dir)
+    readDir(dir, function(data){
+        console.log('Reading Dir ...' );
+        console.log(data);
+        tempDir = data
+    })
     
     server.on('connection', function (socket) {
         
@@ -109,60 +113,9 @@ function runTCP_Server(port, dir) {
             })
         });
         socket.on('list', function (req, callback) {
-            dirList = readDir(dir)
+            //dirList = readDir(dir)
             //console.log(dirList)
-            var out = []
-            var algo = 'md5';
-            fs.readdir(dir, (err, files) => {
-                //console.log("files : " +  JSON.stringify(files));
-                var i = 0  
-                files.forEach(element => {    
-
-                    
-                    
-                    
-                    fs.lstat(path.join(dir, element), (err, stats) => {
-                        
-                        //console.log(`Is file: ${stats.isFile()}`);
-			            //console.log(`Is directory: ${stats.isDirectory()}`);
-                        var FileSize = stats.size / 1000000;
-                        //console.log(FileSize);
-                        FileSize = Math.round(FileSize)
-                        var sizeMGB = 0
-                        if(FileSize >= 1000){
-                            sizeMGB = FileSize / 1000
-                            sizeMGB = sizeMGB + " GB"
-                        }else{
-                            sizeMGB = FileSize + " MB"
-                        }
-
-                        if(stats.isFile()){
-                            var shasum = crypto.createHash(algo);
-
-                            var s = fs.ReadStream(path.join(dir, element));
-                            s.on('data', function(d) { shasum.update(d); });
-
-                            s.on('end', function() {
-                                i++
-                                var d = shasum.digest('hex');
-                                console.log(d);
-                                
-                                out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB, fileuuid: d  })
-                                if(i == files.length){
-                                    console.log("Out " + out);
-                                    callback(out);
-                                    out = ""
-                                }
-                            }); 
-                        }
-                           
-                        //console.log(out);
-                        //console.log("i " + i);
-                        //console.log("files.length " + files.length);
-                        
-                    });
-                }); 
-              });
+            callback(tempDir);
         });
         socket.on('close', function() {
             console.log('Server // Client closed Connection ');
@@ -194,19 +147,59 @@ function stopTCP_Server(port) {
  * @param dir string
  * @return Array
  */
-function readDir(dir) {
-    var out
-   // console.log("dir : " + dir);
-
+function readDir(dir, callback) {
+    var out = []
+    var algo = 'md5';
     fs.readdir(dir, (err, files) => {
-       // console.log("files : " +  JSON.stringify(files));
-        out = files
-        files.forEach(file => {
-          //console.log(file);
-        });
-        
-      });
-      return out
+        //console.log("files : " +  JSON.stringify(files));
+        var i = 0  
+        files.forEach(element => {    
+
+            
+            
+            
+            fs.lstat(path.join(dir, element), (err, stats) => {
+                
+                //console.log(`Is file: ${stats.isFile()}`);
+                //console.log(`Is directory: ${stats.isDirectory()}`);
+                var FileSize = stats.size / 1000000;
+                //console.log(FileSize);
+                FileSize = Math.round(FileSize)
+                var sizeMGB = 0
+                if(FileSize >= 1000){
+                    sizeMGB = FileSize / 1000
+                    sizeMGB = sizeMGB + " GB"
+                }else{
+                    sizeMGB = FileSize + " MB"
+                }
+
+                if(stats.isFile()){
+                    var shasum = crypto.createHash(algo);
+
+                    var s = fs.ReadStream(path.join(dir, element));
+                    s.on('data', function(d) { shasum.update(d); });
+
+                    s.on('end', function() {
+                        i++
+                        var d = shasum.digest('hex');
+                        console.log(d);
+                        
+                        out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB, fileuuid: d  })
+                        if(i == files.length){
+                            console.log("Out " + out);
+                            callback(out);
+                            out = ""
+                        }
+                    }); 
+                }
+                   
+                //console.log(out);
+                //console.log("i " + i);
+                //console.log("files.length " + files.length);
+                
+            });
+        }); 
+    });
 }
 
 
