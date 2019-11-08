@@ -185,6 +185,7 @@ function readDir(dir, callback) {
                         console.log(d);
                         
                         out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB, fileuuid: d  })
+                        user_data.emit("tempDir", out);
                         if(i == files.length){
                             console.log("Out " + out);
                             callback(out);
