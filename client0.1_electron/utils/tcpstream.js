@@ -122,7 +122,7 @@ function runTCP_Server(port, dir) {
                     
                     
                     fs.lstat(path.join(dir, element), (err, stats) => {
-                        i++
+                        
                         //console.log(`Is file: ${stats.isFile()}`);
 			            //console.log(`Is directory: ${stats.isDirectory()}`);
                         var FileSize = stats.size / 1000000;
@@ -143,6 +143,7 @@ function runTCP_Server(port, dir) {
                             s.on('data', function(d) { shasum.update(d); });
 
                             s.on('end', function() {
+                                i++
                                 var d = shasum.digest('hex');
                                 console.log(d);
                                 
