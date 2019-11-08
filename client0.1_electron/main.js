@@ -276,8 +276,8 @@ ipcMain.on('tcpdisconnect', (event, data) => {
 ipcMain.on('tcpstartServer', (event, data) => {
 	console.log("tcp start server Data : " + data);
 	tcp.runServer(8090, applogindata.config_updir, applogindata.config_user);
-	ipscan("192.168.178.")
-	
+	//ipscan("192.168.178.")
+	getAliveHosts("192.168.178.")
 	
 	
 
@@ -779,6 +779,40 @@ function ipscan(data){
 		
 	
 }
+
+
+async function getAliveHosts(data) {
+    var a = [];
+	alive = [];
+	let index 
+	for (index = 0; index < 245; index++) {
+		var ip = data + index
+		a.push(ip);
+	}
+	if(index >= 244){
+		
+		var rounds = 0
+		a.forEach(function(host){
+			
+			ping.sys.probe(host, function(isAlive){
+				if(isAlive == true){
+					alive.push(host);	
+					console.log("Alive Host on IP = " + host)		  		
+				}
+				console.log("round = " + rounds)	
+				
+				rounds++
+				if (rounds == a.length) {
+					console.log("Finish IP Scan = ")
+					mainWindow.webContents.send('ip', {name: "network", "val": alive });
+					return alive
+				}
+			});
+		});
+	}
+		
+}
+
 
 // global Key register with callback 
 // The callback are Fired on Pressed registrated key

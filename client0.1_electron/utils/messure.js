@@ -29,7 +29,6 @@ function steamDataSize(BufferLength, upload, ip){
  * @returns {number} speed
  */
 function speedtest(size, time){
-    var nowTime = Date.now()
     var speed = size / time;
     var out = speed.toFixed(2)
     return out;
