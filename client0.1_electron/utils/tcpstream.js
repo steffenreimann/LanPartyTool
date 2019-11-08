@@ -11,7 +11,7 @@ var Socket = require('fast-tcp').Socket;
 var client_sockets = [];
 var messure = require('./messure.js'); 
 var log = true
-
+var crypto = require('crypto');
 // Import events module
 var events = require('events');
 
@@ -112,10 +112,22 @@ function runTCP_Server(port, dir) {
             dirList = readDir(dir)
             //console.log(dirList)
             var out = []
+            var algo = 'md5';
             fs.readdir(dir, (err, files) => {
                 //console.log("files : " +  JSON.stringify(files));
                 var i = 0  
-                files.forEach(element => {        
+                files.forEach(element => {    
+
+                    
+                    var shasum = crypto.createHash(algo);
+
+                    var s = fs.ReadStream(path.join(dir, element));
+                    s.on('data', function(d) { shasum.update(d); });
+                    s.on('end', function() {
+                    var d = shasum.digest('hex');
+                    console.log(d);
+                    });    
+
                     fs.lstat(path.join(dir, element), (err, stats) => {
                         i++
                         //console.log(`Is file: ${stats.isFile()}`);
@@ -130,7 +142,7 @@ function runTCP_Server(port, dir) {
                         }else{
                             sizeMGB = FileSize + " MB"
                         }
-                        out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB })
+                        out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB, fileuuid: d  })
                         //console.log(out);
                         //console.log("i " + i);
                         //console.log("files.length " + files.length);
@@ -297,21 +309,32 @@ function download(dpath, file, server) {
     console.log(file);
     console.log(server);
     console.log('Client Download request to server');
+    var fileAcc = true
             //var base = path.basename(info.path)
             ///var tmp_path = path.join(dir, str + base)
             //console.log(base);
             //console.log(tmp_path);
 
-    
-    
-    console.log(acc(paathh))
-    if(!acc(paathh)){
-    
-        var WriteStream = fs.createWriteStream(paathh);
+    fs.access(paathh, fs.F_OK, (err) => {
+        if (err) {
+            //console.error(err)
+            fileAcc = true
+        }else{
+            fileAcc = true
+            var paathh = path.join(dpath, file + '(1)')
+        //file exists
+        }
+        
+    })
 
+
+    if(fileAcc){
+        console.log("fileAcc");
+        console.log(fileAcc);
         client_sockets[server].emit('download', {'path': file, 'client': server});
 
         client_sockets[server].on('download' + file, function (readStream, info) {
+            var WriteStream = fs.createWriteStream(paathh);
             console.log(info);
             console.log(paathh);
             var inpu_size = 0    
@@ -348,6 +371,7 @@ function download(dpath, file, server) {
             });
             readStream.on('error', function(data){
                 WriteStream.error();
+                WriteStream.end();
                 console.log('-- ERROR -- client');
                 console.log(data);
                 

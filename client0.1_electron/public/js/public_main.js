@@ -67,7 +67,7 @@ console.log(d.id);
     console.log(size);
     console.log(finishSize);
     var prog = finishSize / size * 100
-    prog = prog.toFixed(2);
+    prog = prog.toFixed(1);
     var progid = data.server + "progress" + data.file
     var elem = document.getElementById(progid);
     elem.style.width = prog + "%";
