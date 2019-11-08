@@ -343,14 +343,14 @@ function download(dpath, file, server) {
                 console.log(fullTime);
                 console.log(speed);
                 //console.log(datas); 
-                WriteStream = ""
+                
                 return messure.streamAnalyse(false, speed, inpu_size, server);
             });
             readStream.on('error', function(data){
                 WriteStream.error();
                 console.log('-- ERROR -- client');
                 console.log(data);
-                WriteStream = ""
+                
                 return data
             })  
         });

@@ -232,6 +232,7 @@ ipcMain.on('applogin', (event, data) => {
 	console.log('applogindata ');
 	console.log(applogindata);
 	mainWindow.webContents.send('applogin', con.userCfg );
+	mainWindow.webContents.send('ip', {name: "localhost", "val": NetworkInterfaces()} );
 	if(pwWindow != undefined){
 		pwWindow.hide();
 		pwWindow = null;
@@ -276,7 +277,7 @@ ipcMain.on('tcpstartServer', (event, data) => {
 	console.log("tcp start server Data : " + data);
 	tcp.runServer(8090, applogindata.config_updir, applogindata.config_user);
 	ipscan("192.168.178.")
-	mainWindow.webContents.send('ip', {name: "localhost", "val": NetworkInterfaces()} );
+	
 	
 	
 
