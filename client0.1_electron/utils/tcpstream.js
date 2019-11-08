@@ -123,11 +123,7 @@ function runTCP_Server(port, dir) {
 
                     var s = fs.ReadStream(path.join(dir, element));
                     s.on('data', function(d) { shasum.update(d); });
-                    s.on('end', function() {
-                    var d = shasum.digest('hex');
-                    console.log(d);
-                    });    
-
+                    
                     fs.lstat(path.join(dir, element), (err, stats) => {
                         i++
                         //console.log(`Is file: ${stats.isFile()}`);
@@ -142,7 +138,13 @@ function runTCP_Server(port, dir) {
                         }else{
                             sizeMGB = FileSize + " MB"
                         }
-                        out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB, fileuuid: d  })
+                        s.on('end', function() {
+                            var d = shasum.digest('hex');
+                            console.log(d);
+                            out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB, fileuuid: d  })
+                            });    
+        
+                        
                         //console.log(out);
                         //console.log("i " + i);
                         //console.log("files.length " + files.length);
