@@ -1,5 +1,6 @@
 const electron = require('electron');
 const {ipcRenderer} = electron;
+const {clipboard} = electron;
 const ul = document.querySelector('ul');
 const saltRounds = 10;
 
@@ -99,7 +100,13 @@ ipcRenderer.on('split-info', function(event, data){
      
     });
 
+function writeClipboard(data) {
+    clipboard.writeText(data)
+    console.log(clipboard.readText())
+}
 
+    
+   
 //ul.addEventListener('dblclick', removeItem);
 var localipHTML = ""
 var networkHTML = ""
@@ -108,7 +115,7 @@ function ipList(data, id) {
     var out = ""
     if(id == "network"){
         networkHTML += `<tr>
-        <td data-title=""><i onclick="document.execCommand(${data})" class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
+        <td data-title="Art"><i onclick="writeClipboard('${data}')" class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
         <td data-title="Name">Hostname</td>
         
         <td data-title="IP">${data}</td>
@@ -119,7 +126,7 @@ function ipList(data, id) {
     if(id == "localhost"){
         
         localipHTML += `<tr>
-        <td data-title=""><i  onclick="document.execCommand(${data.ip})" class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
+        <td data-title=""><i  onclick="writeClipboard('${data.ip}')" class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
         <td data-title="Name">${data.name}</td>
         
         <td data-title="IP">${data.ip}</td>
@@ -133,6 +140,7 @@ function ipList(data, id) {
     
     out = ""
 }
+
 
 
 

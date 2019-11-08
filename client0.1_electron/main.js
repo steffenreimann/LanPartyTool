@@ -46,6 +46,11 @@ const mainMenuTemplate =  [
 		  }
 		},
 		{
+		  label:'Einfügen',
+		  accelerator:process.platform == 'darwin' ? 'Command+M' : 'Ctrl+V',
+		  role: 'paste'
+		},
+		{
 		  label: 'Quit',
 		  accelerator:process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
 				  role: 'quit'
