@@ -119,10 +119,7 @@ function runTCP_Server(port, dir) {
                 files.forEach(element => {    
 
                     
-                    var shasum = crypto.createHash(algo);
-
-                    var s = fs.ReadStream(path.join(dir, element));
-                    s.on('data', function(d) { shasum.update(d); });
+                    
                     
                     fs.lstat(path.join(dir, element), (err, stats) => {
                         i++
@@ -138,21 +135,30 @@ function runTCP_Server(port, dir) {
                         }else{
                             sizeMGB = FileSize + " MB"
                         }
-                        s.on('end', function() {
-                            var d = shasum.digest('hex');
-                            console.log(d);
-                            out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB, fileuuid: d  })
-                            });    
-        
-                        
+
+                        if(stats.isFile()){
+                            var shasum = crypto.createHash(algo);
+
+                            var s = fs.ReadStream(path.join(dir, element));
+                            s.on('data', function(d) { shasum.update(d); });
+
+                            s.on('end', function() {
+                                var d = shasum.digest('hex');
+                                console.log(d);
+                                
+                                out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB, fileuuid: d  })
+                                if(i == files.length){
+                                    console.log("Out " + out);
+                                    callback(out);
+                                    out = ""
+                                }
+                            }); 
+                        }
+                           
                         //console.log(out);
                         //console.log("i " + i);
                         //console.log("files.length " + files.length);
-                        if(i == files.length){
-                            console.log("Out " + out);
-                            callback(out);
-                            out = ""
-                        }
+                        
                     });
                 }); 
               });
