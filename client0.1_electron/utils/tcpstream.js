@@ -312,7 +312,7 @@ function download(dpath, file, server) {
         client_sockets[server].emit('download', {'path': file, 'client': server});
 
         client_sockets[server].on('download', function (readStream, info) {
-            console.log("info");
+            console.log(info);
             console.log(paathh);
             var inpu_size = 0    
             readStream.on('data', function(data){
@@ -322,7 +322,7 @@ function download(dpath, file, server) {
                 sectionTime = sectionTime / 1000;
                 const isReady = WriteStream.write(data);
                 if (log) {
-                    obj.emit("downloading", inpu_size);
+                    obj.emit("downloading", {finishSize: inpu_size, size: info, file: file, server: server});
                 }
                 if(!isReady){
                     //wird der Inputstream gestoppt
