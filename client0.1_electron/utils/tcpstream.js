@@ -192,6 +192,8 @@ function readDir(dir, callback) {
                             out = ""
                         }
                     }); 
+                }else{
+                    i++
                 }
                    
                 //console.log(out);
