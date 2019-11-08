@@ -301,7 +301,7 @@ $( "#tcpserver" ).click(function() {
     })
   });
 $( "#list" ).click(function() {
-    console.log('tcp server');
+    console.log('tcp list');
     ipcRenderer.send('list' , () => { 
         console.log("Event sent."); 
     })

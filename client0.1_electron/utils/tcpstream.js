@@ -189,6 +189,7 @@ function readDir(dir, callback) {
                         if(i == files.length){
                             console.log("Out " + out);
                             callback(out);
+                            user_data.emit("tempDir", out);
                             out = ""
                         }
                     }); 
@@ -277,7 +278,8 @@ function loadListFormServer(server) {
     
         client_server_connections.forEach(element => {
             client_sockets[element.server].emit('list' , "1", function (response) {
-                console.log('Response Client : ' + response);
+                console.log('Response Client : ');
+                console.log(response);
                 i = response
                 client_server_connections[element.server].loadable = response
                 user_data.emit("client_server_connections", client_server_connections);
