@@ -20,7 +20,12 @@ ipcRenderer.on('clientValid', function(e, data){
 });
 ipcRenderer.on('list', function(e, data){
     console.log(data);
-    serverList(data)
+    serverList(data, "#servers")
+});
+ipcRenderer.on('loadClients', function(e, data){
+    console.log('loadClients');
+    console.log(data);
+   // clientList(data)
 });
 
 ipcRenderer.on('DOM', function(event, data){
@@ -43,6 +48,43 @@ ipcRenderer.on('DOM', function(event, data){
     }
     });
 
+
+    
+ipcRenderer.on('ip', function(event, data){
+    
+    console.log("ip Event ID : " + data.name);
+    console.log("ip Event val : " + data.val);
+
+    
+
+    if(data.name == "localhost"){
+        //serverList(data, "#servers")
+        data.val.forEach(element => {
+            console.log(element);
+            ipList(element, data.name)
+        });
+    }else if(data.name == "network"){
+        data.val.forEach(element => {
+            ipList(element, data.name)
+            console.log("network : " + element);
+        });
+    }
+    });
+ipcRenderer.on('reloadVAR', function(event, data){
+    
+    console.log("reloadVAR : " + data.user);
+    
+
+    data.localip.forEach(element => {
+        ipList(element, "localhost")
+        console.log("network : " + element);
+    });
+    data.alive.forEach(element => {
+        ipList(element, "network")
+        console.log("network : " + element);
+    });
+    });
+
 ipcRenderer.on('split-info', function(event, data){
     console.log("File Size : " + data);
     console.log("File time : " + data.time);
@@ -59,8 +101,42 @@ ipcRenderer.on('split-info', function(event, data){
 
 
 //ul.addEventListener('dblclick', removeItem);
+var localipHTML = ""
+var networkHTML = ""
+function ipList(data, id) {
+    var fileOut = ""
+    var out = ""
+    if(id == "network"){
+        networkHTML += `<tr>
+        <td data-title=""><i class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
+        <td data-title="Name">Hostname</td>
+        
+        <td data-title="IP">${data}</td>
 
-function serverList(data) {
+    </tr>`
+    $("#network").html(networkHTML)
+    }
+    if(id == "localhost"){
+        
+        localipHTML += `<tr>
+        <td data-title=""><i class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
+        <td data-title="Name">${data.name}</td>
+        
+        <td data-title="IP">${data.ip}</td>
+
+    </tr>`
+    $("#localhost").html(localipHTML)
+    }
+
+
+   // $(id).html(out)
+    
+    out = ""
+}
+
+
+
+function serverList(data, id) {
     var fileOut = ""
     var out = ""
     data.forEach(element => {
@@ -118,13 +194,13 @@ function serverList(data) {
         fileOut = ""
     });
 
-    $("#servers").html(out)
+    $(id).html(out)
     
     out = ""
 }
 
 
-  
+
 function removeItem(e){
       console.log('hallo');
     }
@@ -191,6 +267,12 @@ $( "#list" ).click(function() {
         console.log("Event sent."); 
     })
   });
+$( "#clients" ).click(function() {
+    console.log('reload clients');
+    ipcRenderer.send('loadClients' , () => { 
+        console.log("Event sent."); 
+    })
+  });
  
 
 function DFFS(server, file) {
@@ -198,7 +280,8 @@ function DFFS(server, file) {
         console.log("Event sent to nodejs"); 
     })
 }
-  
+
+
 function tcpdisconnect(server) {
     
     ipcRenderer.send('tcpdisconnect', server , () => { 
@@ -227,3 +310,6 @@ ipcRenderer.on('fileData', (event, data) => {
 })
 
 
+ipcRenderer.send('reloadVAR', () => { 
+    console.log("Event sent."); 
+})

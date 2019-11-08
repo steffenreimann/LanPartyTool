@@ -81,6 +81,19 @@
 			</h4>
 		</div>
 		<div id="collapseFour4" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+				<table class="table pmd-table table-striped table-mc-red">
+						<thead>
+							<tr>
+							<th>Art</th>
+							<th>Hostname</th>
+							
+							<th>IP</th>
+							</tr>
+						</thead>
+						<tbody id="network">	
+							
+						</tbody>
+						</table>
 			<div class="panel-body">
                 <div class="form-group pmd-textfield">
 					<label for="IpAddress" class="control-label">
@@ -93,7 +106,10 @@
 						Name
 					</label>
 					<input type="text" title="test" id="tcpconnectname" class=" form-control" value="Nickname" >
-                </div>
+				</div>
+				
+				
+
                 <button id="tcpconnect" type="button" class="btn btn-primary">Connect</button >
 				<div id="servers" class="form-group pmd-textfield">
 					
@@ -110,14 +126,27 @@
 			<h4 class="panel-title">
 				<a data-toggle="collapse" data-parent="#accordionServer" href="#collapseServer" aria-expanded="false" aria-controls="collapseServer"  data-expandable="false">
 					<i class="material-icons pmd-sm pmd-accordion-icon-left">account_box</i> Server
-					<i id="list" class="material-icons pmd-sm pmd-accordion-icon-right">autorenew</i>
+					<i id="clients" class="material-icons pmd-sm pmd-accordion-icon-right">autorenew</i>
 				</a> 
 				
 			</h4>
 		</div>
 		<div id="collapseServer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingServer">
+
+			<table class="table pmd-table table-striped table-mc-red">
+				<thead>
+					<tr>
+						<th>Art</th>
+						<th>Adapter Name</th>
+						<th>IP</th>
+					</tr>
+				</thead>
+				<tbody id="localhost">				
+				</tbody>
+			</table>
+
 			<div class="panel-body">
-                
+				
                 <button id="tcpserver" type="button" class="btn btn-primary">Start TCP Server</button >
                 
 				<div id="clients" class="form-group pmd-textfield">

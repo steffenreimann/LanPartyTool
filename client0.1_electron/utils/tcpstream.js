@@ -33,9 +33,10 @@ function runTCP_Server(port, dir) {
         
         console.log(server_client_connections);
         console.log('TCP Server ... Client Connection ...');
-        socket.on('login', function (data) {
-            console.log('Trying to login: ' + JSON.stringify(data));
-            server_client_connections.push({socket: socket, ip: "data.ip", username: data.config_user, user_uuid: data.config_uuid});
+        socket.on('login', function (d) {
+            console.log('Trying to login: ' + d.ip);
+            server_client_connections.push({socket: socket, ip: d.ip, username: d.data.config_user, user_uuid: d.data.config_uuid});
+            console.log(server_client_connections[0]);
         });
         socket.on('LT-Broadcast', function (data) {
           console.log('LT-Broadcast');
@@ -152,6 +153,10 @@ function runTCP_Server(port, dir) {
     });
     
     server.listen(port);
+}
+
+function loadClients() {
+    return server_client_connections
 }
 
  /**
@@ -429,5 +434,6 @@ module.exports = {
     traffic: obj,
     setlog: setLog,
     list: loadListFormServer,
-    login: login
+    login: login,
+    loadClients: loadClients
   };

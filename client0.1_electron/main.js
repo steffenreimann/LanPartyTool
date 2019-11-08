@@ -13,7 +13,9 @@ var ping = require('ping');
 var splitFile = require('./split-file.js'); 
 var Files = require('./utils/files.js'); 
 const {app, BrowserWindow, Menu, ipcMain, globalShortcut} = electron;
-
+var localip = []
+var alive = [];
+var serverFiles = []
 let mainWindow;
 let pwWindow;
 var user = {uuid: "", name: "",ip: ""};
@@ -104,6 +106,13 @@ if (!configHelper.Init()) {
 	configHelper.InitDirs();
 	console.log('Created directory' + configPath.GetBaseDir());
 }
+
+
+
+'use strict';
+
+var os = require('os');
+
 
 
 
@@ -247,7 +256,8 @@ ipcMain.on('tcpconnect', (event, data) => {
 	console.log("tcpconnect Data : " + data);
 	console.log("user data to login : " + user);
 	tcp.runClient(data,8090)
-	tcp.login(applogindata)
+	var applogin = {data: applogindata, ip: localip }
+	tcp.login(applogin)
 	//connectToServer(data);
 })
 ipcMain.on('tcpdisconnect', (event, data) => {
@@ -259,12 +269,18 @@ ipcMain.on('tcpdisconnect', (event, data) => {
 
 ipcMain.on('tcpstartServer', (event, data) => {
 	console.log("tcp start server Data : " + data);
-	tcp.runServer(8090, applogindata.config_updir);
+	tcp.runServer(8090, applogindata.config_updir, applogindata.config_user);
+	ipscan("192.168.178.")
+	mainWindow.webContents.send('ip', {name: "localhost", "val": NetworkInterfaces()} );
+	
+	
+
 	//connectToServer(data);
 })
 ipcMain.on('list', (event, data) => {
 	//console.log("tcp list server Data : " + JSON.stringify(tcp.list(0)));
-	mainWindow.webContents.send('list', tcp.list(0) );
+	serverFiles = tcp.list(0)
+	mainWindow.webContents.send('list', serverFiles );
 	//connectToServer(data);
 })
 
@@ -284,6 +300,17 @@ ipcMain.on('loadPath', (event, data) => {
 	openPath();
 })
 
+ipcMain.on('loadClients', (event, dataa) => {
+	var data = tcp.loadClients()
+	console.log("loadClients: " + data);
+	mainWindow.webContents.send('loadClients', data );
+	
+})
+
+ipcMain.on('reloadVAR', (event, data) => {
+	mainWindow.webContents.send('reloadVAR', {localip: localip, alive: alive, user: user, serverFiles: serverFiles} );
+})
+
 // register event listener
 tcp.traffic.on("downloading", function(data) {
 	// process data when someEvent occurs
@@ -299,7 +326,21 @@ tcp.traffic.on("uploading", function(data) {
 
 
 
-
+function NetworkInterfaces() {
+	var ifaces = os.networkInterfaces();
+	Object.keys(ifaces).forEach(function (ifname) {
+		ifaces[ifname].forEach(function (iface) {
+			//'IPv4' !== iface.family || 
+			if (iface.internal !== false) {
+			// skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+			return null;
+			}
+			console.log(ifname, iface.address);
+			localip.push({name: ifname, ip: iface.address}) 
+		});
+	});
+	return localip
+}
 
 
 function savefile(data) {
@@ -702,22 +743,35 @@ function speedtest(size, time){
  */
 function ipscan(data){
 	var a = [];
+	alive = [];
 	let index 
 	for (index = 0; index < 245; index++) {
-		var ip = "192.168.178." + index
+		var ip = data + index
 		a.push(ip);
 	}
 	if(index >= 244){
-		var alive = [];
+		
+		var rounds = 0
 		a.forEach(function(host){
+			
 			ping.sys.probe(host, function(isAlive){
 				if(isAlive == true){
 					alive.push(host);	
 					console.log("Alive Host on IP = " + host)		  		
 				}
+				console.log("round = " + rounds)	
+				
+				rounds++
+				if (rounds == a.length) {
+					console.log("Finish IP Scan = ")
+					mainWindow.webContents.send('ip', {name: "network", "val": alive });
+					return alive
+				}
 			});
 		});
 	}
+		
+	
 }
 
 // global Key register with callback 
