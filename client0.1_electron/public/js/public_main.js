@@ -23,10 +23,7 @@ ipcRenderer.on('list', function(e, data){
     console.log(data);
     serverList(data, "#servers")
 });
-ipcRenderer.on('loadClients', function(e, data){
 ipcRenderer.on('console', function(e, data){
-
-    console.log('NodeJS Console Log');
     console.log(data);
     
 });
