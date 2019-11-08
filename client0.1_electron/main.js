@@ -335,7 +335,7 @@ tcp.traffic.on("uploading", function(data) {
 tcp.user.on("tempDir", function(tempDir) {
 	// process data when someEvent occurs
 	//serverFiles = tempDir
-	//mainWindow.webContents.send('list', serverFiles );
+	mainWindow.webContents.send('console', tempDir );
 });
 
 tcp.user.on("client_server_connections", function(tempDir) {

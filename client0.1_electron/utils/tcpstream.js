@@ -155,10 +155,6 @@ function readDir(dir, callback) {
         //console.log("files : " +  JSON.stringify(files));
         var i = 0  
         files.forEach(element => {    
-
-            
-            
-            
             fs.lstat(path.join(dir, element), (err, stats) => {
                 
                 //console.log(`Is file: ${stats.isFile()}`);
