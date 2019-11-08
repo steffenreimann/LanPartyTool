@@ -114,8 +114,8 @@ function ipList(data, id) {
     var fileOut = ""
     var out = ""
     if(id == "network"){
-        networkHTML += `<tr>
-        <td data-title="Art"><i onclick="writeClipboard('${data}')" class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
+        networkHTML += `<tr onclick="writeClipboard('${data}')">
+        <td data-title="Art"><i  class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
         <td data-title="Name">Hostname</td>
         
         <td data-title="IP">${data}</td>
@@ -125,8 +125,8 @@ function ipList(data, id) {
     }
     if(id == "localhost"){
         
-        localipHTML += `<tr>
-        <td data-title=""><i  onclick="writeClipboard('${data.ip}')" class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
+        localipHTML += `<tr onclick="writeClipboard('${data.ip}')">
+        <td data-title=""><i class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
         <td data-title="Name">${data.name}</td>
         
         <td data-title="IP">${data.ip}</td>
