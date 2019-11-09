@@ -1,0 +1,34 @@
+{
+    server: {
+        incommingClients: {
+            ip:
+            uuid:
+            name:
+            loadable:[{
+                file:
+                size:
+                
+            }]
+            }
+        localIPs
+    },
+    client: {
+        outgoingClients:{
+            host: host, 
+            port: port,
+            server: server, 
+            loadable: [{
+                filename: 
+                isFile: 
+                isDir: 
+                size:  
+                fileuuid:  
+                complete:
+            }]
+            }
+        networkIPs:
+    }
+    user
+}
+
+
