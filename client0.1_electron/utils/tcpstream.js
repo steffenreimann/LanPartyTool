@@ -165,13 +165,7 @@ function readDir(dir, callback) {
                 var FileSize = stats.size / 1000000;
                 //console.log(FileSize);
                 FileSize = Math.round(FileSize)
-                var sizeMGB = 0
-                if(FileSize >= 1000){
-                    sizeMGB = FileSize / 1000
-                    sizeMGB = sizeMGB + " GB"
-                }else{
-                    sizeMGB = FileSize + " MB"
-                }
+                
                 
                 if(stats.isFile()){
                     var shasum = crypto.createHash(algo);
@@ -184,12 +178,12 @@ function readDir(dir, callback) {
                         var d = shasum.digest('hex');
                         console.log(d);
                         
-                        out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: sizeMGB, fileuuid: d  })
-                        user_data.emit("tempDir", out);
+                        out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: FileSize, fileuuid: d, complete: '' })
+                        //user_data.emit("tempDir", out);
                         if(i == files.length){
                             console.log("Out " + out);
                             callback(out);
-                            user_data.emit("tempDir", out);
+                            //user_data.emit("tempDir", out);
                             out = ""
                         }
                     }); 
@@ -237,6 +231,9 @@ var name = data.name
         console.log('Response Client : ' + response);
         client_server_connections.push({host: host, port: port, loadable: response, server: client_sockets.length - 1, name: name})
         console.log("Client = " + JSON.stringify(client_server_connections));
+
+        user_data.emit("client_server_connections", client_server_connections);
+
       });
 
     client_sockets[client_sockets.length - 1].on('close', function() {
@@ -370,6 +367,9 @@ function download(dpath, file, server) {
             });
             readStream.on('end', function() {
                 WriteStream.end();
+
+                //client_server_connections[server].loadable.complete = 100
+
                 console.log("File end client");
                 var fullTime = Date.now() - startTime;
                 fullTime = fullTime / 1000;

@@ -101,13 +101,16 @@ ipcRenderer.on('ip', function(event, data){
     }
     });
 ipcRenderer.on('reloadVAR', function(event, data){
-    
-    console.log("reloadVAR : " + data.user);
-    
+    networkHTML = ""
+    localipHTML = ""
+    console.log("reloadVAR : ");
+    console.log(data);
+
+    serverList(data.serverFiles, "#servers")
 
     data.localip.forEach(element => {
         ipList(element, "localhost")
-        console.log("network : " + element);
+        console.log("localhost : " + element);
     });
     data.alive.forEach(element => {
         ipList(element, "network")
@@ -147,8 +150,8 @@ function ipList(data, id) {
         <td data-title="Art"><i  class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
         <td data-title="Name">Hostname</td>
         
-        <td data-title="IP">${data}</td>
-
+        <td data-title="IP">${data} <i onclick="tcpconnect('${data}')"  class="material-icons pmd-sm pmd-accordion-icon-right">add_circle_outline</i></td>
+        
     </tr>`
     $("#network").html(networkHTML)
     }
@@ -178,6 +181,17 @@ function serverList(data, id) {
     var out = ""
     data.forEach(element => {
         element.loadable.forEach(file => {
+
+            var sizeMGB = 0
+            var FileSize = 0
+            if(FileSize >= 1000){
+                sizeMGB = FileSize / 1000
+                sizeMGB = sizeMGB + " GB"
+            }else{
+                sizeMGB = FileSize
+            }
+
+
             var filetyp = "insert_drive_file"
             if(file.isDir){
                 filetyp = "folder"
@@ -242,7 +256,13 @@ function serverList(data, id) {
     out = ""
 }
 
-
+function tcpconnect(ip) {
+    console.log('tcpconnect');
+    console.log(ip)
+    ipcRenderer.send('tcpconnect', {ip: ip, name: 'name' }, () => { 
+        console.log("Event sent."); 
+    })
+}
 
 function removeItem(e){
       console.log('hallo');
@@ -313,6 +333,13 @@ $( "#list" ).click(function() {
 $( "#clients" ).click(function() {
     console.log('reload clients');
     ipcRenderer.send('loadClients' , () => { 
+        console.log("Event sent."); 
+    })
+  });
+$( "#ipscan" ).click(function() {
+    console.log('reload ipscan');
+    networkHTML = ""
+    ipcRenderer.send('ipscan' , () => { 
         console.log("Event sent."); 
     })
   });

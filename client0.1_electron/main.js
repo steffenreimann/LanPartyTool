@@ -280,7 +280,7 @@ ipcMain.on('tcpstartServer', (event, data) => {
 	console.log("tcp start server Data : " + data);
 	tcp.runServer(8090, applogindata.config_updir, applogindata.config_user);
 	//ipscan("192.168.178.")
-	getAliveHosts("192.168.178.")
+	
 	
 	
 
@@ -289,6 +289,11 @@ ipcMain.on('tcpstartServer', (event, data) => {
 ipcMain.on('list', (event, data) => {
 	//console.log("tcp list server Data : " + JSON.stringify(tcp.list(0)));
 	tcp.list(0)
+	//connectToServer(data);
+})
+ipcMain.on('ipscan', (event, data) => {
+	//console.log("tcp list server Data : " + JSON.stringify(tcp.list(0)));
+	getAliveHosts("192.168.178.")
 	//connectToServer(data);
 })
 
@@ -316,6 +321,7 @@ ipcMain.on('loadClients', (event, dataa) => {
 })
 
 ipcMain.on('reloadVAR', (event, data) => {
+	//tcp.list(0)
 	mainWindow.webContents.send('reloadVAR', {localip: localip, alive: alive, user: user, serverFiles: serverFiles} );
 })
 
@@ -341,7 +347,8 @@ tcp.user.on("tempDir", function(tempDir) {
 tcp.user.on("client_server_connections", function(tempDir) {
 	// process data when someEvent occurs
 	serverFiles = tempDir
-	mainWindow.webContents.send('list', tempDir );
+	//mainWindow.webContents.send('list', tempDir );
+	mainWindow.webContents.send('reloadVAR', {localip: localip, alive: alive, user: user, serverFiles: serverFiles} );
 });
 
 
