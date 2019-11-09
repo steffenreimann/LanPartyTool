@@ -42,7 +42,7 @@ function runTCP_Server(port, dir) {
             console.log('Trying to login: ' + d.ip);
             server_client_connections.push({socket: socket, ip: d.ip, username: d.data.config_user, user_uuid: d.data.config_uuid});
             console.log(server_client_connections[0]);
-            runTCP_Client({ip: d.ip, name: d.data.config_user}, port)
+            runTCP_Client({ip: d.ip[1].ip, name: d.data.config_user}, port)
         });
         socket.on('LT-Broadcast', function (data) {
           console.log('LT-Broadcast');
