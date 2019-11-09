@@ -259,7 +259,11 @@ function serverList(data, id) {
 function tcpconnect(ip) {
     console.log('tcpconnect');
     console.log(ip)
-    ipcRenderer.send('tcpconnect', {ip: ip, name: 'name' }, () => { 
+    if(ip == ""){
+        var name = $( "#tcpconnectname" ).val();
+        var ip = $( "#tcpconnectip" ).val();
+    }
+    ipcRenderer.send('tcpconnect', {ip: ip, name: name }, () => { 
         console.log("Event sent."); 
     })
 }
@@ -339,7 +343,8 @@ $( "#clients" ).click(function() {
 $( "#ipscan" ).click(function() {
     console.log('reload ipscan');
     networkHTML = ""
-    ipcRenderer.send('ipscan' , () => { 
+   var ipscanVal = $( "#ipscanVal" ).val();
+    ipcRenderer.send('ipscan', ipscanVal , () => { 
         console.log("Event sent."); 
     })
   });

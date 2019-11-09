@@ -116,7 +116,14 @@ function runTCP_Server(port, dir) {
         socket.on('list', function (req, callback) {
             //dirList = readDir(dir)
             //console.log(dirList)
-            callback(tempDir);
+            readDir(dir, function(data){
+                console.log('Reading Dir ...' );
+                console.log(data);
+                tempDir = data
+                user_data.emit("tempDir", tempDir);
+                callback(tempDir);
+            })
+            
         });
         socket.on('close', function() {
             console.log('Server // Client closed Connection ');
@@ -377,7 +384,12 @@ function download(dpath, file, server) {
                 console.log(fullTime);
                 console.log(speed);
                 //console.log(datas); 
-                
+                readDir(dpath, function(data){
+                    console.log('Reading Dir ...' );
+                    console.log(data);
+                    tempDir = data
+                    user_data.emit("tempDir", tempDir);
+                })
                 return messure.streamAnalyse(false, speed, inpu_size, server);
             });
             readStream.on('error', function(data){

@@ -293,7 +293,7 @@ ipcMain.on('list', (event, data) => {
 })
 ipcMain.on('ipscan', (event, data) => {
 	//console.log("tcp list server Data : " + JSON.stringify(tcp.list(0)));
-	getAliveHosts("192.168.178.")
+	getAliveHosts(data)
 	//connectToServer(data);
 })
 

@@ -87,31 +87,23 @@
 							<th>Art</th>
 							<th>Hostname</th>
 							
-							<th>IP <i id="ipscan" class="c material-icons pmd-sm pmd-accordion-icon-right">autorenew</i></th>
+							<th>IP <input type="text" title="test" id="ipscanVal" class=" c " value="192.168.178." > <i id="ipscan" class="c material-icons pmd-sm pmd-accordion-icon-right">autorenew</i></th>
 							
 							</tr>
 						</thead>
 						<tbody id="network">	
 							
 						</tbody>
+						<tr >
+							<td data-title="Art"><i  class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
+							<td data-title="Name"><input type="text" title="test" id="tcpconnectname" class="" value="name" ></td>
+							
+							<td data-title="IP"><input type="text" title="test" id="tcpconnectip" class="" value="localhost" > <i onclick="tcpconnect('')"  class="material-icons pmd-sm pmd-accordion-icon-right">add_circle_outline</i></td>
+							
+						</tr>
 						</table>
 			<div class="panel-body">
-                <div class="form-group pmd-textfield">
-					<label for="IpAddress" class="control-label">
-						Server IP
-					</label>
-					<input type="text" title="test" id="tcpconnectip" class=" form-control" value="localhost" >
-                </div>
-                <div class="form-group pmd-textfield">
-					<label for="name" class="control-label">
-						Name
-					</label>
-					<input type="text" title="test" id="tcpconnectname" class=" form-control" value="Nickname" >
-				</div>
-				
-				
-
-                <button id="tcpconnect" type="button" class="btn btn-primary">Connect</button >
+                
 				<div id="servers" class="form-group pmd-textfield">
 					
                 </div>
