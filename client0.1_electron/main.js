@@ -187,7 +187,7 @@ ipcMain.on('splitfile', (event, path) => {
 })  
 ipcMain.on('saveConfig', (event, data) => { 
 	const readUserConfig = configHelper.LoadUserConfig(data.config_pw);
-	const cleanObject = {'config_user': data.config_user, 'config_uuid': null, tmp_path: null, 'files': [], 'config_updir': data.config_updir }
+	const cleanObject = { config_user: data.config_user, config_uuid: null, tmp_path: null, files: [], config_ServerDir: data.config_ServerDir, config_ClientDir: data.config_ClientDir }
 	if(readUserConfig.fileExists && readUserConfig.parseError){
 		return;
 	}
@@ -218,13 +218,6 @@ ipcMain.on('applogin', (event, data) => {
 	console.log(data);
 	const con = configHelper.LoadUserConfig(data.config_pw);
 	user.uuid = true;
-	console.log(con.userCfg.config_updir);
-	if(con.config_updir == '' || con.userCfg.config_updir == undefined ){
-		con.userCfg.config_updir = configPath.GetBaseDir()
-	}
-	//intiGameDir("lul", data.config_pw)
-	console.log('con.userCfg.config_updir');
-	console.log(con.userCfg.config_updir);
 
 	//tcp.runServer(8090, con.userCfg.config_updir);
 	loadHTML('public/appmainWindow.html');
@@ -278,7 +271,7 @@ ipcMain.on('tcpdisconnect', (event, data) => {
 
 ipcMain.on('tcpstartServer', (event, data) => {
 	console.log("tcp start server Data : " + data);
-	tcp.runServer(8090, applogindata.config_updir, applogindata.config_user);
+	tcp.runServer(8090, applogindata.config_ServerDir, applogindata.config_user);
 	//ipscan("192.168.178.")
 	
 	

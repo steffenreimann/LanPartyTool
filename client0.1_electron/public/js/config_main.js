@@ -5,20 +5,49 @@ var qrcode = new QRCode(document.getElementById("qrcode"), {
     height : 400
 });
 
+var config_ServerDir = [];
+var config_ClientDir = [];
+
 function saveConfig() {
 	//Hashing eines Passwords 
 	var config_pw = $( "#config_pw" ).val();
 	var config_user = $( "#config_user" ).val();
-	var config_updir = $( "#config_updir" ).val();
+	//var config_serverDir = $( "#config_serverDir" ).val();
+	//var config_ClientDir = $( "#config_ClientDir" ).val();
     //var config_uuid = uuidv1(); // -> v1 UUID
-    
     if(isCorrect([config_pw, config_user],["","0"])){
-        ipcRenderer.send('saveConfig', {'config_pw': config_pw, 'config_user': config_user, 'config_uuid': null, 'config_updir': config_updir } , () => {})
+        var data = {config_pw: config_pw, config_user: config_user, config_uuid: null, config_ServerDir: config_ServerDir, config_ClientDir: config_ClientDir }
+        console.log(data);
+        ipcRenderer.send('saveConfig', data , () => {})
     }else{
         console.log("isNotCorrect");
     }
     
 }
+
+function pushClientDir(dir, id) {
+    if(dir == "" && id !== ""){
+        dir = $( id ).val();
+    }else{
+        config_ClientDir.push(dir);
+    }
+    
+}
+function pushServerDir(dir) {
+    if(dir == "" && id !== ""){
+        console.log("config_ServerDir null");
+    }else{
+        console.log("config_ServerDir");
+        config_ServerDir.push(dir);
+
+    }
+        console.log(config_ServerDir);
+}
+
+function listServerDir(params) {
+    
+}
+
 
 ipcRenderer.on('saveConfig', (event, data) => { 
     console.log(data);
@@ -34,6 +63,7 @@ ipcRenderer.on('applogin', (event, data) => {
 ipcRenderer.on('loadPath', (event, data) => { 
     console.log(data);
     $( "#config_updir" ).val(data)
+    pushServerDir(data)
 })
 function applogin(){
     var config_pw = $( "#config_pw" ).val();
@@ -61,7 +91,18 @@ ipcRenderer.on('loadConfig', (event, data) => {
     if(data != null){
         $( "#config_user" ).val(data.config_user)
         $( "#config_uuid" ).val(data.config_uuid)
-        $( "#config_updir" ).val(data.config_updir)
+       // $( "#config_updir" ).val(data.config_updir)
+      // config_ServerDir = []
+      // config_ClientDir = []
+
+       data.config_ServerDir.forEach(element => {
+            pushServerDir(element)
+       });
+       data.config_ClientDir.forEach(element => {
+            pushClientDir(element)
+       });
+
+
         var token = handshake.GenerateToken(data.config_uuid);
         console.log(token.toString());
 

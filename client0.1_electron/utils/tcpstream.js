@@ -156,55 +156,62 @@ function stopTCP_Server(port) {
  * @param dir string
  * @return Array
  */
-function readDir(dir, callback) {
+function readDir(dirs, callback) {
     var out = []
     var algo = 'md5';
+    var a = 0 
     user_data.emit("tempDir", "read Dir");
-    fs.readdir(dir, (err, files) => {
-        user_data.emit("tempDir", files);
-        //console.log("files : " +  JSON.stringify(files));
-        var i = 0  
-        files.forEach(element => {    
-            fs.lstat(path.join(dir, element), (err, stats) => {
-                user_data.emit("tempDir", element)
-                user_data.emit("tempDir", stats.isFile())
-                //console.log(`Is file: ${stats.isFile()}`);
-                //console.log(`Is directory: ${stats.isDirectory()}`);
-                var FileSize = stats.size / 1000000;
-                //console.log(FileSize);
-                FileSize = Math.round(FileSize)
-                
-                
-                if(stats.isFile()){
-                    var shasum = crypto.createHash(algo);
+    dirs.forEach(dir => {
+        console.log("dir");
+        console.log(dir);
+        a++
+        fs.readdir(dir, (err, files) => {
+            user_data.emit("tempDir", files);
+            //console.log("files : " +  JSON.stringify(files));
+            var i = 0  
+             
+            files.forEach(element => {    
+                fs.lstat(path.join(dir, element), (err, stats) => {
+                    user_data.emit("tempDir", element)
+                    user_data.emit("tempDir", stats.isFile())
+                    //console.log(`Is file: ${stats.isFile()}`);
+                    //console.log(`Is directory: ${stats.isDirectory()}`);
+                    var FileSize = stats.size / 1000000;
+                    //console.log(FileSize);
+                    FileSize = Math.round(FileSize)
+                    
+                    
+                    if(stats.isFile()){
+                        var shasum = crypto.createHash(algo);
 
-                    var s = fs.ReadStream(path.join(dir, element));
-                    s.on('data', function(d) { shasum.update(d); });
+                        var s = fs.ReadStream(path.join(dir, element));
+                        s.on('data', function(d) { shasum.update(d); });
 
-                    s.on('end', function() {
-                        i++
-                        var d = shasum.digest('hex');
-                        console.log(d);
-                        
-                        out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: FileSize, fileuuid: d, complete: '' })
-                        //user_data.emit("tempDir", out);
-                        if(i == files.length){
-                            console.log("Out " + out);
-                            callback(out);
+                        s.on('end', function() {
+                            i++
+                            var d = shasum.digest('hex');
+                            console.log(d);
+                            
+                            out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: FileSize, fileuuid: d, complete: '' })
                             //user_data.emit("tempDir", out);
-                            out = ""
-                        }
-                    }); 
-                }else{
-                    i++
-                }
-                   
-                //console.log(out);
-                //console.log("i " + i);
-                //console.log("files.length " + files.length);
-                
-            });
-        }); 
+                            if(i == files.length && a == dirs.lenght){
+                                console.log("Out " + out);
+                                callback(out);
+                                //user_data.emit("tempDir", out);
+                                out = ""
+                            }
+                        }); 
+                    }else{
+                        i++
+                    }
+                    
+                    //console.log(out);
+                    //console.log("i " + i);
+                    //console.log("files.length " + files.length);
+                    
+                });
+            }); 
+        });
     });
 }
 
