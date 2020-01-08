@@ -219,6 +219,9 @@ ipcMain.on('applogin', (event, data) => {
 	const con = configHelper.LoadUserConfig(data.config_pw);
 	user.uuid = true;
 
+	console.log("con");
+	console.log(con);
+
 	//tcp.runServer(8090, con.userCfg.config_updir);
 	loadHTML('public/appmainWindow.html');
 	applogindata = con.userCfg
@@ -303,7 +306,7 @@ ipcMain.on('downloadfile', (event, data) => {
 })
 ipcMain.on('loadPath', (event, data) => {
 	console.log("loadPath: " + data);
-	openPath();
+	openPath(data);
 })
 
 ipcMain.on('loadClients', (event, dataa) => {
@@ -355,7 +358,7 @@ function NetworkInterfaces() {
 			// skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
 			return null;
 			}
-			console.log(ifname, iface.address);
+			//console.log(ifname, iface.address);
 			localip.push({name: ifname, ip: iface.address}) 
 		});
 	});
@@ -501,19 +504,29 @@ function openSplitFile(path){
 	}
 }
 
-function openPath(path){
+function openPath(data){
 	const {dialog} = require('electron') 
-  	const fs = require('fs') 
-  	console.log('openfile');
-  	var selected = dialog.showOpenDialog({properties: ['openDirectory']});
+	  const fs = require('fs') 
+	  
+	
+	  console.log('openfile');
+	  
+	  
+
+
+
+
+
+  	var selected = dialog.showOpenDialog(data.options);
    	if(selected != undefined) {
 	   	console.log(selected)
 		//filestats(selectedFiles[0])
-		
+		mainWindow.webContents.send('loadPath', {selected: selected, type: data.type} );
 		fs.lstat(selected[0], (err, stats) => {
 			if(err)
+			
 			return console.log(err); //Handle error
-
+			
 			console.log(`Is file: ${stats.isFile()}`);
 			console.log(`Is directory: ${stats.isDirectory()}`);
 			console.log(`Is symbolic link: ${stats.isSymbolicLink()}`);
@@ -524,7 +537,7 @@ function openPath(path){
 			if(stats.isDirectory()){
 				console.log('Ist Ordner');
 				 
-				mainWindow.webContents.send('loadPath', selected[0] );
+				
 				
 			}
 		});
@@ -777,7 +790,7 @@ function ipscan(data){
 			ping.sys.probe(host, function(isAlive){
 				if(isAlive == true){
 					alive.push(host);	
-					console.log("Alive Host on IP = " + host)		  		
+					//console.log("Alive Host on IP = " + host)		  		
 				}
 				//console.log("round = " + rounds)	
 				
@@ -811,7 +824,7 @@ async function getAliveHosts(data) {
 			ping.sys.probe(host, function(isAlive){
 				if(isAlive == true){
 					alive.push(host);	
-					console.log("Alive Host on IP = " + host)		  		
+					//console.log("Alive Host on IP = " + host)		  		
 				}
 				//console.log("round = " + rounds)	
 				

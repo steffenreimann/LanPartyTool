@@ -29,7 +29,7 @@
 							</div>
 						</div>
 						
-						<!-- Password -->
+						<!-- UUID -->
 						<div class="form-group pmd-textfield">
 							<label for="inputError1" class="control-label pmd-input-group-label">UUID</label>
 							<div class="input-group">
@@ -37,14 +37,43 @@
 								<input id="config_uuid" type="text" class="form-control" >
 							</div>
 						</div>
-						<div class="form-group pmd-textfield">
-							<label for="inputError1" class="control-label pmd-input-group-label">Tmp Ordner</label>
-							<div class="input-group">
-								<div class="input-group-addon"><i class="material-icons md-dark pmd-sm">folder</i></div>
-								<input id="config_updir" type="text" class="form-control" >
-								<div onclick="loadPath()" class="c input-group-addon"><i class="material-icons md-dark pmd-sm">folder_open</i></div>
-							</div>
-						</div>
+
+
+						<table class="table pmd-table table-striped table-mc-red">
+							<p onclick="loadPath('client')">Client Ordner</p>
+							<thead>
+								<tr>
+									<th>Art</th>
+									
+									<th>Path</th>
+									<th class="pmd-accordion-icon-right">Entfernen</th>
+								</tr>
+							</thead>
+							<tbody id="config_ClientDir">				
+							</tbody>
+							<tr >
+								<td ><i onclick="loadPath('client')" style="color: green" class="c material-icons pmd-sm pmd-accordion-icon-left pmd-ripple-effect">add_circle_outline</i></td>
+								</tr>
+						</table>
+						<table class="table pmd-table table-striped table-mc-red">
+							<p onclick="loadPath('server')">Server Ordner</p>
+							<thead>
+								<tr>
+									<th>Art</th>
+									
+									<th>Path</th>
+									<th class="pmd-accordion-icon-right">Entfernen</th>
+								</tr>
+							</thead>
+							<tbody id="config_ServerDir">				
+							</tbody>
+							<tr >
+								<td><i onclick="loadPath('server')" style="color: green;" class="c material-icons pmd-sm pmd-accordion-icon-left pmd-ripple-effect">add_circle_outline</i></td>
+								
+							</tr>
+						</table>
+
+
 					</div>
 					<div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
 				</div>
@@ -84,6 +113,13 @@
 		</div>
 	</div>
 </body>
+
+
+
+
+
+
+
 
 <script>window.$ = window.jQuery = require('./js/jquery.js');</script>
 <script src="../node_modules/propellerkit/dist/js/bootstrap.js"></script>

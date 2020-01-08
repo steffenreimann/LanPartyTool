@@ -27,6 +27,8 @@ var server_client_connections = []
  */
 function runTCP_Server(port, dir) {
     console.log('Try Starting TCP Server ...' );
+    console.log('tcpstream.js --- ' );
+    console.log(dir);
     readDir(dir, function(data){
         console.log('Reading Dir ...' );
         console.log(data);
@@ -160,9 +162,9 @@ function readDir(dirs, callback) {
     var out = []
     var algo = 'md5';
     var a = 0 
-    user_data.emit("tempDir", "read Dir");
+    //user_data.emit("tempDir", "read Dir");
     dirs.forEach(dir => {
-        console.log("dir");
+        console.log("tcpstream --- function readDir()");
         console.log(dir);
         a++
         fs.readdir(dir, (err, files) => {

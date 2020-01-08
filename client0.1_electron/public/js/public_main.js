@@ -146,11 +146,12 @@ function ipList(data, id) {
     var fileOut = ""
     var out = ""
     if(id == "network"){
-        networkHTML += `<tr onclick="writeClipboard('${data}')">
+        networkHTML += `<tr >
         <td data-title="Art"><i  class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
         <td data-title="Name">Hostname</td>
         
-        <td data-title="IP">${data} <i onclick="tcpconnect('${data}')"  class="material-icons pmd-sm pmd-accordion-icon-right">add_circle_outline</i></td>
+        <td onclick="writeClipboard('${data}')" data-title="IP">${data}</td>
+        <td data-title="" class="material-icons pmd-sm pmd-accordion-icon-right">add_circle_outline</i></td>
         
     </tr>`
     $("#network").html(networkHTML)
@@ -161,7 +162,7 @@ function ipList(data, id) {
         <td data-title=""><i class="material-icons pmd-sm pmd-accordion-icon-left">settings_ethernet</i></td>
         <td data-title="Name">${data.name}</td>
         
-        <td data-title="IP">${data.ip}</td>
+        <td data-title="IP">Hide IP! Click to Copy IP to Clipboard</td>
 
     </tr>`
     $("#localhost").html(localipHTML)

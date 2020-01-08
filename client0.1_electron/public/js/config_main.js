@@ -7,7 +7,9 @@ var qrcode = new QRCode(document.getElementById("qrcode"), {
 
 var config_ServerDir = [];
 var config_ClientDir = [];
-
+var html_config_ServerDir = ``;
+var html_config_ClientDir = ``;
+var config_data = {}
 function saveConfig() {
 	//Hashing eines Passwords 
 	var config_pw = $( "#config_pw" ).val();
@@ -16,7 +18,7 @@ function saveConfig() {
 	//var config_ClientDir = $( "#config_ClientDir" ).val();
     //var config_uuid = uuidv1(); // -> v1 UUID
     if(isCorrect([config_pw, config_user],["","0"])){
-        var data = {config_pw: config_pw, config_user: config_user, config_uuid: null, config_ServerDir: config_ServerDir, config_ClientDir: config_ClientDir }
+        var data = {config_pw: config_pw, config_user: config_user, config_uuid: null, config_ServerDir: config_data.config_ServerDir, config_ClientDir: config_data.config_ClientDir }
         console.log(data);
         ipcRenderer.send('saveConfig', data , () => {})
     }else{
@@ -25,24 +27,7 @@ function saveConfig() {
     
 }
 
-function pushClientDir(dir, id) {
-    if(dir == "" && id !== ""){
-        dir = $( id ).val();
-    }else{
-        config_ClientDir.push(dir);
-    }
-    
-}
-function pushServerDir(dir) {
-    if(dir == "" && id !== ""){
-        console.log("config_ServerDir null");
-    }else{
-        console.log("config_ServerDir");
-        config_ServerDir.push(dir);
 
-    }
-        console.log(config_ServerDir);
-}
 
 function listServerDir(params) {
     
@@ -63,8 +48,20 @@ ipcRenderer.on('applogin', (event, data) => {
 ipcRenderer.on('loadPath', (event, data) => { 
     console.log(data);
     $( "#config_updir" ).val(data)
-    pushServerDir(data)
+    //pushServerDir(data)
+
+    if (data.type == "server") {
+        pushServerDir(data.selected)
+        config_data.config_ServerDir.push(data.selected);
+    }
+    if (data.type == "client") {
+        pushClientDir(data.selected)
+        config_data.config_ClientDir.push(data.selected);
+    }
+  
+
 })
+
 function applogin(){
     var config_pw = $( "#config_pw" ).val();
     ipcRenderer.send('applogin', {'config_pw': config_pw } , () => {})
@@ -77,31 +74,58 @@ function loadConfig(){
     ipcRenderer.send('loadConfig' , {'config_pw': config_pw}, () => {
         console.log(data)
     })
+    
+
 }
 
-function loadPath(){
+function loadPath(type, dir, title, button){
+
+    if(button == undefined){
+        button = "Open"
+    }
+    if(title == undefined){
+        title = "LanTool File Open"
+    }
+    if(dir == undefined){
+        dir = "/"
+    }
+    if(type == undefined){
+        type = ""
+    }
+
+    let options = {
+		// See place holder 1 in above image
+		title : title, 
+		// See place holder 2 in above image
+		defaultPath : dir,
+		// See place holder 3 in above image
+		buttonLabel : button,
+		// See place holder 4 in above image
+		filters :[
+		 {name: 'Images', extensions: ['jpg', 'png', 'gif']},
+		 {name: 'Movies', extensions: ['mkv', 'avi', 'mp4']},
+		 {name: 'Custom File Type', extensions: ['as']},
+		 {name: 'All Files', extensions: ['*']}
+		],
+		properties: ['openDirectory']
+	   }
     var config_pw = $( "#config_pw" ).val();
-    ipcRenderer.send('loadPath' , {'config_pw': config_pw}, () => {
+    ipcRenderer.send('loadPath' , {type: type, options: options}, () => {
         console.log(data)
     })
 }
 
+
+
+
+
 ipcRenderer.on('loadConfig', (event, data) => { 
     console.log(data);
     if(data != null){
-        $( "#config_user" ).val(data.config_user)
-        $( "#config_uuid" ).val(data.config_uuid)
+        renderConfig(data)
        // $( "#config_updir" ).val(data.config_updir)
       // config_ServerDir = []
       // config_ClientDir = []
-
-       data.config_ServerDir.forEach(element => {
-            pushServerDir(element)
-       });
-       data.config_ClientDir.forEach(element => {
-            pushClientDir(element)
-       });
-
 
         var token = handshake.GenerateToken(data.config_uuid);
         console.log(token.toString());
@@ -126,7 +150,89 @@ ipcRenderer.on('loadConfig', (event, data) => {
     }
 })
 
+var renderLengServer = 0
+var renderLengClient = 0
 
+function renderConfig(data) {
+    console.log('renderConfig');
+        html_config_ServerDir = ``;
+        html_config_ClientDir = ``;
+         renderLengServer = 0
+         renderLengClient = 0
+        $("#config_ClientDir").html(html_config_ClientDir)
+        $("#config_ServerDir").html(html_config_ServerDir)
+        if(data != null){
+            config_data = data
+        }else{
+            //config_data.config_ServerDir = []
+            //config_data.config_ClientDir = []
+        }
+
+
+        $( "#config_user" ).val(config_data.config_user)
+        $( "#config_uuid" ).val(config_data.config_uuid)
+        config_data.config_ServerDir.forEach(element => {
+            pushServerDir(element)
+       });
+
+       config_data.config_ClientDir.forEach(element => {
+            pushClientDir(element)
+       });
+}
+
+
+function pushClientDir(dir) {
+   
+    renderLengClient++
+    if(dir == ""){
+        dir = $( id ).val();
+    }else{
+        //config_data.config_ClientDir.push(dir);
+        html_config_ClientDir += `<tr >
+            <td data-title="Art"><i  class="material-icons pmd-sm pmd-accordion-icon-left">folder</i></td>
+            
+            <td onclick="loadPath('${dir}')" data-title="IP">${dir}</td>
+            <td onclick="delPath('${renderLengServer}', 'client')" style="color: red;" data-title="Löschen" class="material-icons pmd-sm pmd-accordion-icon-right c pmd-ripple-effect">remove_circle_outline</i></td>
+            </tr>`
+    $("#config_ClientDir").html(html_config_ClientDir)
+    
+    }
+   
+}
+function pushServerDir(dir) {
+    renderLengServer++
+
+    if(dir == ""){
+        console.log("config_ServerDir null");
+    }else{
+        console.log("config_ServerDir");
+        console.log(dir);
+       // config_data.config_ServerDir.push(dir);
+        html_config_ServerDir += `<tr >
+            <td data-title="Art"><i  class="material-icons pmd-sm pmd-accordion-icon-left">folder_shared</i></td>
+            
+            <td onclick="loadPath('${dir}')" data-title="IP">${dir}</td>
+            <td onclick="delPath('${renderLengServer}', 'server')" style="color: red;" data-title="Löschen" class="material-icons pmd-sm pmd-accordion-icon-right c pmd-ripple-effect">remove_circle_outline</i></td>
+            </tr>`
+    
+    }
+    console.log(config_data.config_ServerDir);
+    $("#config_ServerDir").html(html_config_ServerDir)
+}
+
+
+function delPath(params, type) {
+    console.log('delPath');
+    console.log(params);
+    console.log(type);
+    if(type == 'server'){
+        config_data.config_ServerDir.splice(params -1, 1);
+    }
+    if(type == 'client'){
+        config_data.config_ClientDir.splice(params -1, 1);
+    }
+    renderConfig();
+}
 
 /**
  * Return false if data and filter are equal tetstå
