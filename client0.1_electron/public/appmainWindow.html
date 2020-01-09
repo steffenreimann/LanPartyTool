@@ -27,6 +27,7 @@
             
             <!--Accordion with colored icon example -->
 <div class="panel-group pmd-accordion" id="accordion4" role="tablist" aria-multiselectable="true" > 
+<div class="panel-group pmd-accordion" id="accordion4" role="tablist" aria-multiselectable="true" > 
 	<div class="panel panel-warning"> 
 		<div class="panel-heading" role="tab" id="headingOne">
 			<h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion4" href="#collapseOne4" aria-expanded="true" aria-controls="collapseOne4"  data-expandable="false"><i class="material-icons pmd-sm pmd-accordion-icon-left">mood</i> Merge </a> </h4>
@@ -140,7 +141,10 @@
 
 			<div class="panel-body">
 				
-                <button id="tcpserver" type="button" class="btn btn-primary">Start TCP Server</button >
+                <button  id="tcpserver" type="button" class="btn btn-primary">Start TCP Server</button  >
+                <button  id="testtt" onclick="renderAnimColor({id: 'testtt',FromColor: [255,0,0],ToColor: [0,255,255], time: 2000});" type="button" class="btn btn-primary">test</button  >
+                <button  id="testttr" onclick="renderAnimColor2({id: 'testttr',FromColor: [255,0,0],ToColor: [0,255,255], time: 2000});" type="button" class="btn btn-primary">test</button  >
+              
                 
 				<div id="clients" class="form-group pmd-textfield">
 					
@@ -187,6 +191,8 @@
 <script src="../node_modules/propellerkit/dist/js/bootstrap.js"></script>
 <script src="../node_modules/propellerkit/dist/js/propeller.js"></script>
 <script language="javascript" type="text/javascript" src="./js/public_main.js"></script>
+<script language="javascript" type="text/javascript" src="./js/animate.js"></script>
+
 <script type="text/javascript" src="./js/qrcode.js"></script>
 <script src="https://wzrd.in/standalone/uuid%2Fv1@latest"></script>
 

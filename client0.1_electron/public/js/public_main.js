@@ -151,7 +151,7 @@ function ipList(data, id) {
         <td data-title="Name">Hostname</td>
         
         <td onclick="writeClipboard('${data}')" data-title="IP">${data}</td>
-        <td data-title="" class="material-icons pmd-sm pmd-accordion-icon-right">add_circle_outline</i></td>
+        <td onclick="tcpconnect('${data}')" data-title="" class="material-icons pmd-sm pmd-accordion-icon-right">add_circle_outline</i></td>
         
     </tr>`
     $("#network").html(networkHTML)

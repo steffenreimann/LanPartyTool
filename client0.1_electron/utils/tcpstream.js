@@ -25,26 +25,22 @@ var server_client_connections = []
  * @param number {number}
  * @return {Object} {error:boolean, obj:cloned object}
  */
-function runTCP_Server(port, dir) {
+function runTCP_Server(port, config) {
     console.log('Try Starting TCP Server ...' );
     console.log('tcpstream.js --- ' );
-    console.log(dir);
-    readDir(dir, function(data){
-        console.log('Reading Dir ...' );
-        console.log(data);
-        tempDir = data
-        user_data.emit("tempDir", tempDir);
-    })
+    console.log(config);
+    analyseServerDir(config)
+
     
     server.on('connection', function (socket) {
         
-        console.log(server_client_connections);
+        //console.log(server_client_connections);
         console.log('TCP Server ... Client Connection ...');
         socket.on('login', function (d) {
             console.log('Trying to login: ' + d.ip);
             server_client_connections.push({socket: socket, ip: d.ip, username: d.data.config_user, user_uuid: d.data.config_uuid});
-            console.log(server_client_connections[0]);
-            runTCP_Client({ip: d.ip[1].ip, name: d.data.config_user}, port)
+            //console.log(server_client_connections[0]);
+          // runTCP_Client({ip: d.ip[1].ip, name: d.data.config_user}, port)
         });
         socket.on('LT-Broadcast', function (data) {
           console.log('LT-Broadcast');
@@ -52,7 +48,7 @@ function runTCP_Server(port, dir) {
         });
         socket.on('download', function (info) {
 
-            var paath = path.join(dir, info.path)
+            var paath = path.join(config.config_ServerDir, info.path)
             console.log('Server // Download request from client');
             console.log(paath);
 
@@ -89,7 +85,7 @@ function runTCP_Server(port, dir) {
             var str = JSON.stringify(info.client); 
             console.log('Server //  upload new path');
             var base = path.basename(info.path)
-            var tmp_path = path.join(dir, str + base)
+            var tmp_path = path.join(config.config_ServerDir, str + base)
             console.log(base);
             console.log(tmp_path);
             const Wstream = fs.createWriteStream(tmp_path);
@@ -118,14 +114,8 @@ function runTCP_Server(port, dir) {
         });
         socket.on('list', function (req, callback) {
             //dirList = readDir(dir)
-            //console.log(dirList)
-            readDir(dir, function(data){
-                console.log('Reading Dir ...' );
-                console.log(data);
-                tempDir = data
-                user_data.emit("tempDir", tempDir);
-                callback(tempDir);
-            })
+            console.log('dirList')
+            
             
         });
         socket.on('close', function() {
@@ -165,47 +155,89 @@ function readDir(dirs, callback) {
     //user_data.emit("tempDir", "read Dir");
     dirs.forEach(dir => {
         console.log("tcpstream --- function readDir()");
-        console.log(dir);
+        //console.log(dir);
         a++
         fs.readdir(dir, (err, files) => {
-            user_data.emit("tempDir", files);
+            //user_data.emit("tempDir", files);
             //console.log("files : " +  JSON.stringify(files));
             var i = 0  
              
             files.forEach(element => {    
-                fs.lstat(path.join(dir, element), (err, stats) => {
-                    user_data.emit("tempDir", element)
-                    user_data.emit("tempDir", stats.isFile())
+                var this_path = path.join(dir, element)
+                fs.lstat(this_path, (err, stats) => {
+                    //user_data.emit("tempDir", element)
+                    //user_data.emit("tempDir", stats.isFile())
                     //console.log(`Is file: ${stats.isFile()}`);
                     //console.log(`Is directory: ${stats.isDirectory()}`);
+
+
                     var FileSize = stats.size / 1000000;
-                    //console.log(FileSize);
                     FileSize = Math.round(FileSize)
                     
                     
-                    if(stats.isFile()){
-                        var shasum = crypto.createHash(algo);
+                        if (stats.isFile()) {
+                            var shasum = crypto.createHash(algo);
 
-                        var s = fs.ReadStream(path.join(dir, element));
-                        s.on('data', function(d) { shasum.update(d); });
+                            var s = fs.ReadStream(this_path);
 
-                        s.on('end', function() {
+                            s.on('data', function(d) { shasum.update(d); });
+
+                            s.on('end', function() {
+
+                                i++
+                                var d = shasum.digest('hex');
+                                //console.log(d);
+                                
+                                console.log("i " + i);
+                               console.log("files.length  " + files.length );
+                                //out.push({name: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: FileSize, fileuuid: d, complete: '' })
+                                out.push({path: dir, name: element, stats: {isFile: stats.isFile(), size: stats.size, birth: stats.birthtime}, fileuuid: d, in: [] })
+                                if(i == files.length ){
+                                  //  console.log("Out " + out);
+                                    callback(out);
+                                    //user_data.emit("tempDir", out);
+                                    //out = []
+                                }
+                               // console.log(out);
+                                //user_data.emit("tempDir", out);
+                                
+                            }); 
+                        }else if(stats.isDirectory()){
                             i++
+                            //out.push({path: dir, name: element, stats: stats, fileuuid: d, in: '' })
+                            var shasum = crypto.createHash(algo);
+                            var dd = element
+                            shasum.update(dd);
                             var d = shasum.digest('hex');
-                            console.log(d);
-                            
-                            out.push({filename: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: FileSize, fileuuid: d, complete: '' })
-                            //user_data.emit("tempDir", out);
-                            if(i == files.length && a == dirs.lenght){
-                                console.log("Out " + out);
+
+                            var uff = [this_path]
+                            readDir(uff, function(data){
+                                console.log('Reading Dir ...' + this_path);
+                               // console.log(data);
+                               // console.log(d);
+                                //tempDir = data
+                               // user_data.emit("tempDir", tempDir);
+                               out.push({path: dir, name: element, stats: {isFile: stats.isFile(), size: stats.size, birth: stats.birthtime}, fileuuid: d, in: data })
+
+
+                               console.log("i " + i);
+                               console.log("files.length  " + files.length );
+                               if(i == files.length ){
+                                //console.log("Out " + out);
                                 callback(out);
                                 //user_data.emit("tempDir", out);
-                                out = ""
+                                //out = []
                             }
-                        }); 
-                    }else{
-                        i++
-                    }
+                            })
+                        }
+                      ///  console.log("i " + i);
+                       // console.log("files.length  " + files.length );
+                       // console.log("a " + a);
+                       // console.log("dirs.lenght " + dirs.lenght);
+                        
+                    
+                      
+                    
                     
                     //console.log(out);
                     //console.log("i " + i);
@@ -215,6 +247,17 @@ function readDir(dirs, callback) {
             }); 
         });
     });
+}
+
+
+function analyseServerDir (config) {
+    readDir(config.config_ServerDir, function(data){
+        console.log(' analyseServerDir ...' );
+        console.log(data.length);
+        //tempDir = data
+        //user_data.emit("tempDir", data);
+        //callback(tempDir);
+    })
 }
 
 

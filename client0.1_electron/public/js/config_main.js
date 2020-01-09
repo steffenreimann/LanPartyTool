@@ -52,11 +52,11 @@ ipcRenderer.on('loadPath', (event, data) => {
 
     if (data.type == "server") {
         pushServerDir(data.selected)
-        config_data.config_ServerDir.push(data.selected);
+        config_data.config_ServerDir.push(data.selected[0]);
     }
     if (data.type == "client") {
         pushClientDir(data.selected)
-        config_data.config_ClientDir.push(data.selected);
+        config_data.config_ClientDir.push(data.selected[0]);
     }
   
 

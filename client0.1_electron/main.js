@@ -58,8 +58,6 @@ const mainMenuTemplate =  [
 	  ]
 	}
   ];
-
-
   // If OSX, add empty object to menu
 if(process.platform == 'darwin'){
 	//mainMenuTemplate.unshift({});
@@ -104,21 +102,12 @@ if(process.env.NODE_ENV !== 'production'){
 	   ]
 	 });
 }
-
-
 // Check Configuration directory
 if (!configHelper.Init()) {
 	configHelper.InitDirs();
 	console.log('Created directory' + configPath.GetBaseDir());
 }
-
-
-
-'use strict';
-
 var os = require('os');
-
-
 
 
 // Fast-TCP Testung -----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -167,14 +156,13 @@ app.on('ready', function(){
 	Menu.setApplicationMenu(mainMenu);
 	KeyReg('CommandOrControl+p', true, ipscan)
 });
-
-
 app.on('will-quit', () => {
 	
   
 	// Unregister all shortcuts.
 	globalShortcut.unregisterAll()
   })
+
 
 ipcMain.on('openFile', (event, path) => { 
     openSplitFile(path)
@@ -203,7 +191,6 @@ ipcMain.on('saveConfig', (event, data) => {
 	mainWindow.webContents.send('saveConfig', cleanObject );
 	applogindata = cleanObject
 }) 
-
 ipcMain.on('loadConfig', (event, data) => { 
 	console.log(data);
 	//{'config_pw': config_pw}
@@ -237,7 +224,6 @@ ipcMain.on('applogin', (event, data) => {
 ipcMain.on('applogout', (event, data) => { 
 	applogout();
 }) 
-
 ipcMain.on('saveSplitFile', (event, data) => {
     //console.log("Joo path" + data.path);
     savefile(data)
@@ -271,10 +257,9 @@ ipcMain.on('tcpdisconnect', (event, data) => {
 	
 	//connectToServer(data);
 })
-
 ipcMain.on('tcpstartServer', (event, data) => {
 	console.log("tcp start server Data : " + data);
-	tcp.runServer(8090, applogindata.config_ServerDir, applogindata.config_user);
+	tcp.runServer(8090, applogindata);
 	//ipscan("192.168.178.")
 	
 	
@@ -292,7 +277,6 @@ ipcMain.on('ipscan', (event, data) => {
 	getAliveHosts(data)
 	//connectToServer(data);
 })
-
 ipcMain.on('uploadfile', (event, data) => {
 	console.log("tcpconnect Data : " + data);
 	console.log(tcp.upload(data, 0));;
@@ -308,29 +292,25 @@ ipcMain.on('loadPath', (event, data) => {
 	console.log("loadPath: " + data);
 	openPath(data);
 })
-
 ipcMain.on('loadClients', (event, dataa) => {
 	var data = tcp.loadClients()
 	console.log("loadClients: " + data);
 	mainWindow.webContents.send('loadClients', data );
 	
 })
-
 ipcMain.on('reloadVAR', (event, data) => {
 	//tcp.list(0)
 	mainWindow.webContents.send('reloadVAR', {localip: localip, alive: alive, user: user, serverFiles: serverFiles} );
 })
 
+
 // register event listener
 tcp.traffic.on("downloading", function(data) {
 	// process data when someEvent occurs
-	
 	mainWindow.webContents.send('DOM', {"id": "#size", "val": data} );
 });
-
 tcp.traffic.on("uploading", function(data) {
 	// process data when someEvent occurs
-	
 	mainWindow.webContents.send('DOM', {"id": "#size", "val": data} );
 });
 
@@ -339,14 +319,12 @@ tcp.user.on("tempDir", function(tempDir) {
 	//serverFiles = tempDir
 	mainWindow.webContents.send('console', tempDir );
 });
-
 tcp.user.on("client_server_connections", function(tempDir) {
 	// process data when someEvent occurs
 	serverFiles = tempDir
 	//mainWindow.webContents.send('list', tempDir );
 	mainWindow.webContents.send('reloadVAR', {localip: localip, alive: alive, user: user, serverFiles: serverFiles} );
 });
-
 
 
 function NetworkInterfaces() {
@@ -364,8 +342,6 @@ function NetworkInterfaces() {
 	});
 	return localip
 }
-
-
 function savefile(data) {
     const {dialog} = require('electron') 
     const fs = require('fs') 
