@@ -148,20 +148,30 @@ function stopTCP_Server(port) {
  * @param dir string
  * @return Array
  */
+
+
+ var DirRounds = 0
+ var DirCounter = 0
+
 function readDir(dirs, callback) {
+    var dirs_clone = dirs
     var out = []
     var algo = 'md5';
     var a = 0 
+    console.log("dirs : " +  JSON.stringify(dirs.lenght));
     //user_data.emit("tempDir", "read Dir");
+    console.log("dirs.lenght " + dirs_clone.lenght);
     dirs.forEach(dir => {
         console.log("tcpstream --- function readDir()");
-        //console.log(dir);
+        console.log(dir);
+        DirRounds++
+        DirCounter++
         a++
         fs.readdir(dir, (err, files) => {
             //user_data.emit("tempDir", files);
-            //console.log("files : " +  JSON.stringify(files));
+            console.log("files : " +  JSON.stringify(files));
             var i = 0  
-             
+            
             files.forEach(element => {    
                 var this_path = path.join(dir, element)
                 fs.lstat(this_path, (err, stats) => {
@@ -170,7 +180,7 @@ function readDir(dirs, callback) {
                     //console.log(`Is file: ${stats.isFile()}`);
                     //console.log(`Is directory: ${stats.isDirectory()}`);
 
-
+                    
                     var FileSize = stats.size / 1000000;
                     FileSize = Math.round(FileSize)
                     
@@ -187,23 +197,26 @@ function readDir(dirs, callback) {
                                 i++
                                 var d = shasum.digest('hex');
                                 //console.log(d);
+                                if(i == files.length){
+                                    console.log("Out " + out);
+                                    callback(out);
+                                    
+
+                                    out = []
+                                }
                                 
-                                console.log("i " + i);
-                               console.log("files.length  " + files.length );
+                              //  console.log("i " + i);
+                             //  console.log("files.length  " + files.length );
                                 //out.push({name: element, isFile: stats.isFile(), isDir: stats.isDirectory(), size: FileSize, fileuuid: d, complete: '' })
                                 out.push({path: dir, name: element, stats: {isFile: stats.isFile(), size: stats.size, birth: stats.birthtime}, fileuuid: d, in: [] })
-                                if(i == files.length ){
-                                  //  console.log("Out " + out);
-                                    callback(out);
-                                    //user_data.emit("tempDir", out);
-                                    //out = []
-                                }
+                            
                                // console.log(out);
                                 //user_data.emit("tempDir", out);
                                 
                             }); 
                         }else if(stats.isDirectory()){
                             i++
+                            
                             //out.push({path: dir, name: element, stats: stats, fileuuid: d, in: '' })
                             var shasum = crypto.createHash(algo);
                             var dd = element
@@ -217,24 +230,31 @@ function readDir(dirs, callback) {
                                // console.log(d);
                                 //tempDir = data
                                // user_data.emit("tempDir", tempDir);
+                               DirCounter++
                                out.push({path: dir, name: element, stats: {isFile: stats.isFile(), size: stats.size, birth: stats.birthtime}, fileuuid: d, in: data })
 
-
-                               console.log("i " + i);
-                               console.log("files.length  " + files.length );
-                               if(i == files.length ){
-                                //console.log("Out " + out);
+                               if(i == files.length){
+                                console.log("Out " + out);
                                 callback(out);
-                                //user_data.emit("tempDir", out);
-                                //out = []
+                                
+
+                                out = []
                             }
+                           
                             })
                         }
-                      ///  console.log("i " + i);
-                       // console.log("files.length  " + files.length );
+
+                    console.log("i " + i);
+                    console.log("files.length  " + files.length );
                        // console.log("a " + a);
                        // console.log("dirs.lenght " + dirs.lenght);
-                        
+                           // console.log("i " + i);
+                              // console.log("files.length  " + files.length );
+                             // console.log("DirCounter " + DirCounter);
+                            //  console.log("DirRounds  " + DirRounds );
+                            //  console.log("dirs.lenght " + dirs_clone.lenght);
+
+                    
                     
                       
                     
@@ -251,9 +271,12 @@ function readDir(dirs, callback) {
 
 
 function analyseServerDir (config) {
+    console.log("config.config_ServerDir.lenght");
+    console.log(config.config_ServerDir.lenght);
     readDir(config.config_ServerDir, function(data){
         console.log(' analyseServerDir ...' );
-        console.log(data.length);
+        console.log(data);
+        user_data.emit("tempDir", data);
         //tempDir = data
         //user_data.emit("tempDir", data);
         //callback(tempDir);
